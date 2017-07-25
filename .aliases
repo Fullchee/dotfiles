@@ -1,0 +1,21 @@
+# in bash:
+#if [ -f ~/.aliases ]; then
+#     . ~/.aliases
+#fi
+
+# in .zshrc:
+# source $HOME/.aliases
+alias uoft='ssh zhangful@cdf.utoronto.ca'
+alias 'projects'='cd /home/fancyferret/Documents/projects'
+
+# for linux connection to drive
+alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
+alias globalnpm="npm list -g --depth=0"
+
+vimend () {
+    vim '+normal Go' $1
+}
+
+function config {
+   '/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
+}
