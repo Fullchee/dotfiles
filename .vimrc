@@ -28,3 +28,15 @@ set expandtab       "tabs are spaces
 set wildmenu        "when typing a command, press tab for visual autocomplete
 set mouse=a         "almost like GUI
 set pastetoggle=<F2> "in insert mode, press f2 to paste normally
+
+"if there is a long wrapped line, it will go up one 'line' visually
+nnoremap j gj
+nnoremap k gk
+vnoremap j gj
+vnoremap k gk
+nnoremap <Down> gj
+nnoremap <Up> gk
+vnoremap <Down> gj
+vnoremap <Up> gk
+inoremap <Down> <C-o>gj
+inoremap <Up> <C-o>gk
