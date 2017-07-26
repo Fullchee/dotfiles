@@ -1,0 +1,17 @@
+{
+    "workbench.statusBar.visible": true,
+    "workbench.activityBar.visible": false,
+    "window.zoomLevel": 0,
+    "workbench.sideBar.location": "left",
+    "editor.minimap.enabled": true,
+    "editor.wordWrap": "on",
+    "window.title": "${activeEditorLong}${separator}${rootName}",
+    "terminal.integrated.shell.osx": "/usr/local/bin/zsh",
+    "editor.emptySelectionClipboard": false,
+    "eslint.autoFixOnSave": true,
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#303030",
+        "statusBar.noFolderBackground": "#222225",
+        "statusBar.debuggingBackground": "#511f1f"
+    }
+}
