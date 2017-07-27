@@ -1,11 +1,20 @@
 {
-    "workbench.activityBar.visible": false,
-    "workbench.sideBar.location": "left",
     "window.zoomLevel": 0,
     "editor.wordWrap": "on",
     "files.autoSave": "afterDelay",
-    "workbench.statusBar.visible": false,
     "workbench.colorTheme": "Visual Studio Dark",
     "window.title": "${dirty}${activeEditorLong}${separator}${rootName}${separator}${appName}",
-    "terminal.integrated.shell.linux": "/bin/zsh"
+    "terminal.integrated.shell.linux": "/bin/zsh",
+    "workbench.statusBar.visible": true,
+    "workbench.activityBar.visible": false,
+    "workbench.sideBar.location": "left",
+    "editor.minimap.enabled": true,
+    "terminal.integrated.shell.osx": "/usr/local/bin/zsh",
+    "editor.emptySelectionClipboard": false,
+    "eslint.autoFixOnSave": true,
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#303030",
+        "statusBar.noFolderBackground": "#222225",
+        "statusBar.debuggingBackground": "#511f1f"
+    }
 }
