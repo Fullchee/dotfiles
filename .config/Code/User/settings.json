@@ -1,0 +1,11 @@
+{
+    "workbench.activityBar.visible": false,
+    "workbench.sideBar.location": "left",
+    "window.zoomLevel": 0,
+    "editor.wordWrap": "on",
+    "files.autoSave": "afterDelay",
+    "workbench.statusBar.visible": false,
+    "workbench.colorTheme": "Visual Studio Dark",
+    "window.title": "${dirty}${activeEditorLong}${separator}${rootName}${separator}${appName}",
+    "terminal.integrated.shell.linux": "/bin/zsh"
+}
