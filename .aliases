@@ -18,3 +18,8 @@ vimend () {
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 
+# mkdir -c switches into the new dir
+mkcd () {
+  mkdir "$1"
+  cd "$1"
+}
