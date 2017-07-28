@@ -1,0 +1,7 @@
+[user]
+	email = fullchee@outlook.com
+	name = Fullchee Zhang
+[credential]
+	helper = store
+[push]
+	default = simple
