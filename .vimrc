@@ -40,3 +40,8 @@ vnoremap <Down> gj
 vnoremap <Up> gk
 inoremap <Down> <C-o>gj
 inoremap <Up> <C-o>gk
+
+# avoid the hotpinks in vimdiff to read the lines better
+if &diff
+    colorscheme evening
+endif
