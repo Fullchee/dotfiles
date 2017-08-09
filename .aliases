@@ -8,15 +8,18 @@
 alias uoft='ssh zhangful@cdf.utoronto.ca'
 alias 'projects'='cd /home/fancyferret/Documents/projects'
 
+# use 'config' instead of 'git' to manage this git repo
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
+
 # for linux connection to drive
 alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
+
 alias globalnpm="npm list -g --depth=0"
 
+# open the file with vim at the bottom of the file
 vimend () {
     vim '+normal Go' $1
 }
-
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 
 # mkdir -c switches into the new dir
 mkcd () {
@@ -24,6 +27,7 @@ mkcd () {
   cd "$1"
 }
 
+# plugin taken from oh-my-zsh for easy extraction
 extract() {
 	local remove_archive
 	local success
