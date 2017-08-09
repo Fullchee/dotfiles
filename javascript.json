@@ -15,7 +15,7 @@
 	},
 
 	"Bluebird Generator Starter": {
-		"prefix": "gf",
+		"prefix": "gen",
 		"body": [
 			"const $2 = Promise.coroutine(function*($3) {",
 			"    $4",
