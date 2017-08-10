@@ -91,9 +91,6 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
 alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
@@ -126,14 +123,6 @@ fi
 
 alias uoft='ssh zhangful@cdf.utoronto.ca'
 
-alias '369a1'='cd /home/fancyferret/0school/3rdyearlocal/csc369/group_0008/A1'
-alias '3rdyear'='cd /home/fancyferret/OneDrive/3rdYear'
-alias '301'='cd /home/fancyferret/0school/3rdyearlocal/301-repos'
-alias '321'='cd /home/fancyferret/OneDrive/3rdYear/CSC321'
-alias 'school'='cd /home/fancyferret/0school/3rdyearlocal'
-alias '301a2'='cd /home/fancyferret/0school/3rdyearlocal/301-repos/a2-zhangful'
-alias '369'='cd /home/fancyferret/0school/3rdyearlocal/csc369/CSC369A4/ext2'
-alias 'projects'='cd /home/fancyferret/Documents/projects'
 # added by Anaconda2 4.3.0 installer
 #export PATH="/home/fancyferret/anaconda2/bin:$PATH"
 export PATH="$PATH:/home/fancyferret/Downloads"
@@ -141,14 +130,9 @@ function getAllGitBranches() {
         for remote in "git branch -r"; do 
                 git branch --track ${remote#origin/} $remote; done
 }
-alias emptydisk="cp 'emptydisk (copy).img' emptydisk.img"
-alias onefile="cp 'onefile (copy).img' onefile.img"
-alias twolevel="cp 'twolevel (copy).img' twolevel.img"
 
-alias hardlink="cp 'hardlink (copy).img' hardlink.img"
-alias corrupt="cp 'twolevel-corrupt (copy).img' twolevel-corrupt.img"
-alias deletedfile="cp 'deletedfile (copy).img' deletedfile.img"
 alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
+
 GIT_PROMPT_ONLY_IN_REPO=1
 source ~/.bash-git-prompt/gitprompt.sh
 
@@ -156,5 +140,3 @@ if [ -f ~/.aliases ]; then
      . ~/.aliases
 fi
 export PATH=~/.npm-global/bin:$PATH
-alias config='/usr/bin/git --git-dir=/home/fancyferret/.cfg/ --work-tree=/home/fancyferret'
-alias config='/usr/bin/git --git-dir=/home/fancyferret/.cfg/ --work-tree=/home/fancyferret'
