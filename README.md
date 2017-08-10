@@ -3,6 +3,7 @@
 ### Setup
 1. Backup all of your original config files
 2. Clone the repo
+3. Install prezto (https://github.com/sorin-ionescu/prezto)
 ```bash
 git clone --bare https://github.com/Fullchee/cfg.git $HOME/.cfg
 ```
