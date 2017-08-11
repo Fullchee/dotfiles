@@ -102,6 +102,7 @@ extract() {
 	done
 }
 
+# BE CAREFUL! it pushes too!
 function lazygit() {
     git add .
     git commit -a -m "$1"
