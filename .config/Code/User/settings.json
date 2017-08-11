@@ -17,5 +17,9 @@
         "statusBar.noFolderBackground": "#222225",
         "statusBar.debuggingBackground": "#511f1f"
     },
-    "terminal.integrated.fontFamily": "Source Code Pro for Powerline"
+    "terminal.integrated.fontFamily": "Source Code Pro for Powerline",
+    "files.associations": {
+        ".aliases": "shellscript",
+        ".zshrc": "shellscript"
+    }
 }
