@@ -26,7 +26,6 @@ vimend () {
     vim '+normal Go' $1
 }
 
-# mkdir -c switches into the new dir
 mkcd () {
   mkdir "$1"
   cd "$1"
