@@ -107,3 +107,8 @@ function lazygit() {
     git commit -a -m "$1"
     git push
 }
+
+# usage: debugnodefile <path to node file>
+debugnodefile () {
+    node --inspect=9229 --debug-brk "$1" 28688 1
+}
