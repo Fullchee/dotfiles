@@ -1,2 +1,2 @@
 .aliases linguist-language=bash
-zpreztorc linguist-language=bash
+.zprezto/runcoms/zpreztorc linguist-language=shellscript
