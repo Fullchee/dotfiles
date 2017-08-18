@@ -16,7 +16,7 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 ```
 
-TO change shell, use
+To change shell, use
 ```bash
 chsh -s $(which zsh)
 ```
