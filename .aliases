@@ -112,3 +112,7 @@ function lazygit() {
 debugnodefile () {
     node --inspect=9229 --debug-brk "$1" 28688 1
 }
+
+export PATH=~/.npm-global/bin:$PATH
+
+alias chrome="google-chrome"
