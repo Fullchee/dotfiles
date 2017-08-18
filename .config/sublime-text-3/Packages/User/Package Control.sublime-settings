@@ -1,0 +1,16 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+		"0_package_control_loader"
+	],
+	"installed_packages":
+	[
+		"FileDiffs",
+		"Fold Comments",
+		"Origami",
+		"Package Control",
+		"SublimeCodeIntel",
+		"Sync View Scroll"
+	]
+}
