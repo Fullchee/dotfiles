@@ -116,3 +116,4 @@ debugnodefile () {
 export PATH=~/.npm-global/bin:$PATH
 
 alias chrome="google-chrome"
+alias vsc="code"
