@@ -123,3 +123,7 @@ alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
 function compresspdf() {
 	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $filename" "$filename"
 }
+
+function f() {
+	find . -name "$1" 2>&1 | grep -v 'Permission denied'
+}
