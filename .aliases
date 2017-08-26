@@ -17,7 +17,7 @@ alias ls='ls -GF'
 alias uoft='ssh zhangful@cdf.utoronto.ca'
 
 # for linux connection to drive
-alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
+alias gdrive="google-drive-ocamlfuse ~/google-drive"
 
 alias globalnpm="npm list -g --depth=0"
 
