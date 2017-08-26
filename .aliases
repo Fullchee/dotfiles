@@ -118,3 +118,8 @@ export PATH=~/.npm-global/bin:$PATH
 alias chrome="google-chrome"
 alias vsc="code"
 alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
+
+# requires ghostscript
+function compresspdf() {
+	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $filename" "$filename"
+}
