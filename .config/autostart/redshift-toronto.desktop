@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=redshift -l 43.6532:-79.3832 -t 5500:3300
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
+Hidden=false
+Name[en_CA]=Redshift Toronto
+Comment[en_CA]=
+X-GNOME-Autostart-Delay=0
