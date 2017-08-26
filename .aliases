@@ -116,3 +116,5 @@ debugnodefile () {
 export PATH=~/.npm-global/bin:$PATH
 
 alias chrome="google-chrome"
+alias vsc="code"
+alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
