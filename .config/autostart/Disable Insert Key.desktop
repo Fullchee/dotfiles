@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=xmodmap -e "keycode 118 ="
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
+Hidden=false
+Name[en_CA]=Disable Insert Key
+Comment[en_CA]=
+X-GNOME-Autostart-Delay=0
