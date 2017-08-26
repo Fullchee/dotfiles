@@ -11,3 +11,5 @@
 	br = branch
 	co = checkout
   
+[core]
+	editor = subl -n -w
