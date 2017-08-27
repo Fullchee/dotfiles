@@ -120,10 +120,18 @@ alias vsc="code"
 alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
 
 # requires ghostscript
+# usage: compress <
 function compresspdf() {
 	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $filename" "$filename"
 }
 
 function f() {
 	find . -name "$1" 2>&1 | grep -v 'Permission denied'
+}
+
+# requires: ffmpg, youtube-dl
+# with zsh, you need to manually put quotes around the URL
+# Usage: youtubemp3 "<url>"
+function youtubemp3() {
+	youtube-dl --extract-audio --prefer-ffmpeg --audio-format mp3 "$1"
 }
