@@ -122,10 +122,18 @@ alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
 # requires ghostscript
 # usage: compresspdf <pdf filename>
 function compresspdf() {
+	if [ -z "$1" ] ; then
+	        echo 'Usage: compresspdf <pdf filename>'
+        	return
+   	fi
 	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $1" "$1"
 }
 
 function f() {
+	if [ -z "$1" ] ; then
+	        echo 'Usage: f <exact file name>'
+        	return
+        fi
 	find . -name "$1" 2>&1 | grep -v 'Permission denied'
 }
 
@@ -133,15 +141,24 @@ function f() {
 # with zsh, you need to manually put quotes around the URL
 # Usage: youtubemp3 "<url>"
 function youtubemp3() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: youtubemp3 <url>'
+		return
+	fi
 	youtube-dl --extract-audio --prefer-ffmpeg --audio-format mp3 "$1"
 }
 
 # usage: resetmongo <backupdb> <maindb>
 function resetmongo() {
-	backupdb="$1"
-	maindb="$2"
+    if [ -z "$1" ] || [  -z "$2" ] ; then
+        echo 'Usage: resetmongo <backupdb> <maindb>'
+        return
+    fi
+    
+    backupdb="$1"
+    maindb="$2"
 
-	mongo "$maindb" --eval "db.dropDatabase()"
-	mongo "$backupdb" --eval "db.copyDatabase(\"$backupdb\", \"$maindb\")"
+    mongo "$maindb" --eval "db.dropDatabase()"
+    mongo "$backupdb" --eval "db.copyDatabase(\"$backupdb\", \"$maindb\")"
 }
 
