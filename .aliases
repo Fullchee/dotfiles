@@ -120,9 +120,9 @@ alias vsc="code"
 alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
 
 # requires ghostscript
-# usage: compress <
+# usage: compresspdf <pdf filename>
 function compresspdf() {
-	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $filename" "$filename"
+	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $1" "$1"
 }
 
 function f() {
