@@ -135,3 +135,13 @@ function f() {
 function youtubemp3() {
 	youtube-dl --extract-audio --prefer-ffmpeg --audio-format mp3 "$1"
 }
+
+# usage: resetmongo <backupdb> <maindb>
+function resetmongo() {
+	backupdb="$1"
+	maindb="$2"
+
+	mongo "$maindb" --eval "db.dropDatabase()"
+	mongo "$backupdb" --eval "db.copyDatabase(\"$backupdb\", \"$maindb\")"
+}
+
