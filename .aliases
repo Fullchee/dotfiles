@@ -162,3 +162,5 @@ function resetmongo() {
     mongo "$backupdb" --eval "db.copyDatabase(\"$backupdb\", \"$maindb\")"
 }
 
+# copy cwd to clipboard
+alias cpcwd="pwd | xclip -selection clipboard"
