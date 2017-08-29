@@ -8,6 +8,8 @@
 # source $HOME/.aliases
 # ---------------------------------------
 
+platform='linux'
+
 # use 'config' instead of 'git' to manage this git repo
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 
@@ -163,4 +165,8 @@ function resetmongo() {
 }
 
 # copy cwd to clipboard
-alias cpcwd="pwd | xclip -selection clipboard"
+if [[ "$platform" == 'linux' ]]; then
+	alias cpcwd="pwd | xclip -selection clipboard"
+elif [[ $platform == 'mac' ]]; then
+	alias cpcwd="pwd | pbcopy"
+fi
