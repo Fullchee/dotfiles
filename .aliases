@@ -27,13 +27,14 @@ alias learningjs="/home/fancyferret/Documents/learningjs"
 # avoid using sudo with global npm modules
 export PATH=~/.npm-global/bin:$PATH
 
-alias chrome="google-chrome"
 alias vsc="code"
 alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
 
 # copy cwd to clipboard
 if [[ "$platform" == 'linux' ]]; then
 	alias cpcwd="pwd | xclip -selection clipboard"
+	alias chrome="google-chrome"
 elif [[ $platform == 'mac' ]]; then
 	alias cpcwd="pwd | pbcopy"
+	alias chrome="open -a \"Google Chrome\""
 fi
