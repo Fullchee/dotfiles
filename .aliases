@@ -39,4 +39,4 @@ elif [[ $platform == 'mac' ]]; then
 	alias chrome="open -a \"Google Chrome\""
 fi
 
-alias write-good-short="write-good --no-passive --no-adverb --no-tooWordy"
+alias "write-short"="write-good --no-passive --no-adverb --no-tooWordy"
