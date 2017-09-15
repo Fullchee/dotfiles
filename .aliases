@@ -38,3 +38,5 @@ elif [[ $platform == 'mac' ]]; then
 	alias cpcwd="pwd | pbcopy"
 	alias chrome="open -a \"Google Chrome\""
 fi
+
+alias write-good-short="write-good --no-passive --no-adverb --no-tooWordy"
