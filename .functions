@@ -93,7 +93,7 @@ function compresspdf() {
 	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="small $1" "$1"
 }
 
-function findFileNamePath() {
+function findfilename() {
 	if [ -z "$1" ] ; then
 	        echo 'Usage: f <exact file name>'
         	return
@@ -124,4 +124,13 @@ function resetmongo() {
 
     mongo "$maindb" --eval "db.dropDatabase()"
     mongo "$backupdb" --eval "db.copyDatabase(\"$backupdb\", \"$maindb\")"
+}
+
+# shortcuts for ubuntu installation
+# the install command already exists
+function inst() {
+	"sudo apt-get install $1"
+}
+function remv() {
+	"sudo apt-get remove $1"
 }
