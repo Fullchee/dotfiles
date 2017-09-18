@@ -134,3 +134,16 @@ function inst() {
 function remv() {
 	"sudo apt-get remove $1"
 }
+
+function op() {
+	PROGRAM=$1
+	WINID=$(wmctrl -lx | grep -i $PROGRAM | awk 'NR==1{print $1}')
+
+	if [ $WINID ]; then
+	    wmctrl -ia $WINID &
+	 #  exit 0  
+	else
+	    $PROGRAM &
+	 #  exit 0 
+	fi
+}

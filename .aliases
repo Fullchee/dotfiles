@@ -40,3 +40,4 @@ elif [[ $platform == 'mac' ]]; then
 fi
 
 alias "write-short"="write-good --no-passive --no-adverb --no-tooWordy"
+alias chrome="google-chrome"
