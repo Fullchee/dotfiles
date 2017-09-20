@@ -1,0 +1,1 @@
+/home/fancyferret/.zprezto/runcoms/zshrc
