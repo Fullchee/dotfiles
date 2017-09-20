@@ -95,10 +95,10 @@ function compresspdf() {
 
 function findfilename() {
 	if [ -z "$1" ] ; then
-	        echo 'Usage: f <exact file name>'
+	        echo 'Usage: f <portion of file name>'
         	return
         fi
-	find . -iname "$1" 2>&1 | grep -v 'Permission denied'
+	find . -iname "*$1*" 2>&1 | grep -v 'Permission denied'
 }
 
 # requires: ffmpg, youtube-dl
