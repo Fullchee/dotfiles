@@ -147,3 +147,9 @@ function op() {
 	 #  exit 0 
 	fi
 }
+
+function lazygit() {
+	git add -u
+	git commit -m $1
+	git push
+}
