@@ -81,7 +81,7 @@
     "no-void": "error",
     "object-curly-spacing": [2, "always"],
     "object-property-newline": ["error", { "allowMultiplePropertiesPerLine": true }],
-    "object-shorthand": 1,
+    "object-shorthand": "consistent",
     "prefer-const": 1,
     "prefer-rest-params": 1,
     "semi": [2, "always"],
