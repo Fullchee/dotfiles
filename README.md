@@ -1,4 +1,4 @@
-# cfg
+# dotfiles
 
 ### Setup
 1. Install prezto (https://github.com/sorin-ionescu/prezto)
