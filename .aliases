@@ -22,7 +22,7 @@ alias uoft='ssh zhangful@cdf.utoronto.ca'
 alias gdrive="google-drive-ocamlfuse ~/google-drive"
 
 alias globalnpm="npm list -g --depth=0"
-alias learningjs="/home/fancyferret/Documents/learningjs"
+alias learningjs="~/Documents/learningjs"
 
 # avoid using sudo with global npm modules
 export PATH=~/.npm-global/bin:$PATH
