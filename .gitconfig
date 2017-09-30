@@ -12,7 +12,7 @@
 	co = checkout
   
 [core]
-	editor = subl -n -w
+	editor = vim
 [diff]
     tool = meld
 [difftool]
