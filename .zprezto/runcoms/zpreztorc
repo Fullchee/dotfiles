@@ -218,3 +218,4 @@ zstyle ':prezto:module:prompt' theme 'agnoster'
 # zstyle ':prezto:module:utility' safe-ops 'yes'
 source ~/.aliases
 source ~/.functions
+. ~/z.sh
