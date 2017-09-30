@@ -48,4 +48,6 @@ alias backup='git init; git add .; git commit -m "init commit"'
 
 if [[ "$cdf" == 'true' ]]; then
     alias subl="~/sublime_text_3/sublime_text"
+    alias opendir="xdg-open"
+    alias code="~/VSCode-linux-x64/bin/code"
 fi
