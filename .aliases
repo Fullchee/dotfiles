@@ -50,4 +50,5 @@ if [[ "$cdf" == 'true' ]]; then
     alias subl="~/sublime_text_3/sublime_text"
     alias opendir="xdg-open"
     alias code="~/VSCode-linux-x64/bin/code"
+    # useful: diskusage to figure out which folders are using up space
 fi
