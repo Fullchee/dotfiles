@@ -22,5 +22,3 @@ To change shell, use
 ```bash
 chsh -s $(which zsh)
 ```
-
-On line ~139, remove the prompt_context in the file: `.zprezto/modules/prompt/external/agnoster/agnoster.zsh-theme` to make it cleaner
