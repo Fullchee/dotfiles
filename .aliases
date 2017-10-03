@@ -10,7 +10,7 @@
 
 # 'linux', 'mac', or 'cdf'
 platform='linux'
-cdf='true'
+cdf=false
 
 # use 'config' instead of 'git' to manage this git repo
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
@@ -46,7 +46,7 @@ alias chrome="google-chrome"
 alias updatevsc="wget https://vscode-update.azurewebsites.net/latest/linux-deb-x64/stable -O /tmp/code_latest_amd64.deb; sudo dpkg -i /tmp/code_latest_amd64.deb"
 alias backup='git init; git add .; git commit -m "init commit"'
 
-if [[ "$cdf" == 'true' ]]; then
+if [[ cdf = true ]]; then
     alias subl="~/sublime_text_3/sublime_text"
     alias opendir="xdg-open"
     alias code="~/VSCode-linux-x64/bin/code"
