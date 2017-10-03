@@ -14,6 +14,7 @@ cdf=false
 
 # use 'config' instead of 'git' to manage this git repo
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
+alias configpull='git stash && git pull && git stash pop'
 
 # ls with colour, <dir_name>/ 
 alias ls='ls -GF'
