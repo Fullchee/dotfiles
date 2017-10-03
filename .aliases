@@ -1,21 +1,24 @@
-# ----------- USING THIS FILE -----------
-# in bash:
-#if [ -f ~/.aliases ]; then
-#     . ~/.aliases
-#fi
-
-# in .zshrc:
-# source $HOME/.aliases
-# ---------------------------------------
-
+# 1) SETUP (stash these configurations)
 # 'linux', 'mac', or 'cdf'
 platform='linux'
 cdf=false
 
-# use 'config' instead of 'git' to manage this git repo
+# 2) CONFIG
+# use 'config' instead of 'git' to manage this git repo, lose all git auto-complete commands :(
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 alias configpull='git stash && git pull && git stash pop'
 
+# 3) GIT
+# git status to report any git sub modules
+alias backup='git init; git add .; git commit -m "init commit"; git status'
+alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
+
+# 4) PROGRAMS
+alias vsc="code"
+alias updatevsc="wget https://vscode-update.azurewebsites.net/latest/linux-deb-x64/stable -O /tmp/code_latest_amd64.deb; sudo dpkg -i /tmp/code_latest_amd64.deb"
+alias chrome="google-chrome"
+
+# 5) COMMAND LINE (MISC)
 # ls with colour, <dir_name>/ 
 alias ls='ls -GF'
 
@@ -24,14 +27,11 @@ alias uoft='ssh zhangful@cdf.utoronto.ca'
 # for linux connection to drive
 alias gdrive="google-drive-ocamlfuse ~/google-drive"
 
+# list all globally installed npm modules
 alias globalnpm="npm list -g --depth=0"
-alias learningjs="~/Documents/learningjs"
 
 # avoid using sudo with global npm modules
 export PATH=~/.npm-global/bin:$PATH
-
-alias vsc="code"
-alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
 
 # copy cwd to clipboard
 if [[ "$platform" == 'linux' ]]; then
@@ -42,11 +42,7 @@ elif [[ $platform == 'mac' ]]; then
 	alias chrome="open -a \"Google Chrome\""
 fi
 
-alias "write-short"="write-good --no-passive --no-adverb --no-tooWordy"
-alias chrome="google-chrome"
-alias updatevsc="wget https://vscode-update.azurewebsites.net/latest/linux-deb-x64/stable -O /tmp/code_latest_amd64.deb; sudo dpkg -i /tmp/code_latest_amd64.deb"
-alias backup='git init; git add .; git commit -m "init commit"'
-
+# UofT CDF Settings
 if [[ cdf = true ]]; then
     alias subl="~/sublime_text_3/sublime_text"
     alias opendir="xdg-open"
