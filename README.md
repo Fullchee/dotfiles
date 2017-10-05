@@ -7,10 +7,8 @@
 4. Download Powerline Fonts (https://github.com/powerline/fonts)
 
 ```bash
+# run the following two steps
 git clone --bare https://github.com/Fullchee/cfg.git $HOME/.cfg
-```
-
-```bash
 config config --local status.showUntrackedFiles no
 ```
 
