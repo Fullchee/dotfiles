@@ -151,7 +151,15 @@ function op() {
 function lazygit() {
 	git add -u
 	git commit -m $1
+	git pull
 	git push
+}
+
+function lazyconfig() {
+	config add -u
+	config commit -m $1
+	config pull
+	config push
 }
 
 function diffdir() {

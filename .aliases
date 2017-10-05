@@ -50,3 +50,5 @@ if [[ cdf = true ]]; then
     # diskusage to figure out which folders are using up space
     # alt-f2 to launch KRunner (to open programs)
 fi
+
+alias diskusage="du -h . | sort -rh"
