@@ -153,3 +153,7 @@ function lazygit() {
 	git commit -m $1
 	git push
 }
+
+function diffdir() {
+	diff -r $1 $2 | grep $1 | awk '{print $4}'
+}
