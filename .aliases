@@ -52,3 +52,6 @@ if [[ cdf = true ]]; then
 fi
 
 alias diskusage="du -h . | sort -rh"
+
+alias python="python3"
+export PATH=/bin:/usr/bin:/usr/local/bin:$PATH
