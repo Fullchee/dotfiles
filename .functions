@@ -157,3 +157,37 @@ function lazyconfig() {
 function diffdir() {
 	diff -r $1 $2 | grep $1 | awk '{print $4}'
 }
+
+
+# asdf/fileName.ext => fileName
+function getURLFileName() {
+	fullfile="$1"
+	filename=$(basename "$fullfile")
+	echo "${filename%.*}"
+}
+
+# git sparse checkout
+function sparse-checkout() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: sparse-checkout <url>' 
+		return
+	fi
+	
+	# I have no clue how to reuse code and 
+	giturl="$1"
+	filename=$(basename "$giturl")
+	filename="${filename%.*}"
+
+	mkdir $filename
+	cd $filename
+	git init
+	git remote add -f origin $giturl
+	git config core.sparseCheckout true
+
+	echo "\n"
+	echo "Add the directories you wish to pull\n"
+	echo '    echo "some/dir/" >> .git/info/sparse-checkout\n'
+	echo "\n"
+	echo 'When you are done, pull\n'
+	echo '    git pull origin master\n'
+}
