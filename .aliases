@@ -7,6 +7,7 @@ cdf=false
 # use 'config' instead of 'git' to manage this git repo, lose all git auto-complete commands :(
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 alias configpull='git stash && git pull && git stash pop'
+alias sz="source ~/.zshrc"
 
 # 3) GIT
 # git status to report any git sub modules
