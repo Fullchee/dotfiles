@@ -78,8 +78,11 @@ extract() {
 	done
 }
 
-# usage: debugnodefile <path to node file>
-debugnodefile () {
+debugnode () {
+	if [ -z "$1" ] ; then
+		echo 'usage: debugnode <path to node file>'
+		return
+	fi
     node --inspect=9229 --debug-brk "$1" 28688 1
 }
 
