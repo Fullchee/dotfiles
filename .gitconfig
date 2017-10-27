@@ -14,6 +14,7 @@
 	unignore = update-index --no-assume-unchanged
 	ignored = !git ls-files -v | grep "^[[:lower:]]"
 	add-deleted = !git ls-files --deleted -z | xargs -0 git rm
+	backup = "!git init; git add .; git commit -m \"init commit\"; git status"
   
 [core]
 	editor = vim
