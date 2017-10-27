@@ -27,8 +27,3 @@
     tool = meld
 [mergetool "meld"]
     cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
-    
-[alias]
-    st = status -s
-    ls = log --decorate --oneline
-    ll = log --decorate --numstat
