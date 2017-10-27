@@ -13,6 +13,7 @@
 	ignore = update-index --assume-unchanged
 	unignore = update-index --no-assume-unchanged
 	ignored = !git ls-files -v | grep "^[[:lower:]]"
+	rm-deleted = '!git rm $(git ls-files --deleted)'
   
 [core]
 	editor = vim
