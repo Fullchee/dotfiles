@@ -1,35 +1,18 @@
-# 1) SETUP (stash these configurations before pulling)
-cdf=false
-
 # --- CONFIG
 # use 'config' instead of 'git' to manage this git repo, lose all git auto-complete commands :(
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 alias configpull='git stash && git pull && git stash pop'
 alias sz="source ~/.zshrc"
 
-# --- PROGRAMS
-alias vsc="code"
+# --- Linux-only
+SETUP (stash these configurations before pulling)
+cdf=false
+
 alias updatevsc="wget https://vscode-update.azurewebsites.net/latest/linux-deb-x64/stable -O /tmp/code_latest_amd64.deb; sudo dpkg -i /tmp/code_latest_amd64.deb"
 alias chrome="google-chrome"
-
-# --- COMMAND LINE (MISC)
-# ls with colour, <dir_name>/ 
-alias ls='ls -GF'
-
-alias uoft='ssh zhangful@teach.cs.utoronto.ca'
-
-# for linux connection to drive
 alias gdrive="google-drive-ocamlfuse ~/google-drive"
-
-# list all globally installed npm modules
-alias globalnpm="npm list -g --depth=0"
-
-# avoid using sudo with global npm modules
-export PATH=~/.npm-global/bin:$PATH
-
-# copy cwd to clipboard
 alias cpcwd="pwd | xclip -selection clipboard"
-alias chrome="google-chrome"
+alias python="python3"
 
 # UofT CDF Settings
 if [[ cdf = true ]]; then
@@ -40,8 +23,16 @@ if [[ cdf = true ]]; then
     # alt-f2 to launch KRunner (to open programs)
 fi
 
+alias vsc="code"
+alias ls='ls -GF'
+alias uoft='ssh zhangful@teach.cs.utoronto.ca'
+alias globalnpm="npm list -g --depth=0"
+
 # get the largest files
 alias diskusage="du -h . | sort -rh" | head -100
 
-alias python="python3"
+
+# TODO: put the export in the .zshrc
 export PATH=/bin:/usr/bin:/usr/local/bin:$PATH
+# avoid using sudo with global npm modules
+export PATH=~/.npm-global/bin:$PATH
