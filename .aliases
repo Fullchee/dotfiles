@@ -3,23 +3,18 @@
 platform='linux'
 cdf=false
 
-# 2) CONFIG
+# --- CONFIG
 # use 'config' instead of 'git' to manage this git repo, lose all git auto-complete commands :(
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 alias configpull='git stash && git pull && git stash pop'
 alias sz="source ~/.zshrc"
 
-# 3) GIT
-# git status to report any git sub modules
-alias backup='git init; git add .; git commit -m "init commit"; git status'
-alias gitadddeleted="git ls-files --deleted -z | xargs -0 git rm"
-
-# 4) PROGRAMS
+# --- PROGRAMS
 alias vsc="code"
 alias updatevsc="wget https://vscode-update.azurewebsites.net/latest/linux-deb-x64/stable -O /tmp/code_latest_amd64.deb; sudo dpkg -i /tmp/code_latest_amd64.deb"
 alias chrome="google-chrome"
 
-# 5) COMMAND LINE (MISC)
+# --- COMMAND LINE (MISC)
 # ls with colour, <dir_name>/ 
 alias ls='ls -GF'
 
