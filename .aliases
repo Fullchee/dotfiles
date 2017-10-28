@@ -30,9 +30,3 @@ alias globalnpm="npm list -g --depth=0"
 
 # get the largest files
 alias diskusage="du -h . | sort -rh" | head -100
-
-
-# TODO: put the export in the .zshrc
-export PATH=/bin:/usr/bin:/usr/local/bin:$PATH
-# avoid using sudo with global npm modules
-export PATH=~/.npm-global/bin:$PATH
