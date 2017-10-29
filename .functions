@@ -104,7 +104,7 @@ function youtubemp3() {
 		echo 'Usage: youtubemp3 <url>'
 		return
 	fi
-	youtube-dl --extract-audio --prefer-ffmpeg --audio-format mp3 "$1"
+	youtube-dl --extract-audio --prefer-ffmpeg --audio-format mp3 -o "%(title)s.%(ext)s" "$1"
 }
 
 # usage: resetmongo <backupdb> <maindb>

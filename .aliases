@@ -30,3 +30,4 @@ alias globalnpm="npm list -g --depth=0"
 
 # get the largest files
 alias diskusage="du -h . | sort -rh" | head -100
+alias syncdrives='rsync -av --exclude "My Passport/TV Shows" --exclude "My Passport/Movies" "/media/fancyferret/My Passport" /media/fancyferret/second-backup'
