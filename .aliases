@@ -13,7 +13,6 @@ alias chrome="google-chrome"
 alias gdrive="google-drive-ocamlfuse ~/google-drive"
 alias ungdrive="fusermount -u ~/google-drive"
 alias cpcwd="pwd | xclip -selection clipboard"
-alias python="python3"
 
 # UofT CDF Settings
 if [[ cdf = true ]]; then
@@ -24,6 +23,8 @@ if [[ cdf = true ]]; then
     # alt-f2 to launch KRunner (to open programs)
 fi
 
+# --- Cross-platform
+alias py="python"
 alias vsc="code"
 alias ls='ls -GF'
 alias uoft='ssh zhangful@teach.cs.utoronto.ca'
