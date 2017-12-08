@@ -132,11 +132,3 @@ function getAllGitBranches() {
 }
 
 alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
-
-GIT_PROMPT_ONLY_IN_REPO=1
-source ~/.bash-git-prompt/gitprompt.sh
-
-if [ -f ~/.aliases ]; then
-     . ~/.aliases
-fi
-export PATH=~/.npm-global/bin:$PATH

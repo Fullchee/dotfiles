@@ -34,7 +34,8 @@ zstyle ':prezto:load' pmodule \
   'completion' \
   'autosuggestions' \
   'git' \
-  'prompt'
+  'prompt' \
+  'node'
 
 #
 # Autosuggestions
