@@ -15,6 +15,7 @@
     "computed-property-spacing": [2, "never"],
     "comma-dangle": ["error", "never"],
     "comma-spacing": ["error", { "before": false, "after": true }],
+    "complexity": ["error", 7],
     "curly": 2,
     "dot-notation": 1,
     "eol-last": 2,
