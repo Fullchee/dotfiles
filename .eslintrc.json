@@ -31,7 +31,6 @@
     "max-statements-per-line": ["error", { "max": 3 }],
     "new-cap": 1,
     "new-parens": "error",
-    "no-alert": "error",
     "no-array-constructor": "error",
     "no-confusing-arrow": "error",
     "no-const-assign": "error",
