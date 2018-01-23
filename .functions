@@ -130,5 +130,5 @@ function md2word() {
 		echo 'Usage: md2word src dest' 
 		return
 	fi
-	pandoc -o "$1" -f markdown -t docx "$2"
+	pandoc -o "$2" -f markdown -t docx "$1"
 }
