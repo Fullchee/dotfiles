@@ -124,3 +124,11 @@ function sparse-checkout() {
 	echo 'When you are done, pull\n'
 	echo '    git pull origin master\n'
 }
+
+function md2word() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: md2word src dest' 
+		return
+	fi
+	pandoc -o "$1" -f markdown -t docx "$2"
+}
