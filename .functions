@@ -132,3 +132,11 @@ function md2word() {
 	fi
 	pandoc -o "$2" -f markdown -t docx "$1"
 }
+
+function shrinkimage() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: shrinkimage src dest size' 
+		return
+	fi
+	convert "$1" -resize x"$3" "$2"
+}
