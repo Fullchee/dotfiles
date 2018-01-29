@@ -124,3 +124,13 @@ function sparse-checkout() {
 	echo 'When you are done, pull\n'
 	echo '    git pull origin master\n'
 }
+
+function mp4slice() {
+	ffmpeg -ss "$2" -i "$1" -t "$3" -vcodec copy -acodec copy splice.mp4
+}
+
+function compressmp4() {
+	for file in "$PWD"/*; do
+		ffmpeg -i "$file" -acodec mp2 "${file/.mp4/s.mp4}"
+	done
+}
