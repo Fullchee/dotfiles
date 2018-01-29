@@ -134,3 +134,18 @@ function compressmp4() {
 		ffmpeg -i "$file" -acodec mp2 "${file/.mp4/s.mp4}"
 	done
 }
+function md2word() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: md2word src dest' 
+		return
+	fi
+	pandoc -o "$2" -f markdown -t docx "$1"
+}
+
+function shrinkimage() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: shrinkimage src dest size' 
+		return
+	fi
+	convert "$1" -resize x"$3" "$2"
+}
