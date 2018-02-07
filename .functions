@@ -149,3 +149,12 @@ function shrinkimage() {
 	fi
 	convert "$1" -resize x"$3" "$2"
 }
+
+function restoredb() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: restoredb <db name>' 
+		return
+	fi
+    mongo "$1" --eval "db.dropDatabase()";
+    mongo --eval "db.copyDatabase('$1-cp', '$1')";
+}
