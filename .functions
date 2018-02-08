@@ -13,7 +13,7 @@ debugnode () {
 		echo 'usage: debugnode <path to node file>'
 		return
 	fi
-    node --inspect=9229 --debug-brk "$1" 28688 1
+    node --inspect-brk=9229 "$1" 28688 1
 }
 
 # requires ghostscript
