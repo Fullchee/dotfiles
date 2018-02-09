@@ -158,3 +158,11 @@ function restoredb() {
     mongo "$1" --eval "db.dropDatabase()";
     mongo --eval "db.copyDatabase('$1-cp', '$1')";
 }
+
+function cdg() {
+	TEMP_PWD=$(pwd)
+	while ! [ -d .git ]; do
+		cd ..
+	done
+	OLDPWD=$TEMP_PWD
+}
