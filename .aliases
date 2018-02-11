@@ -36,3 +36,5 @@ alias syncdrives='rsync -av --exclude "My Passport/TV Shows" --exclude "My Passp
 alias ipaddr="ifconfig | grep inet"
 
 alias test="npm test"
+alias psg="ps aux | grep"
+alias pgrep="pgrep -f"

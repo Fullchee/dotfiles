@@ -13,7 +13,7 @@ debugnode () {
 		echo 'usage: debugnode <path to node file>'
 		return
 	fi
-    node --inspect=9229 --debug-brk "$1" 28688 1
+    node --inspect-brk=9229 "$1" 28688 1
 }
 
 # requires ghostscript
@@ -148,4 +148,21 @@ function shrinkimage() {
 		return
 	fi
 	convert "$1" -resize x"$3" "$2"
+}
+
+function restoredb() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: restoredb <db name>' 
+		return
+	fi
+    mongo "$1" --eval "db.dropDatabase()";
+    mongo --eval "db.copyDatabase('$1-cp', '$1')";
+}
+
+function cdg() {
+	TEMP_PWD=$(pwd)
+	while ! [ -d .git ]; do
+		cd ..
+	done
+	OLDPWD=$TEMP_PWD
 }
