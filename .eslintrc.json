@@ -83,7 +83,7 @@
     "no-var": 1,
     "no-void": "error",
     "object-curly-spacing": [2, "always"],
-    "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
+    "object-property-newline": ["error", { "allowMultiplePropertiesPerLine": true }],
     "object-shorthand": 0,
     "prefer-const": 1,
     "prefer-rest-params": 1,
