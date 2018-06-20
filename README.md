@@ -9,6 +9,7 @@
 ```bash
 # run the following two steps
 git clone --bare https://github.com/Fullchee/cfg.git $HOME/.cfg
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 ```
 
