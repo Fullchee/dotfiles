@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=google-drive-ocamlfuse ~/google-drive
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
+Hidden=false
+Name[en_CA]=Google Drive
+Comment[en_CA]=
+X-GNOME-Autostart-Delay=0
