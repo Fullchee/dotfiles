@@ -7,12 +7,17 @@
 4. Download Powerline Fonts (https://github.com/powerline/fonts)
 
 ```bash
+git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+
 # run the following two steps
 git clone --bare https://github.com/Fullchee/cfg.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
+sudo apt-get install fonts-powerline
 ```
+
+Change your font
 
 To change shell, use
 ```bash
