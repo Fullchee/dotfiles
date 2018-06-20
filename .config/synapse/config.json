@@ -12,10 +12,6 @@
     }
   },
   "ui" : {
-    "global" : {
-      "ui-type" : "default",
-      "show-indicator" : false
-    },
     "shortcuts" : {
       "activate" : "<Alt>space",
       "execute" : "Return",
@@ -37,6 +33,10 @@
       "paste" : "<Control>v",
       "alt-paste" : "<Shift>Insert",
       "exit" : "<Control>q"
+    },
+    "global" : {
+      "ui-type" : "default",
+      "show-indicator" : false
     }
   }
 }
