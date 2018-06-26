@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=EXCEL
+Comment=PlayOnLinux
+Type=Application
+Exec=/usr/share/playonlinux/playonlinux --run "EXCEL" %F
+Icon=/home/fullchee/.PlayOnLinux//icones/full_size/EXCEL
+Name[fr_FR]=EXCEL
+StartupWMClass=EXCEL.EXE
+Categories=

@@ -1,1 +1,1 @@
-/home/fancyferret/.zprezto/runcoms/zshrc
+/home/fullchee/.zprezto/runcoms/zshrc
