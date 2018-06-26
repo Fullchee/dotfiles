@@ -32,11 +32,11 @@ alias globalnpm="npm list -g --depth=0"
 
 # get the largest files
 alias diskusage="du -h . | sort -rh" | head -100
-alias syncdrives='rsync -av --exclude "My Passport/TV Shows" --exclude "My Passport/Movies" "/media/fancyferret/My Passport" /media/fancyferret/second-backup'
+alias syncdrives='rsync -av --exclude "My Passport/TV Shows" --exclude "My Passport/Movies" "~/My Passport" /media/`ferret/second-backup'
 alias ipaddr="ifconfig | grep inet"
 
 alias test="npm test"
 alias psg="ps aux | grep"
 alias pgrep="pgrep -f"
-alias eclipse="/home/fancyferret/eclipse/java-neon/eclipse"
+alias eclipse="~/eclipse/java-neon/eclipse"
 alias desktopentries="/usr/share/applications"

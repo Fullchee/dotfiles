@@ -124,8 +124,8 @@ fi
 alias uoft='ssh zhangful@cdf.utoronto.ca'
 
 # added by Anaconda2 4.3.0 installer
-#export PATH="/home/fancyferret/anaconda2/bin:$PATH"
-export PATH="$PATH:/home/fancyferret/Downloads"
+#export PATH="~/anaconda2/bin:$PATH"
+export PATH="$PATH:~/Downloads"
 function getAllGitBranches() {
         for remote in "git branch -r"; do 
                 git branch --track ${remote#origin/} $remote; done

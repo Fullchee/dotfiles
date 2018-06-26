@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=/home/fancyferret/opt/Todoist/todoist
+Exec=~/opt/Todoist/todoist
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
