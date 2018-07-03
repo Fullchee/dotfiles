@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=WINWORD
+Comment=PlayOnLinux
+Type=Application
+Exec=/usr/share/playonlinux/playonlinux --run "WINWORD" %F
+Icon=/home/fullchee/.PlayOnLinux//icones/full_size/WINWORD
+Name[fr_FR]=WINWORD
+StartupWMClass=WINWORD.EXE
+Categories=
