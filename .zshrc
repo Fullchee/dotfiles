@@ -1,1 +1,0 @@
-/home/fullchee/.zprezto/runcoms/zshrc
