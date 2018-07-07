@@ -1,6 +1,6 @@
 {
 	"alwaysOnTop": true,
-	"snapEdges": false,
+	"snapEdges": true,
 	"timeExpiredNotification": "focus",
 	"overtime": true,
 	"overtimeDelay": 60,
