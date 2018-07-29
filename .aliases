@@ -41,5 +41,6 @@ alias pgrep="pgrep -f"
 alias eclipse="~/eclipse/java-neon/eclipse"
 alias desktopentries="/usr/share/applications"
 alias billinfo="keepass2 ~/google-drive/Learning/Bill\ Info\ \(36bd048f\).kdbx"
-alias androidemulator="cd ~/Android/Sdk/tools && ./emulator -avd Nexus_5X_API_23_Marshmellow_"
+# redirect the std 
+alias androidemulator="~/Android/Sdk/tools/emulator -avd Nexus_5_API_25 > /dev/null &"
 alias androidEmulator="androidemulator"
