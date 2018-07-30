@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=pomodoneapp
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_CA]=PomoDone
+Name=PomoDone
+Comment[en_CA]=Pomodoro App with Todoist Integration
+Comment=Pomodoro App with Todoist Integration

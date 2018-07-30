@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=~/opt/Todoist/todoist
+Exec=/opt/google/chrome/google-chrome "--profile-directory=Profile 1" --app-id=oihmkpogbcncclhnjdcnbhpgmidhcoed
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
