@@ -132,3 +132,6 @@ function getAllGitBranches() {
 }
 
 alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
+
+# added by Anaconda3 installer
+export PATH="/home/fancyferret/anaconda3/bin:$PATH"

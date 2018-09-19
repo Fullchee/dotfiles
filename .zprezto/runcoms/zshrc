@@ -23,3 +23,6 @@ export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 . ~/z.sh
+
+# added by Anaconda3 installer
+export PATH="/home/fancyferret/anaconda3/bin:$PATH"

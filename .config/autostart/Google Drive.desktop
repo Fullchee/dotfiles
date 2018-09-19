@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=google-drive-ocamlfuse ~/google-drive
+Exec=/usr/bin/google-drive-ocamlfuse ~/google-drive
 X-GNOME-Autostart-enabled=true
 NoDisplay=false
 Hidden=false
