@@ -17,7 +17,7 @@ for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 done
 
 # Clone this repo
-git clone --bare https://github.com/Fullchee/cfg.git $HOME/.cfg
+git clone --bare https://github.com/Fullchee/dotfiles.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
 config config --local status.showUntrackedFiles no
