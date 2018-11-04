@@ -20,6 +20,14 @@ done
 git clone --bare https://github.com/Fullchee/dotfiles.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
+
+# remove stock zsh files that conflict with my dot files
+mkdir -p .config-backup && \
+config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | \
+xargs -I{} mv {} .config-backup/{}
+
+config checkout
+
 config config --local status.showUntrackedFiles no
 
 # install powerline fonts
