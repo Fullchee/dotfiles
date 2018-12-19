@@ -123,8 +123,6 @@ fi
 
 alias uoft='ssh zhangful@cdf.utoronto.ca'
 
-# added by Anaconda2 4.3.0 installer
-#export PATH="~/anaconda2/bin:$PATH"
 export PATH="$PATH:~/Downloads"
 function getAllGitBranches() {
         for remote in "git branch -r"; do 
@@ -135,3 +133,4 @@ alias connectToDrive="google-drive-ocamlfuse ~/google-drive"
 
 # added by Anaconda3 installer
 export PATH="/home/fancyferret/anaconda3/bin:$PATH"
+source /home/fullchee/anaconda3/etc/profile.d/conda.sh
