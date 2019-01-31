@@ -40,7 +40,7 @@ alias psg="ps aux | grep"
 alias pgrep="pgrep -f"
 alias eclipse="~/eclipse/java-neon/eclipse"
 alias desktopentries="/usr/share/applications"
-alias billinfo="keepass2 ~/google-drive/Learning/Bill\ Info.kdbx"
+alias billinfo="keepass2 ~/grive/Bill\ Info.kdbx"
 # redirect the std 
 alias androidemulator="~/Android/Sdk/tools/emulator -avd Nexus_5_API_25 > /dev/null &"
 alias androidEmulator="androidemulator"

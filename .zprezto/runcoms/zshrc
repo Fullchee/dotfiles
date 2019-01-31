@@ -25,8 +25,8 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 . ~/z.sh
 
 # added by Anaconda3 installer
-#export PATH="/home/fullchee/anaconda3/bin:$PATH"
-#source /home/fullchee/anaconda3/etc/profile.d/conda.sh
+export PATH="/home/fullchee/anaconda3/bin:$PATH"
+source /home/fullchee/anaconda3/etc/profile.d/conda.sh
 export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
 export PATH=$JAVA_HOME/bin:$PATH
 
