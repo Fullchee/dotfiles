@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Exec=/usr/bin/google-drive-ocamlfuse ~/google-drive
+Exec=shutter --min_at_startup
 X-GNOME-Autostart-enabled=true
 NoDisplay=false
 Hidden=false
-Name[en_CA]=Google Drive
-Comment[en_CA]=
+Name[en_CA]=Shutter
+Comment[en_CA]=Awesome screenshots that you can edit
 X-GNOME-Autostart-Delay=0
