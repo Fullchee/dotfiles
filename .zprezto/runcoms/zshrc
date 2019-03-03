@@ -32,3 +32,19 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 export MAVEN_HOME="/home/fullchee/opt/dev/apache-maven-3.6.0"
 export PATH=$PATH:$MAVEN_HOME/bin
+
+# for npm global modules without sudo
+NPM_PACKAGES="${HOME}/.npm-packages"
+export PATH="$NPM_PACKAGES/bin:$PATH"
+
+# Unset manpath so we can inherit from /etc/manpath via the `manpath` command
+unset MANPATH # delete if you already modified MANPATH elsewhere in your config
+export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
+
+# for tab name in terminal
+preexec() {
+    echo -n '\e]0;'
+    echo -nE "$1"
+    print -nP '  (%~)'
+    echo -n '\a'
+}

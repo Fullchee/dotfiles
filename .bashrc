@@ -136,3 +136,4 @@ export PATH="/home/fancyferret/anaconda3/bin:$PATH"
 source /home/fullchee/anaconda3/etc/profile.d/conda.sh
 source ~/.aliases
 source ~/.functions
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
