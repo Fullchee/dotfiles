@@ -15,6 +15,7 @@
 	ignored = !git ls-files -v | grep "^[[:lower:]]"
 	add-deleted = !git ls-files --deleted -z | xargs -0 git rm
 	backup = "!git init; git add .; git commit -m \"init commit\"; git status"
+	adog = "log --all --decorate --oneline --graph"
   
 [core]
 	editor = vim
