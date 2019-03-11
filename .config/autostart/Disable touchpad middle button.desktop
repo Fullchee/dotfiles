@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=xinput set-button-map 13 1 0 3
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
+Hidden=false
+Name[en_CA]=Disable touchpad middle button
+Comment[en_CA]=No description
+X-GNOME-Autostart-Delay=0
