@@ -49,3 +49,5 @@ alias syswidecron="sudo vim /etc/crontab"
 alias o.="o ."
 alias fixspeakers="sudo alsa force-reload"  # for Dell XPS
 alias matlab="~/MATLAB/bin/matlab"
+alias restartdocker="sudo /etc/init.d/docker restart"
+alias updategrive="cd ~/grive;grive;cd -"
