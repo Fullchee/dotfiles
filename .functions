@@ -172,3 +172,11 @@ function t() {
   	# pass additional args after
 	tree -I '.git|node_modules|.DS_Store' --dirsfirst -L ${1:-3} -aC $2
 }
+
+function notify() {
+	if [ -z "$1" ] ; then
+		echo 'Usage: notify <message> time' 
+		return
+	fi
+	echo 'notify-send "$1"' | at $2
+}

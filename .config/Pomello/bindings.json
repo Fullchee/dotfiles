@@ -12,6 +12,7 @@
 	"externalDistraction": "meta+-",
 	"continueTask": "c",
 	"moveTask": "d",
+	"voidTask": "meta+shift+\\",
 	"switchTask": "meta+shift+i",
 	"completeTaskEarly": "meta+shift+d",
 	"skipBreak": "meta+k"
