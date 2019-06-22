@@ -32,7 +32,7 @@ alias globalnpm="npm list -g --depth=0"
 
 # get the largest files
 alias largestfiles="du -h . | sort -rh" | head -100
-alias syncdrives='rsync -av --exclude "My Passport/TV Shows" --exclude "My Passport/Movies" "~/My Passport" /media/`ferret/second-backup'
+alias syncdrives='rsync -av --exclude "My Passport/TV Shows" --exclude "My Passport/Movies" "/media/fullchee/My Passport" "/media/fullchee/second-backup"'
 alias ipaddr="ifconfig | grep inet"
 
 alias test="npm test"
@@ -44,8 +44,6 @@ alias billinfo="keepass2 ~/grive/Bill\ Info.kdbx"
 # redirect the std 
 alias androidemulator="~/Android/Sdk/tools/emulator -avd Nexus_5_API_25 > /dev/null &"
 alias androidEmulator="androidemulator"
-alias ml="cd /home/fancyferret/Documents/learning/ml"
-alias syswidecron="sudo vim /etc/crontab"
 alias o.="o ."
 alias fixspeakers="sudo alsa force-reload"  # for Dell XPS
 alias matlab="~/MATLAB/bin/matlab"
