@@ -1,0 +1,19 @@
+[Default Applications]
+text/html=google-chrome.desktop
+x-scheme-handler/http=google-chrome.desktop
+x-scheme-handler/https=google-chrome.desktop
+x-scheme-handler/about=google-chrome.desktop
+x-scheme-handler/unknown=google-chrome.desktop
+application/x-anki=anki.desktop
+application/x-apkg=anki.desktop
+x-scheme-handler/webcal=google-chrome.desktop
+x-scheme-handler/mailto=google-chrome.desktop
+text/css=sublime_text.desktop
+text/markdown=sublime_text.desktop
+x-scheme-handler/postman=Postman.desktop
+text/csv=gnumeric.desktop
+
+[Added Associations]
+text/css=sublime_text.desktop;
+text/markdown=sublime_text.desktop;
+text/csv=tad.desktop;gnumeric.desktop;
