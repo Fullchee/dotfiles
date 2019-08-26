@@ -14,15 +14,6 @@ alias gdrive="google-drive-ocamlfuse ~/google-drive"
 alias rmgdrive="fusermount -u ~/google-drive"
 alias cpcwd="pwd | xclip -selection clipboard"
 
-# UofT CDF Settings
-if [[ cdf = true ]]; then
-    alias subl="~/sublime_text_3/sublime_text"
-    alias opendir="xdg-open"
-    alias code="~/VSCode-linux-x64/bin/code"
-    # diskusage to figure out which folders are using up space
-    # alt-f2 to launch KRunner (to open programs)
-fi
-
 # --- Cross-platform
 alias py="python"
 alias vsc="code"
