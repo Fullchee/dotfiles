@@ -48,4 +48,6 @@ alias o.="o ."
 alias fixspeakers="sudo alsa force-reload"  # for Dell XPS
 alias matlab="~/MATLAB/bin/matlab"
 alias restartdocker="sudo /etc/init.d/docker restart"
-alias updategrive="cd ~/grive;grive;cd -"
+alias updategrive="cd ~/grive;grive;cd -"-
+alias typora="opt/Typora-linux-x64/Typora &"
+alias stopin30="echo 'systemctl suspend' | at now + 30 minutes"
