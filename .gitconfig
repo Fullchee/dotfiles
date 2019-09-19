@@ -7,25 +7,24 @@
 	default = simple
 [alias]
 	st = status -s
-	ci = commit
-	br = branch
-	co = checkout
 	ignore = update-index --assume-unchanged
 	unignore = update-index --no-assume-unchanged
 	ignored = !git ls-files -v | grep "^[[:lower:]]"
 	add-deleted = !git ls-files --deleted -z | xargs -0 git rm
-	backup = "!git init; git add .; git commit -m \"init commit\"; git status"
-	adog = "log --all --decorate --oneline --graph"
-  
+	backup = "!git init; git add .; git commit -m 'init commit'; git status"
+	adog = log --all --decorate --oneline --graph
+	c = !git add -A && git commit -m
+	amend = !git add ${1-.} && git commit --amend --no-edit
+	f = !git fetch --all && git rebase origin/master
 [core]
 	editor = vim
 [diff]
-    tool = meld
+	tool = vscode
 [difftool]
-    prompt = false
-[difftool "meld"]
-    cmd = meld "$LOCAL" "$REMOTE"
+	prompt = false
 [merge]
-    tool = meld
-[mergetool "meld"]
-    cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
+	tool = vscode
+[mergetool "vscode"]
+	cmd = "code --wait "
+[difftool "vscode"]
+	cmd = "code --wait --diff  "
