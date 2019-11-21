@@ -1,10 +1,9 @@
 # dotfiles
 
 ### Setup
-1. Install prezto (https://github.com/sorin-ionescu/prezto)
-2. Backup all of your original config files
-3. Clone this repo
-4. Download Powerline Fonts (https://github.com/powerline/fonts)
+1. Run the linux post install script
+   * https://github.com/Fullchee/post-install-scripts/blob/master/linux/linux-post-install.sh
+   * (also installs powerline fonts)
 
 ```bash
 sudo apt install zsh zsh-doc
@@ -36,5 +35,3 @@ sudo apt-get install fonts-powerline
 # change shell
 chsh -s $(which zsh)
 ```
-
-Finally change your font to a powerline font.
