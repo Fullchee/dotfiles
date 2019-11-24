@@ -16,6 +16,7 @@
 	c = !git add -A && git commit -m
 	amend = !git add ${1-.} && git commit --amend --no-edit
 	f = !git fetch --all && git rebase origin/master
+	n = git checkout -b
 [core]
 	editor = vim
 [diff]

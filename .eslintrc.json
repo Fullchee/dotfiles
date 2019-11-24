@@ -2,10 +2,16 @@
   "env": {
     "node" : true,
     "es6"  : true,
-    "mocha": true
   },
+  "extends": [
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 2017
+    "sourceType": "module",
+    "ecmaVersion": 2017,
+    "allowImportExportEverywhere": true
   },
   "rules": {
     "accessor-pairs": "error",
@@ -95,7 +101,6 @@
     "space-unary-ops": 2,
     "spaced-comment": ["error", "always"],
     "use-isnan": "error",
-    "valid-typeof": "error",
-    "yoda": 1
+    "valid-typeof": "error"
   }
 }

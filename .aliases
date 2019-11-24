@@ -7,8 +7,6 @@ alias sz="source ~/.zshrc"
 # --- Linux-only
 alias updatevsc="sudo wget https://vscode-update.azurewebsites.net/latest/linux-deb-x64/stable -O /tmp/code_latest_amd64.deb; sudo dpkg -i /tmp/code_latest_amd64.deb"
 alias chrome="google-chrome"
-alias gdrive="google-drive-ocamlfuse ~/google-drive"
-alias rmgdrive="fusermount -u ~/google-drive"
 alias cpcwd="pwd | xclip -selection clipboard"
 
 # --- Cross-platform
@@ -28,7 +26,7 @@ alias psg="ps aux | grep"
 alias pgrep="pgrep -f"
 alias eclipse="~/eclipse/java-neon/eclipse"
 alias desktopentries="/usr/share/applications"
-alias billinfo="keepass2 ~/grive/Bill\ Info.kdbx"
+alias billinfo="keepass2 ~/grive/Records/Finances/Bill\ Info.kdbx"
 # redirect the std 
 alias androidemulator="~/Android/Sdk/tools/emulator -avd Nexus_5_API_25 > /dev/null &"
 alias androidEmulator="androidemulator"
@@ -39,3 +37,4 @@ alias restartdocker="sudo /etc/init.d/docker restart"
 alias updategrive="cd ~/grive;grive;cd -"-
 alias typora="opt/Typora-linux-x64/Typora &"
 alias stopin30="sleep 1800; systemctl suspend;"
+alias course="xdg-open http://localhost:8000/draw && yarn start --cwd ~/learning/courseography"
