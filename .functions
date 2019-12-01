@@ -125,11 +125,16 @@ function sparse-checkout() {
 	echo '    git pull origin master\n'
 }
 
+# mp4slice fileName 00:00:00(startTime) 00:00:00(elapsedTime)
 function mp4slice() {
-	ffmpeg -ss "$2" -i "$1" -t "$3" -vcodec copy -acodec copy splice.mp4
+	ffmpeg -ss "$2" -i "$1" -t "$3" -vcodec copy -acodec copy "$1-slice".mp4
 }
 
 function compressmp4() {
+	ffmpeg -i "$1" -acodec mp2 "$1.min.mp4"
+}
+
+function compressallmp4() {
 	for file in "$PWD"/*; do
 		ffmpeg -i "$file" -acodec mp2 "${file/.mp4/s.mp4}"
 	done
