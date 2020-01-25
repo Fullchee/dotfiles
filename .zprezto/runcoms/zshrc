@@ -24,6 +24,7 @@ export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 . ~/z.sh
+export PATH=$PATH:/snap/bin
 
 # added by Anaconda3 installer
 export PATH="/home/fullchee/anaconda3/bin:$PATH"

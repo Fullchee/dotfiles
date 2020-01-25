@@ -38,3 +38,4 @@ alias updategrive="cd ~/grive;grive;cd -"-
 alias typora="opt/Typora-linux-x64/Typora &"
 alias stopin30="sleep 1800; systemctl suspend;"
 alias course="xdg-open http://localhost:8000/draw && yarn start --cwd ~/learning/courseography"
+alias open=xdg-open
