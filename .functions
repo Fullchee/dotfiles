@@ -185,3 +185,13 @@ function notify() {
 	fi
 	echo 'notify-send "$1"' | at $2
 }
+
+killport(){
+    if [ $# -eq 0 ]; then
+        echo "No arguments provided"
+        echo "provide port of service you wish to kill"
+        exit 1
+    fi
+    fuser -k $1/tcp
+}
+
