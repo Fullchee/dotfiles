@@ -8,6 +8,7 @@
     "airbnb",
     "plugin:prettier/recommended"
   ],
+  "plugins": ["react-hooks"],
   "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
@@ -94,6 +95,8 @@
     "object-shorthand": 0,
     "prefer-const": 1,
     "prefer-rest-params": 1,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "semi": [2, "always"],
     "semi-spacing": "error",
     "space-before-function-paren": ["error", "never"],
