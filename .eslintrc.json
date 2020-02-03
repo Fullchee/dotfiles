@@ -1,20 +1,23 @@
 {
   "env": {
     "node": true,
-    "es6": true,
+    "es2020": true,
     "jest": true
   },
   "extends": [
-    "airbnb",
-    "plugin:prettier/recommended",
+    "eslint:recommended",
+    "plugin:cypress/recommended",
     "plugin:jsx-a11y/recommended"
   ],
-  "plugins": ["react-hooks", "jsx-a11y"],
+  "plugins": ["react-hooks"],
   "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 2017,
-    "allowImportExportEverywhere": true
+    "ecmaVersion": 2020,
+    "allowImportExportEverywhere": true,
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "rules": {
     "accessor-pairs": "error",
