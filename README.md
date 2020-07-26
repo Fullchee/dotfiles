@@ -1,5 +1,25 @@
 # dotfiles
 
+TODO
+
+have a post-install script in this repo
+
+add this
+```sh
+sudo rm /etc/apt/preferences.d/nosnap.pref
+apt update
+apt install snapd
+```
+
+```
+git clone --bare https://github.com/Fullchee/mac-dotfiles.git $HOME/.cfg
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+config config --local status.showUntrackedFiles no
+./post-install.sh
+```
+
+Add an ssh key: https://github.com/settings/keys
+
 ### Setup
 1. Run the linux post install script
    * https://github.com/Fullchee/post-install-scripts/blob/master/linux/linux-post-install.sh
