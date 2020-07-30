@@ -14,7 +14,6 @@ fi
 # Customize to your needs...
 source $HOME/.aliases
 source $HOME/.functions
-source $HOME/.private_aliases
 source /etc/environment
 export PATH=/bin:/usr/bin:/usr/local/bin
 export PATH=~/.npm-global/bin:$PATH
@@ -26,9 +25,6 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 . ~/z.sh
 export PATH=$PATH:/snap/bin
 
-# added by Anaconda3 installer
-export PATH="/home/fullchee/anaconda3/bin:$PATH"
-source /home/fullchee/anaconda3/etc/profile.d/conda.sh
 export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
 export PATH=$JAVA_HOME/bin:$PATH
 
