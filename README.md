@@ -12,7 +12,7 @@ apt install snapd
 ```
 
 ```
-git clone --bare https://github.com/Fullchee/mac-dotfiles.git $HOME/.cfg
+git clone --bare https://github.com/Fullchee/dotfiles.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 ./post-install.sh
