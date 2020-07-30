@@ -52,4 +52,5 @@ rm -f linux-UFRII-drv-v370-usen-06.tar.gz
 	- [ ] [Intellij](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
 	- [ ] Android Studio
 - [ ] GRUB Customizer
-   - [ ] use a custom background image
+   - [ ] use a custom background image that's a `.png`
+
