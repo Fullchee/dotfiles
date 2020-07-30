@@ -1,13 +1,10 @@
-#!/bin/sh
+#!/bin/zsh
 
 # adding repos
 sudo add-apt-repository -y ppa:atareao/atareao
-sudo add-apt-repository -y ppa:danielrichter2007/grub-customizer # todo: update it for focal
-sudo add-apt-repository -y ppa:videolan/stable-daily # todo: update it for focal
 sudo add-apt-repository -y ppa:numix/ppa
-sudo add-apt-repository -y ppa:noobslab/apps # doesn't support focal
 sudo add-apt-repository -y ppa:alessandro-strada/ppa
-sudo add-apt-repository -y ppa:shutter/ppa
+sudo add-apt-repository -y ppa:linuxuprising/shutter
 sudo add-apt-repository -y ppa:peek-developers/stable
 sudo add-apt-repository -y ppa:jtaylor/keepass
 sudo add-apt-repository -y ppa:linrunner/tlp
@@ -53,6 +50,7 @@ sudo apt-get -y --force-yes upgrade
 
 # installing the programs
 sudo apt-get -y install at
+sudo apt-get -y install apt-transport-https # for vscode
 sudo apt-get -y install imagemagick
 sudo apt-get -y install fd-find
 sudo apt-get -y install convert
@@ -61,16 +59,13 @@ sudo apt-get -y install gcc
 sudo apt-get -y install git
 sudo apt-get -y install google-chrome-stable
 sudo apt-get -y install grive
-sudo apt-get -y install gnome-tweak-tool gnome-shell-extensions chrome-gnome-shell
 sudo apt-get -y install gnome-shell-pomodoro
 sudo apt-get -y install gnumeric
 sudo apt-get -y install grub-customizer
 sudo apt-get -y install gconf-editor
 sudo apt-get -y install guake
 sudo apt-get -y install heroku
-sudo apt-get -y install hub # github's wrapper for git
 sudo apt-get -y install keepass2
-# sudo apt-get -y install mailspring # awesome email client
 sudo apt-get -y install nodejs build-essential npm
 sudo apt-get -y install numix-gtk-theme
 sudo apt-get -y install numix-icon-theme
@@ -84,6 +79,7 @@ sudo apt-get -y install ruby-all-dev
 sudo apt-get -y install silversearcher-ag # grep but much better
 sudo apt-get -y install shutter # screenshot and quick editing
 # libgoo-canvas-perl
+sudo apt-get -y install sqlitebrowser
 sudo apt-get -y install sublime-text
 sudo apt-get -y install texlive-full
 sudo apt-get -y install touchpad-indicator
@@ -94,17 +90,13 @@ sudo apt-get -y install vlc
 sudo apt-get -y install wine-stable
 sudo apt-get -y install xclip
 sudo apt-get -y install xterm
+sudo apt-get -y install unetbootin
 sudo apt-get -y install vim
 sudo apt-get -y install yank
-sudo apt-get -y install yarn # Facebook's npm
+sudo apt-get -y install youtube-dl
 sudo apt-get -y install zip
 sudo apt-get -y install zsh
 sudo apt-get -y install zsh-doc
-sudo apt-get -y install apt-transport-https # for vscode
-sudo apt-get -y install sqlitebrowser
-sudo apt-get -y install okular
-sudo apt-get -y install unetbootin
-sudo apt-get -y install youtube-dl
 
 sudo apt remove -y tomboy
 sudo apt-get remove -y gnome-screenshot # I use shutter instead, you can edit 
@@ -140,7 +132,6 @@ git clone --bare https://github.com/Fullchee/cfg.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 config config --local status.showUntrackedFiles no
 config reset --hard
-touch ~/.private_aliases
 config update-index --assume-unchanged ~/.npmrc  # don't want to accidentally add npm credentials
 
 # Disable global Linux Mint help when pressing F1
@@ -214,6 +205,10 @@ rm -f ./libgoo-canvas-perl_0.06-2ubuntu3_amd64.deb
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
 rm -rf ~/.zprezto
 git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+setopt EXTENDED_GLOB
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
 config config --local status.showUntrackedFiles no
 config reset --hard
 config update-index --assume-unchanged ~/.npmrc  # don't want to accidentally add npm credentials
