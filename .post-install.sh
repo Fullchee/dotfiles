@@ -145,7 +145,9 @@ eslint-plugin-import \
 eslint-plugin-jsx-a11y \
 eslint-plugin-react \
 eslint-plugin-react-hooks \
+heroku \
 jest \
+netlify \
 tldr \
 write-good
 
