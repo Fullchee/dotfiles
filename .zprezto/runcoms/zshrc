@@ -15,7 +15,7 @@ fi
 source $HOME/.aliases
 source $HOME/.functions
 source /etc/environment
-export PATH=/bin:/usr/bin:/usr/local/bin
+export PATH=/bin:/usr/bin:/usr/local/bin:~/.npm-packages
 export PATH=~/.npm-global/bin:$PATH
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:~/.local/bin
