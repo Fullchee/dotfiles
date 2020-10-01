@@ -12,8 +12,8 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
-source $HOME/.aliases
-source $HOME/.functions
+source $HOME/.aliases.sh
+source $HOME/.functions.sh
 source /etc/environment
 export PATH=/bin:/usr/bin:/usr/local/bin:~/.npm-packages
 export PATH=~/.npm-global/bin:$PATH
