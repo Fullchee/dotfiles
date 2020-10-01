@@ -215,4 +215,7 @@ config config --local status.showUntrackedFiles no
 config reset --hard
 config update-index --assume-unchanged ~/.npmrc  # don't want to accidentally add npm credentials
 
+# Linux: use local time, dual boot: don't change Windows time
+timedatectl set-local-rtc 1 --adjust-system-clock
+
 
