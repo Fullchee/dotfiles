@@ -218,4 +218,5 @@ config update-index --assume-unchanged ~/.npmrc  # don't want to accidentally ad
 # Linux: use local time, dual boot: don't change Windows time
 timedatectl set-local-rtc 1 --adjust-system-clock
 
-
+# https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
