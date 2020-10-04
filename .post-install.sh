@@ -72,6 +72,7 @@ sudo apt-get -y install numix-icon-theme
 sudo apt-get -y install pandoc # convert between file types
 sudo apt-get -y install peek # record gifs
 sudo apt-get -y install playonlinux # have Microsoft Office on Linux
+sudo apt-get -y install postgresql
 sudo apt-get -y install powerline-fonts
 sudo apt-get -y install redshift # fl.ux for Linux, turn your screen red
 sudo apt-get -y install redshift-gtk
