@@ -40,3 +40,5 @@ alias stopin30="sleep 1800; systemctl suspend;"
 alias course="xdg-open http://localhost:8000/draw && yarn start --cwd ~/learning/courseography"
 alias open=xdg-open
 alias npmgypfail="set NODE_TLS_REJECT_UNAUTHORIZED=0"
+alias androidstudio="~/opt/android-studio/bin/studio.sh &"
+
