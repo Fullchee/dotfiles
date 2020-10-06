@@ -186,23 +186,15 @@ wget https://launchpad.net/ubuntu/+archive/primary/+files/libgoo-canvas-perl_0.0
 sudo apt install -y ./libgoo-canvas-perl_0.06-2ubuntu3_amd64.deb
 rm -f ./libgoo-canvas-perl_0.06-2ubuntu3_amd64.deb
 
-# firefox developer edition, TODO: update version
-#sudo apt remove -y firefox
-#wget https://download-installer.cdn.mozilla.net/pub/devedition/releases/70.0b3/linux-x86_64/en-US/firefox-70.0b3.tar.bz2
-#tar -xvf firefox-*.tar.bz2
-#sudo mv firefox /opt
-#sudo ln -s /opt/firefox/firefox /usr/local/bin/firefox
-#sudo touch /usr/share/applications/firefox-developer.desktop
-#echo "[Desktop Entry]
-#Name=Firefox Developer
-#GenericName=Firefox Developer Edition
-#Exec=/usr/local/bin/firefox
-#Terminal=false
-#Icon=/opt/firefox/browser/chrome/icons/default/default48.png
-#Type=Application
-#Categories=Application;Network;X-Developer;
-#Comment=Firefox Developer Edition Web Browser" | sudo tee /usr/share/applications/firefox-developer.desktop
-#sudo chmod +x /usr/share/applications/firefox-developer.desktop
+# firefox developer edition
+sudo apt remove -y firefox
+wget https://download.mozilla.org/?product=firefox-devedition-latest-ssl&os=linux64&lang=en-CA
+tar -xvf firefox-*.tar.bz2
+sudo mv firefox /opt
+sudo ln -s /opt/firefox/firefox /usr/local/bin/firefox
+sudo touch ~/.local/share/applications/Firefox.cinnamon-generated.desktop
+echo "Icon=/opt/firefox/browser/chrome/icons/default/default48.png" | tee -a ~/.local/share/applications/Firefox.cinnamon-generated.desktop
+sudo chmod +x ~/.local/share/applications/Firefox.cinnamon-generated.desktop
 
 # install prezto
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
