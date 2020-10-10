@@ -37,6 +37,7 @@ chsh -s /bin/zsh
 - [ ] `im-config` and use xim (ibus, the default has the annoying ctrl shift e shortcut)
    - [ ] then reset computer
 - [ ] Settings -> Sound -> Sounds -> Starting Cinnamon (disable)
+- [ ] Settings -> Window Tiling -> Maximize instead of tile (check)
 - [ ] [grive](https://github.com/vitalif/grive2) (run grive in ~/grive)
 - [ ] Printers
 ```sh
