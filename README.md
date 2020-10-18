@@ -4,12 +4,14 @@
 
 
 ```sh
-git clone --bare https://github.com/Fullchee/dotfiles.git $HOME/.cfg
+sudo apt install -y  zsh
+git init--bare $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
-sudo apt install -y zsh
-chsh -s /bin/zsh
-./post-install.sh
+config remote add origin https://github.com/Fullchee/dotfiles.git
+config fetch origin master
+config reset --hard origin/master
+zsh ~/post-install.sh
 ```
 
 ## Manual install steps
