@@ -12,6 +12,10 @@ sudo add-apt-repository -y ppa:linuxgndu/sqlitebrowser
 sudo add-apt-repository -y ppa:nilarimogard/webupd8
 sudo add-apt-repository -y ppa:cpick/hub
 
+# flashing with balena-etcher
+echo "deb https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
+
 # VSCode
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
@@ -51,6 +55,7 @@ sudo apt-get -y --force-yes upgrade
 # installing the programs
 sudo apt-get -y install at
 sudo apt-get -y install apt-transport-https # for vscode
+sudo apt-get -y install balena-etcher-electron
 sudo apt-get -y install imagemagick
 sudo apt-get -y install fd-find
 sudo apt-get -y install convert
