@@ -21,6 +21,7 @@ zsh ~/post-install.sh
   - [ ] Install Office 2007 (word and excel)
 - [ ] Chrome Login
 - [ ] Firefox Login
+   - [ ] browser.sessionstore.warnOnQuit (set to true)
 - [ ] VSCode Sync (LastPass)
 - [ ] [Anki](https://apps.ankiweb.net/)
 	- [ ] [install all the plugins](https://gist.github.com/Fullchee/20d835b5d2d88eabc778f75f169015d2)
