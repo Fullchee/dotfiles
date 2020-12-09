@@ -110,9 +110,14 @@ sudo apt remove -y hexchat
 sudo apt remove -y thunderbird
 sudo apt remove -y gnome-calendar
 
+# dropbox
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+
 #sudo snap install slack --classic
 #sudo snap install docker circleci
 #sudo snap connect circleci:docker docker
+
+sudo snap install authy --beta
 
 # Install Anki
 # TODO: create a function that will check if the newer version exists
@@ -218,3 +223,4 @@ timedatectl set-local-rtc 1 --adjust-system-clock
 
 # https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+

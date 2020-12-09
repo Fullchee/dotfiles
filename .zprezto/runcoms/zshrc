@@ -18,15 +18,17 @@ source /etc/environment
 export PATH=/bin:/usr/bin:/usr/local/bin:~/.npm-packages
 export PATH=~/.npm-global/bin:$PATH
 export ANDROID_HOME=$HOME/Android/Sdk
+export ANDROID_SDK=$HOME/Android/Sdk
 export PATH=$PATH:~/.local/bin
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
+#export PATH=~/opt/jdk-10.0.2/bin:$PATH
 . ~/z.sh
 export PATH=$PATH:/snap/bin
 
-export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
-export PATH=$JAVA_HOME/bin:$PATH
+#export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+#export PATH=$JAVA_HOME/bin:$PATH
 
 export MAVEN_HOME="/home/fullchee/opt/dev/apache-maven-3.6.0"
 export PATH=$PATH:$MAVEN_HOME/bin
