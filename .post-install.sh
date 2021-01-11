@@ -99,7 +99,6 @@ sudo apt-get -y install xterm
 sudo apt-get -y install unetbootin
 sudo apt-get -y install vim
 sudo apt-get -y install yank
-sudo apt-get -y install youtube-dl
 sudo apt-get -y install zip
 sudo apt-get -y install zsh
 sudo apt-get -y install zsh-doc
@@ -109,6 +108,9 @@ sudo apt-get remove -y gnome-screenshot # I use shutter instead, you can edit
 sudo apt remove -y hexchat
 sudo apt remove -y thunderbird
 sudo apt remove -y gnome-calendar
+
+# youtube-dl`
+pip3 install youtube-dl
 
 # dropbox
 cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
