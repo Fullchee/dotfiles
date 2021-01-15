@@ -158,11 +158,13 @@ eslint-plugin-import \
 eslint-plugin-jsx-a11y \
 eslint-plugin-react \
 eslint-plugin-react-hooks \
-heroku \
+gatsby \
 jest \
 netlify \
-tldr \
-write-good
+next \
+svgo \
+svgr \
+tldr
 
 # disable the insert button
 xmodmap -e "keycode 118 ="
