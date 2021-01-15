@@ -41,8 +41,8 @@ zsh ~/post-install.sh
    - [ ] then reset computer
 - [ ] Settings -> Sound -> Sounds -> Starting Cinnamon (disable)
 - [ ] Settings -> Window Tiling -> Maximize instead of tile (check)
-- [ ] [grive](https://github.com/vitalif/grive2) (run grive in ~/grive)
 - [ ] Printers
+- [ ] Login to Dropbox
 ```sh
 # CANON MF4770n
 wget -O linux-UFRII-drv-v370-usen-06.tar.gz "http://pdisp01.c-wss.com/gdl/WWUFORedirectTarget.do?id=MDEwMDAwOTIzNjAz&cmp=ABR&lang=EN"
