@@ -4,7 +4,7 @@
 [credential]
 	helper = store
 [push]
-	default = simple
+	default = current
 [alias]
 	st = status -s
 	ignore = update-index --assume-unchanged
