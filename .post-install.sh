@@ -160,6 +160,7 @@ eslint-plugin-react \
 eslint-plugin-react-hooks \
 gatsby \
 jest \
+okimdone \
 netlify \
 next \
 svgo \
