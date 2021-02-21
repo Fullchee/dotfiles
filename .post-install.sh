@@ -59,7 +59,6 @@ sudo apt-get -y install dconf-editor
 sudo apt-get -y install gcc
 sudo apt-get -y install git
 sudo apt-get -y install google-chrome-stable
-sudo apt-get -y install grive
 sudo apt-get -y install gnome-shell-pomodoro
 sudo apt-get -y install gnumeric
 sudo apt-get -y install grub-customizer
@@ -67,7 +66,7 @@ sudo apt-get -y install gconf-editor
 sudo apt-get -y install guake
 sudo apt-get -y install heroku
 sudo apt-get -y install keepass2
-sudo apt-get -y install nodejs build-essential npm
+sudo apt-get -y install nodejs build-essential
 sudo apt-get -y install numix-gtk-theme
 sudo apt-get -y install numix-icon-theme
 sudo apt-get -y install pandoc # convert between file types
