@@ -26,10 +26,6 @@ sudo rm -f /etc/apt/preferences.d/nosnap.pref
 
 sudo apt install snapd -y
 
-# sublime text
-wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
-
 # google chrome
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
@@ -47,7 +43,7 @@ curl -L https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
 #echo -e "\ndeb https://typora.io/linux ./" | sudo tee -a /etc/apt/sources.list
 
 # node
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 
 sudo apt-get -y --force-yes update
 sudo apt-get -y --force-yes upgrade
