@@ -50,6 +50,8 @@ sudo apt-get -y --force-yes upgrade
 
 # installing the programs
 sudo apt-get -y install at
+
+# linux mint
 sudo apt-get -y install apt-transport-https # for vscode
 sudo apt-get -y install balena-etcher-electron
 sudo apt-get -y install imagemagick
