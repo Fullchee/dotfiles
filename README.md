@@ -5,13 +5,13 @@
 
 ```sh
 sudo apt install -y  zsh
-git init--bare $HOME/.cfg
+git init --bare $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 config remote add origin https://github.com/Fullchee/dotfiles.git
 config fetch origin master
 config reset --hard origin/master
-zsh ~/post-install.sh
+zsh ~/.post-install.sh
 ```
 
 ## Manual install steps
