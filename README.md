@@ -2,6 +2,10 @@
 
 ## Install
 
+1. `ssh-keygen`
+2. `cat ~/.ssh/id_rsa.pub`
+3. https://github.com/settings/keys   
+4. Clone this repo
 
 ```sh
 sudo apt install -y  zsh
