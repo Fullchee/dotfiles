@@ -144,6 +144,11 @@ config config --local status.showUntrackedFiles no
 config reset --hard
 config update-index --assume-unchanged ~/.npmrc  # don't want to accidentally add npm credentials
 
+setopt EXTENDED_GLOB
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
+
 # Disable global Linux Mint help when pressing F1
 sudo chmod -x /usr/local/bin/yelp
 
