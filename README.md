@@ -15,6 +15,7 @@ config config --local status.showUntrackedFiles no
 config remote add origin https://github.com/Fullchee/dotfiles.git
 config fetch origin master
 config reset --hard origin/master
+config branch --set-upstream-to-origin/master master
 zsh ~/.post-install.sh
 ```
 
