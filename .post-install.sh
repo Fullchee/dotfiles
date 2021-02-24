@@ -148,26 +148,16 @@ config update-index --assume-unchanged ~/.npmrc  # don't want to accidentally ad
 sudo chmod -x /usr/local/bin/yelp
 
 npm install -g npm \
-babel-eslint \
 eslint \
-eslint-config-airbnb \
-eslint-plugin-import \
-eslint-plugin-jsx-a11y \
-eslint-plugin-react \
-eslint-plugin-react-hooks \
-gatsby \
 jest \
 okimdone \
 netlify \
 next \
 svgo \
-svgr \
-tldr
+tldr;
 
 # disable the insert button
 xmodmap -e "keycode 118 ="
-
-
 
 # install screenkey
 # git -C ~/opt clone https://github.com/wavexx/screenkey.git
