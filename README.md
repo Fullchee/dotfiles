@@ -1,5 +1,8 @@
 # dotfiles
 
+- [Mac dotfiles (private)](https://github.com/Fullchee/mac-dotfiles)
+- [Windows dotfiles](https://github.com/Fullchee/windows-dotfiles)
+
 ## Install
 
 1. `ssh-keygen`
