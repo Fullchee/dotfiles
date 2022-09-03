@@ -1,4 +1,8 @@
-> This repo is deprecated. I have switched to using a Mac as my main device whose dotfiles are in a private repo.
+> I switched to a Mac as my main device.
+> 
+> Those dotfiles are private because they have work specific stuff
+
+https://github.com/Fullchee/mac-dotfiles
 
 # dotfiles
 
