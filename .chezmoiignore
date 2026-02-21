@@ -1,3 +1,4 @@
 {{- if ne .chezmoi.hostname "Fullchee-Citylitics" }}
-dot_dotfiles/citylitics/watrhub.code-workspace
+dot_dotfiles/citylitics.gitconfig
+dot_dotfiles/citylitics/**
 {{- end }}
