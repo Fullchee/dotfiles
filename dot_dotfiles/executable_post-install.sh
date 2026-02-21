@@ -65,8 +65,6 @@ npm install --global corepack@latest
 corepack enable pnpm
 corepack use pnpm@latest
 brew install ni  # figures out whether to use npm, pnpm or yarn
-
-brew install pandoc;
 brew install pgcli;
 
 POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
