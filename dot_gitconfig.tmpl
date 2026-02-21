@@ -130,7 +130,11 @@
 	default = simple
 	followTags = true
 [user]
+{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
+	email = 243146669+fullchee-citylitics@users.noreply.github.com
+{{- else }}
 	email = 11246258+Fullchee@users.noreply.github.com
+{{- end }}
 	name = Fullchee Zhang
 	signingkey = ~/.ssh/id_ed25519.pub
 [open "https://ssh.github.com"]
@@ -155,10 +159,10 @@
 [url "git@github.com:"]
 	insteadOf = "https://github.com/"
 
+{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 # must be at bottom to override above
-[includeIf "gitdir:/Users/admin/**"]
-	path = ~/.dotfiles/citylitics.gitconfig
 [includeIf "gitdir:~/personal-projects/**"]
 	path = ~/.dotfiles/personal-projects.gitconfig
 [includeIf "gitdir:/Users/admin/.local/share/chezmoi/**"]
 	path = ~/.dotfiles/personal-projects.gitconfig
+{{- end }}
