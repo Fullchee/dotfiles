@@ -1,0 +1,99 @@
+{
+  "folders": [
+    {
+      "path": "../../watrhub-django/app"
+    },
+    {
+      "path": "../../watrhub-django/cicd"
+    },
+    {
+      "path": "../../watrhub-django/.github"
+    },
+    {
+      "path": "../../watrhub-django/deployment"
+    },
+    {
+      "path": "../../watrhub-django/local-dev"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode-remote.remote-ssh",
+      "ms-python.black-formatter",
+      "batisteo.vscode-django",
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.makefile-tools",
+      "YoavBls.pretty-ts-errors",
+      "mattpocock.ts-error-translator",
+      "shardulm94.trailing-spaces",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ChakrounAnas.turbo-console-log"
+    ]
+  },
+  "launch": {
+    "configurations": [
+      {
+        "connect": {
+          "host": "localhost",
+          "port": 5678
+        },
+        "justMyCode": true,
+        "name": "Python: Remote Attach",
+        "pathMappings": [
+          {
+            "localRoot": "/Users/admin/watrhub-django/app",
+            "remoteRoot": "/usr/src/app"
+          }
+        ],
+        "request": "attach",
+        "type": "debugpy"
+      }
+    ],
+    "version": "0.2.0"
+  },
+  "settings": {
+    "mcp.servers": {
+      "minimal-mysql": {
+        "command": "node",
+        "args": [
+          "/Users/admin/personal-projects/mcp-mysql-read-only/dist/server.js"
+        ],
+      }
+    },
+    "black-formatter.args": [
+      "--config",
+      "/Users/admin/watrhub-django/pyproject.toml"
+    ],
+    "black-formatter.importStrategy": "fromEnvironment",
+    "chat.instructionsFilesLocations": {
+      "/Users/admin/watrhub-django/.github/instructions": true
+    },
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never"
+    },
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": false,
+    "eslint.format.enable": true,
+    "files.exclude": {
+      "frontend/app/build": true
+    },
+    "makefile.configureOnOpen": false,
+    "prettier.configPath": "/Users/admin/watrhub-django/app/frontend/app/.prettierrc.json",
+    "prettier.requireConfig": true,
+    "python.analysis.showOnlyDirectDependenciesInAutoImport": true,
+    "python.defaultInterpreterPath": "/Users/admin/watrhub-django/venv/bin/python",
+    "python.djangoTestRunner.prefixCommand": "DJANGO_SETTINGS_MODULE=watrhub.settings.ci",
+    "python.djangoTestRunner.useVSCodePythonPath": true,
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#033337",
+      "titleBar.activeBackground": "#04474D",
+      "titleBar.activeForeground": "#EFFDFE",
+      "titleBar.inactiveBackground": "#04474D",
+      "titleBar.inactiveForeground": "#aaa"
+    }
+  }
+}

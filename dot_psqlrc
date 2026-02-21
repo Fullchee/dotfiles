@@ -1,0 +1,5 @@
+-- expanded display, too many columns -> see one row at a time
+\x auto
+
+-- distinguish between NULL and ''
+\pset null '∅'

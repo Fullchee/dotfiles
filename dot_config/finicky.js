@@ -1,0 +1,37 @@
+// ~/.finicky.js
+export default {
+  // defaultBrowser: "Orion",
+  defaultBrowser: "Google Chrome",
+//   rewrite: [
+//     // {
+//     //   // Redirect all x.com urls to use xcancel.com
+//     //   match: "x.com/*",
+//     //   url: (url) => {
+//     //     url.host = "xcancel.com";
+//     //     return url;
+//     //   },
+//     // },
+//   ],
+  handlers: [
+    {
+      match: [
+        "toronto.ca/*",
+        "*.toronto.ca/*",
+        "ctfs.com/*",
+        "*.ctfs.com/*",
+        // Family bills Google Doc
+        "https://docs.google.com/document/d/1QSNZv2dawLMgcUbTIH-wu8EJ882Eb0L0qw0XA5QyRVs/edit?tab=t.57hww3umyewg",
+        "*.enbridgegas.com/*",
+      ],
+      browser: "Firefox",
+    },
+    {
+      // develop with Chrome
+      match: [
+        "localhost*",
+        "127.0.0.1*",
+      ],
+      browser: "Google Chrome",
+    },
+  ],
+};

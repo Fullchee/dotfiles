@@ -1,0 +1,312 @@
+#!/bin/zsh
+
+# Extend sudo timeout to 120 minutes
+sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
+
+if ! command -v brew &> /dev/null; then
+  echo "Installing homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Apple silicon
+  if [ -d /opt/homebrew/bin ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  # intel
+  elif [ -d /usr/local/bin ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
+
+brew update;
+
+
+
+# repeated `brew install` for comments to work
+
+brew install bash;  # apple only comes with bash 3 (licensing), later versions can be debugged in VSCode
+brew install bat;  # better cat
+brew install cask;
+brew install coreutils;
+brew install choose-rust;  # eg: easily get the 3rd item in each line https://github.com/theryangeary/choose
+brew install difftastic;  # better git diff
+
+brew install duti;  # set default applications for file types
+duti -s com.microsoft.VSCode vscode-file
+
+brew install entr;  # do something when a file changes https://jvns.ca/blog/2020/06/28/entr/
+brew install eza;  # better ls + tree with git and icons
+brew install fd;  # better find https://github.com/sharkdp/fd
+brew install fzf;  # filter in STDIN https://github.com/junegunn/fzf
+brew install ffmpeg;
+
+brew install gh;  # GitHub CLI
+brew install git;  # newer version of git
+brew install git-filter-repo;  # remove a file from git history
+brew install git-delta;  # git pager, works better for larger files as a pager than difftastic
+brew install sheerun/git-squash/git-squash;
+
+brew install graphviz;  # turborepo uses this for visualizations
+brew install helix;  # like vim but with batteries included
+brew install hwatch;  # better `watch`
+brew install hyperfine;  # command benchmarking
+brew install imagemagick;
+brew install jc;  # turn command outputs into JSON (so you can then use jq)
+brew install jordanbaird-ice;  # hide items in the menu bar, better than HiddenBar?
+brew install jq;  # JSON processor
+brew install just;  # Make but better
+brew install lnav;  # syntax highlighting log files
+brew install mas;  # mac app store CLI
+brew install mosh;  # ssh for bad wifi
+
+# node
+curl -fsSL https://fnm.vercel.app/install | bash;
+fnm install --lts;
+fnm default lts-latest;
+npm install --global corepack@latest
+corepack enable pnpm
+corepack use pnpm@latest
+brew install ni  # figures out whether to use npm, pnpm or yarn
+
+brew install pandoc;
+brew install pgcli;
+
+POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
+brew install $POSTGRES_NAME  # latest version of postgresql
+brew services start postgresql
+echo 'export PATH="/opt/homebrew/opt/$POSTGRES_NAME/bin:$PATH"' >> ~/.dotfiles/programming-scripts.sh
+/opt/homebrew/opt/$POSTGRES_NAME/bin/createdb fullchee
+/opt/homebrew/opt/$POSTGRES_NAME/bin/createdb fullcheezhang
+# when brew installs postgres, need to create a postgres user manually
+# https://stackoverflow.com/questions/15301826/psql-fatal-role-postgres-does-not-exist
+/opt/homebrew/bin/createuser -s postgres
+
+brew install prek;
+
+# python
+brew install pyenv;
+pyenv init
+LATEST_PYTHON_VERSION=$(pyenv install --list | grep --extended-regexp "^\s*[0-9][0-9.]*[0-9]\s*$" | tail -1 | tr -d ' ')
+pyenv install $LATEST_PYTHON_VERSION
+pyenv global $LATEST_PYTHON_VERSION
+pyenv local $LATEST_PYTHON_VERSION
+brew install pipx;  # good to have, `uv tool install` is faster though
+
+brew install ripgrep;  # faster than ag and grep for text search
+brew install shellcheck;  # shell script linter
+brew install shfmt;  # shell script formatter
+
+brew install tealdeer;  # tldr in rust
+tldr --update;  # initialize the tldr cache
+
+brew install ugrep;  # faster grep with the same API (ideally: use rg but LLMs sometimes use `grep`)
+
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh  # uv: python package & project manager, like poetry, pdm
+uv tool install ptpython  # better Python terminal CLI
+uv tool install sqlfluff  # SQL linter and formatter
+
+brew install vim;
+brew install wget;
+brew install zoxide; # better z.sh
+
+brew install --cask adobe-acrobat-reader;  # need adobe reader for government PDFs
+brew install --cask anki;  # spaced repetition flash cards
+brew install --cask balenaetcher  # flash linux distros to SD cards
+brew install --cask cap;  # open source loom, better than kap
+brew install --cask chatgpt;  # in order to access questions I've asked on my phone
+brew install --cask claude;  # often the best when asking programming questions
+brew install --cask db-browser-for-sqlite;
+brew install --cask dbngin;  # UI to turn on/off databases
+brew install --cask discord;
+brew install --cask docker;
+brew install --cask figma;
+brew install --cask finicky;  # open different URLs with different browsers
+brew install --cask firefox;
+mkdir -p ~/Library/Application\ Support/Firefox/distribution
+cp ~/.dotfiles/post-install/browser/firefox-policies.json ~/Library/Application\ Support/Firefox/distribution/policies.json
+
+brew install --cask font-hack-nerd-font;  # font with icons (for eza)
+brew install --cask font-jetbrains-mono;  # font with ligatures for coding
+brew install --cask freedom; # App and internet blocker (freedom.to)
+brew install --cask google-chrome;
+brew install --cask google-drive;
+brew install --cask handbrake;  # video compression
+# brew install --cask hyperkey;   # replace caps lock with hyper, need more -> use karabiner-elements
+brew install --cask imageoptim;  # compress images
+brew install --cask iina;  # video player
+brew install --cask iterm2;
+brew install --cask karabiner-elements;  # key swapping, if just using caps lock as hyper, just use hyperkey
+brew install --cask keycastr;  # record keys
+brew install --cask logitune;  # configure Logitech headset
+brew install --cask modern-csv;  # CSV reader/editor, better than TableTool
+brew install --cask notion;
+brew install --cask obsidian;
+brew install --cask orion;  # WebKit based browser with Chrome and Firefox extensions
+brew install --cask raspberry-pi-imager  # custom raspberry pi os setup (for pihole)
+brew install --cask raycast;  # nicer app launcher/spotlight
+brew install --cask rectangle;  # change window sizes, nicer than Raycast's keyboard shortcuts
+brew install --cask sejda-pdf;  # free pdf editor
+brew install --cask sublime-text;
+brew install --cask superwhisper;  # speech to text
+brew install --cask tableplus;  # database GUI
+brew install --cask todoist;
+brew install --cask visual-studio-code;
+brew install --cask wechat;
+brew install --cask whatsapp;
+# brew install --cask xquartz;  # needed for xclip to work when ssh to linux server
+brew install --cask zoom;
+
+mas install 1440147259; # ad guard for Safari
+
+mas install 937984704;  # Amphetamine: keep mac working
+wget https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
+hdiutil attach Amphetamine\ Enhancer.dmg
+cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
+
+mas install 1352778147; # BitWarden: app store version has more features, like TouchID
+# mas install 1355679052; # Dropover: shake cursor when dragging files to bundle them
+mas install 540348655;  # Monosnap
+mas install 1521432881; # Session (pomodoro timer)
+mas install 1406676254; # Splice Crop: crop the middle of an image (M1 macs only)
+mas install 1122008420; # TableTool, view CSVs
+
+### Calendar
+defaults write com.apple.iCal "Default duration in minutes for new event" -int 30
+killall Calendar
+
+### DOCK
+# Speed up dock show/hide
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -int 0
+# Dock to left
+defaults write com.apple.dock orientation -string "left"
+defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-tile";}';
+defaults write com.apple.dock showhidden -bool TRUE;
+defaults write com.apple.dock tilesize -int 36;
+defaults write com.apple.dock persistent-apps -array;  # remove all the default permanent apps on the dock
+
+# Add Chrome to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Add iTerm2 to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Add Obsidian to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Obsidian.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Add VSCode to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Visual Studio Code.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Add Session to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Session.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+
+
+# spacer tiles in the dock
+defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
+# Add Messenger to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Messenger.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Add WeChat to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/WeChat.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Add WhatsApp to Dock
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/WhatsApp.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# spacer tiles in the dock
+defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
+defaults write com.apple.dock wvous-br-corner -int 0  # remove hot corner to quickly create new note
+killall Dock
+
+### FINDER
+# Path at the top of finder
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+# show dotfiles in Finder
+defaults write com.apple.finder AppleShowAllFiles YES;
+defaults write com.apple.finder ShowPathbar -bool true  # doesn't seem to work
+killall Finder;
+
+
+### Keyboard shortcuts
+
+### Menu bar
+# show bluetooth in menu bar
+/usr/bin/defaults write com.apple.controlcenter.plist Bluetooth -int 18
+defaults write ~/Library/Preferences/ByHost/com.apple.controlcenter.plist BatteryShowPercentage -bool true
+killall ControlCenter
+
+
+### Night Shift
+defaults write com.apple.CoreBrightness CBBlueReductionSchedule -dict \
+  enabled -bool true \
+  start -float 20.0 \
+  end -float 6.0;
+killall CoreBrightness
+
+
+### SAFARI
+# Show the full website address in Safari's address bar
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+# Enable Safari's Develop menu and Web Inspector
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+killall Safari
+
+### Screenshot
+defaults write com.apple.screencapture type clipboard
+killall SystemUIServer
+
+### TRACKPAD
+# increase trackpad sensitivity
+defaults write -g com.apple.mouse.scaling 4.0
+defaults write -g com.apple.trackpad.scaling 4.0
+# Disable swipe between pages
+defaults write -g AppleEnableSwipeNavigateWithScrolls -bool false
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+# App Exposé: swipe down with three fingers
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerVertSwipeGesture -int 2
+# feedback sound when changing volume
+defaults write -g com.apple.sound.beep.feedback -integer 1
+
+
+# Not sure if this works
+defaults write NSGlobalDomain AppleShowScrollBars -string Always
+
+
+# not sure if I need the following
+# Tell system when Xcode utilities live:
+sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer;
+
+
+# install prezto
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
+rm -rf ~/.zprezto
+rm -rf ~/.zprofile
+git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+config config --local status.showUntrackedFiles no
+echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ~/.zshrc
+config reset --hard origin/main
+touch ~/.lc_history
+
+setopt EXTENDED_GLOB
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -sf "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
+
+# local files that change a lot
+config ignore "Library/Application Support/Notion/notion.db"
+config ignore "Library/Preferences/com.googlecode.iterm2.plist"
+
+# create the folder if it doesn't exist
+mkdir -p ~/learning
+cd ~/learning
+git clone git@github.com:Fullchee/notes.git
+cd -
+
+osascript -e 'tell app "System Events" to log out'
+
+# add to /etc/hosts to block certain sites
+
+echo "0.0.0.0     www.webtoons.com webtoons.com" | sudo tee -a /etc/hosts
+sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder  # flush DNS
+
+sudo chflags schg /etc/hosts  # makes the file immutable, can't sudo
+
+
+# Remove the temporary timeout when done
+sudo rm /etc/sudoers.d/timeout

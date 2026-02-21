@@ -1,0 +1,32 @@
+## IDEs
+*.sublime-project
+*/.vscode
+.*.swp
+.idea/
+.vscode
+
+## Node
+node_modules
+npm-debug.log
+
+## OS
+.DS_Store
+
+## Python
+*.egg
+*.egg-info/
+*.pyc
+*.pyd
+*.pyo
+.mypy_cache
+.Python
+.venv
+__pycache__
+build/
+dist/
+env/
+venv
+
+
+## Secrets
+.dotfiles/citylitics/citylitics-secrets.sh

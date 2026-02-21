@@ -1,0 +1,4 @@
+[sqlfluff:rules]
+# Allow empty lines between queries (Rule L022)
+# Set to 1 to allow one blank line, 2 for two, etc.
+max_empty_lines = 1

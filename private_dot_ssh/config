@@ -1,0 +1,34 @@
+Host github.com
+    HostName ssh.github.com
+    Port 443
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+
+Host gcloud-workstation
+    HostName localhost
+    Port 2222
+    User user
+    # known_host issue as not required for SSH tunnel
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+    # ForwardX11 yes
+    # ForwardX11Trusted yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+Host pihole
+    HostName 192.168.50.8
+    User pihole
+    AddKeysToAgent yes
+    UseKeychain yes
+    # ForwardX11 yes
+    # ForwardX11Trusted yes
+
+
+Host home-assistant
+    HostName 192.168.50.45
+    User root
+    AddKeysToAgent yes
+    UseKeychain yes
+    # ForwardX11 yes
+    # ForwardX11Trusted yes

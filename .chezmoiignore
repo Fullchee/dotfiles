@@ -1,0 +1,3 @@
+{{- if ne .chezmoi.hostname "Fullchee-Citylitics" }}
+dot_dotfiles/citylitics/watrhub.code-workspace
+{{- end }}
