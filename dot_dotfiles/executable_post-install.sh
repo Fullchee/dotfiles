@@ -138,7 +138,6 @@ brew install --cask logitune;  # configure Logitech headset
 brew install --cask modern-csv;  # CSV reader/editor, better than TableTool
 brew install --cask notion;
 brew install --cask obsidian;
-brew install --cask orion;  # WebKit based browser with Chrome and Firefox extensions
 brew install --cask raspberry-pi-imager  # custom raspberry pi os setup (for pihole)
 brew install --cask raycast;  # nicer app launcher/spotlight
 brew install --cask rectangle;  # change window sizes, nicer than Raycast's keyboard shortcuts
