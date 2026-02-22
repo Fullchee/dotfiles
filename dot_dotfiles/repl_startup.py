@@ -8,4 +8,4 @@ try:
     traceback.install()
     print("rich setup concluded.")
 except ImportError:
-    pass
+    print("pip install rich to get a prettier CLI experience")
