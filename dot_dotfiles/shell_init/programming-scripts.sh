@@ -164,7 +164,6 @@ export PATH="$PNPM_HOME:$PATH"
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
-export PYTHONSTARTUP=$HOME/.dotfiles/repl_startup.py
 alias py=python
 export PIP_REQUIRE_VIRTUALENV=true
 alias ptpy=ptpython
