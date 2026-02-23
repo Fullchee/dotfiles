@@ -1,29 +1,10 @@
 #!/bin/zsh
 
+sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
+
+# 2026-03: I'd only install desktop apps on a mac
 {{- if eq .chezmoi.os "darwin" }}
-# macOS-specific installation steps sourced from the shared bootstrap
-# script.  These assume $OS has already been set to "darwin" by the
-# caller.
 
-# bootstrap helpers ----------------------------------------------------------
-# Extend sudo timeout to 120 minutes (handled by parent script).
-# Install Homebrew if it's not already available.
-if ! command -v brew &> /dev/null; then
-  echo "Installing homebrew"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  # Apple silicon
-  if [ -d /opt/homebrew/bin ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  # intel
-  elif [ -d /usr/local/bin ]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
-fi
-
-brew update
-
-# cask/app installs (mac only) --------------------------------------------
 install_cask adobe-acrobat-reader
 install_cask anki
 install_cask balenaetcher
@@ -71,25 +52,17 @@ install_cask whatsapp
 install_cask wispr-flow
 install_cask zoom
 
-if [ "$OS" = darwin ]; then
-  mas install 1440147259
-  mas install 937984704
-  wget https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
-  hdiutil attach Amphetamine\ Enhancer.dmg
-  cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
-  mas install 1352778147
-  mas install 540348655
-  mas install 1406676254
-  mas install 1122008420
-fi
 
-# os-specific final tweaks --------------------------------------------------
-if [ "$OS" = darwin ]; then
-  osascript -e 'tell app "System Events" to log out'
-  echo "0.0.0.0     www.webtoons.com webtoons.com" | sudo tee -a /etc/hosts
-  sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
-  sudo chflags schg /etc/hosts
-fi
+mas install 1440147259; # ad guard for Safari
 
-# Remove the temporary timeout when done
+mas install 937984704;  # Amphetamine: keep mac working
+wget https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
+hdiutil attach Amphetamine\ Enhancer.dmg
+cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
+
+mas install 1352778147; # BitWarden: app store version has more features, like TouchID
+mas install 540348655;  # Monosnap
+mas install 1406676254; # Splice Crop: crop the middle of an image (M1 macs only)
+mas install 1122008420; # TableTool, view CSVs
+
 sudo rm /etc/sudoers.d/timeout
