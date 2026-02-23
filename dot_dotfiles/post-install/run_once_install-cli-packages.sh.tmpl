@@ -7,6 +7,7 @@ sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 # duplicating package lines. ugly branching is okay because the helper
 # functions centralize commands.
 
+# TODO: don't need chezmoi for this, use regular bash
 OS={{- if eq .chezmoi.os "darwin" }}darwin{{- else if eq .chezmoi.os "linux" }}linux{{- else }}unknown{{- end }}
 
 install_pkg() {
