@@ -56,26 +56,34 @@ install_pkg choose-rust  # eg: easily get the 3rd item in each line
 install_pkg difftastic  # better git diff
 install_pkg duckdb    # embeddable SQL OLAP
 install_pkg duti      # set default applications (mac only)
-
 install_pkg entr      # run commands when files change
 install_pkg eza       # better ls & tree with icons
+
 install_pkg fd        # on linux it's fd-find
+if [ "$OS" = linux ]; then
+  # make fd available as 'fd' (Ubuntu packages it as fdfind)
+  if [ ! -e /usr/local/bin/fd ]; then
+      sudo ln -s "$(command -v fdfind)" /usr/local/bin/fd
+  fi
+fi
+
 install_pkg fzf       # interactive filter
 install_pkg ffmpeg
 
-install_pkg gh        # GitHub CLI
 install_pkg git       # up-to-date git
+install_pkg gh        # GitHub CLI
 install_pkg git-filter-repo  # remove a file from git history
 install_pkg git-delta  # git pager, works better for larger files as a pager than difftastic
+
 install_pkg graphviz
 install_pkg helix
 install_pkg hwatch
 install_pkg hyperfine # command benchmarking
 install_pkg imagemagick
-install_pkg jc        # json converter
+install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
-install_pkg just      # Make replacement
-install_pkg mosh      # remote terminal that works better on bad connections
+install_pkg just      # a better `Make` and `Makefile` replacement for tasks
+install_pkg mosh      # ssh for bad (mobile) connections
 
 {{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 install_pkg mycli     # mysql CLI with completion
@@ -93,14 +101,13 @@ npm install --global corepack@latest
 corepack enable pnpm
 corepack use pnpm@latest
 install_pkg ni        # figures out npm/pnpm/yarn
-install_pkg pgcli
 
-# postgresql helper: brew formulae vs apt package
+install_pkg pgcli
 if [ "$OS" = darwin ]; then
   POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
   install_pkg "$POSTGRES_NAME"
   brew services start postgresql
-  echo 'export PATH="/opt/homebrew/opt/$POSTGRES_NAME/bin:$PATH"' >> ~/.dotfiles/programming-scripts.sh
+
   /opt/homebrew/opt/$POSTGRES_NAME/bin/createdb "$USER"
   /opt/homebrew/bin/createuser -s postgres
 else
@@ -109,7 +116,7 @@ else
   sudo -u postgres createdb "$USER" || true
 fi
 
-install_pkg prek     # pre-commit faster alternative
+install_pkg prek     # faster pre-commit
 
 # python ------------------------------------------------------------------
 install_pkg pyenv
@@ -140,112 +147,37 @@ install_pkg vim
 install_pkg wget
 install_pkg zoxide
 
-
-# macOS-specific operations are contained in a separate script.
-# source it (once) only when running on macOS so the main file stays clean.
-if [ "$OS" = darwin ]; then
-  SCRIPT_DIR="$(dirname "$0")"
-  source "$SCRIPT_DIR/run_onchange_install-cli-packages-macos.sh.tmpl"
-fi
-
-
-# Remove the temporary timeout when done
-sudo rm /etc/sudoers.d/timeout
-
-
-{{- else if eq .chezmoi.os "linux" }}
-
-set -e
-
-# extend sudo timeout for this script only
-sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
-
-# update & basic tools
-if ! command -v apt-get >/dev/null; then
-    echo "This script expects an APT-based system."
-    exit 1
-fi
-
-sudo apt-get update -y
-sudo apt-get upgrade -y
-
-# essential packages
-sudo apt-get install -y \
-    curl wget git zsh build-essential \
-    ca-certificates gnupg lsb-release software-properties-common \
-    unzip \
-    python3 python3-venv python3-pip \
-    jq fd-find fzf ripgrep \
-    pandoc tree htop tmux \
-    gcc g++ \
-    vim unzip \
-    pkg-config
-
-# make fd available as 'fd' (Ubuntu packages it as fdfind)
-if [ ! -e /usr/local/bin/fd ]; then
-    sudo ln -s "$(command -v fdfind)" /usr/local/bin/fd
-fi
-
-# install chezmoi
-if ! command -v chezmoi >/dev/null; then
-    curl -fsLS https://chezmoi.io/get | sh
-fi
-
-# node & friends via fnm
-if [ ! -d "$HOME/.fnm" ]; then
-    curl -fsSL https://fnm.vercel.app/install | bash
-    . "$HOME/.fnm/fnm.sh"
-fi
-fnm install --lts
-fnm default lts-latest
-npm install --global corepack@latest
-corepack enable pnpm
-corepack use pnpm@latest
-sudo npm install -g ni
-
-# python environment manager
-if ! command -v pyenv >/dev/null; then
-    curl https://pyenv.run | bash
-    # shell setup (add to .profile/.bashrc/zshrc as appropriate)
-    export PATH="$HOME/.pyenv/bin:$PATH"
-    eval "$(pyenv init -)"
-fi
-
-LATEST=$(pyenv install --list | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | tail -1)
-pyenv install -s "$LATEST"
-pyenv global "$LATEST"
-pyenv local "$LATEST"
-
-# optional extras (postgres, mysql, docker, etc.)
-sudo apt-get install -y postgresql postgresql-contrib
-sudo -u postgres createuser -s "$USER" || true
-sudo -u postgres createdb "$USER" || true
-
-# install pipx/uv tooling
-python3 -m pip install --user pipx
-python3 -m pipx ensurepath
-~/.local/bin/pipx install uv  # or use curl installer for uv
-
-# snaps (if you like)
-if command -v snap >/dev/null; then
-    sudo snap install go --classic
-    sudo snap install node --classic
-fi
-
-# finish up
-sudo rm /etc/sudoers.d/timeout
-echo "Ubuntu bootstrap complete.  Log out and back in if you changed shell."
-
-{{- end }}
-
-osascript -e 'tell app "System Events" to log out'
-
+# TODO: use blocked-domains repo to do this instead
 # add to /etc/hosts to block certain sites
-
 echo "0.0.0.0     www.webtoons.com webtoons.com" | sudo tee -a /etc/hosts
 sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder  # flush DNS
 
 sudo chflags schg /etc/hosts  # makes the file immutable, can't sudo
+
+
+
+# common post‑install actions ------------------------------------------------
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
+rm -rf ~/.zprezto
+rm -rf ~/.zprofile
+
+git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+config config --local status.showUntrackedFiles no
+echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ~/.zshrc
+config reset --hard origin/main
+
+touch ~/.lc_history
+
+setopt EXTENDED_GLOB
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -sf "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
+
+# create the folder if it doesn't exist
+mkdir -p ~/projects
+cd ~/projects
+git clone git@github.com:Fullchee/notes.git
+cd -
 
 
 # Remove the temporary timeout when done
