@@ -128,14 +128,15 @@ pyenv global $LATEST_PYTHON_VERSION
 pyenv local $LATEST_PYTHON_VERSION
 install_pkg pipx
 
-install_pkg ripgrep
+install_pkg ripgrep   # faster grep
+install_pkg sd        # faster sed
 install_pkg shellcheck
 install_pkg shfmt
 
 install_pkg tealdeer
 tldr --update
 
-install_pkg ugrep
+install_pkg ugrep   # closer to drop-in faster grep than ripgrep
 
 # uv (Python tool manager)
 if ! command -v uv >/dev/null; then
