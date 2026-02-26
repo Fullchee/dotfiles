@@ -9,6 +9,9 @@ fi
 unset MANPATH # delete if you already modified MANPATH elsewhere in your config
 export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
 
+# This tells zsh to print a mark and move to a new line if the output lacks one
+setopt PROMPT_SP
+
 # RPROMPT='[%D{%L:%M:%S}] '$RPROMPTE
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
@@ -20,17 +23,17 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-source $HOME/.dotfiles/file-scripts.sh
-source $HOME/.dotfiles/git-scripts.sh
-source $HOME/.dotfiles/mac.sh
-source $HOME/.dotfiles/programming-scripts.sh
-source $HOME/.dotfiles/terminal.sh
+source "$HOME/.dotfiles/shell-init/file-scripts.sh"
+source "$HOME/.dotfiles/shell-init/git-scripts.sh"
+source "$HOME/.dotfiles/shell-init/mac.sh"
+source "$HOME/.dotfiles/shell-init/programming-scripts.sh"
+source "$HOME/.dotfiles/shell-init/terminal.sh"
 
-source $HOME/.dotfiles/citylitics/citylitics.sh
+{{ if eq .chezmoi.hostname "Fullchee-Citylitics" -}}
+source "$HOME/.dotfiles/citylitics/citylitics.sh"
+
+# TODO: encrypt with age and chezmoi
 if [ -f "$HOME/.dotfiles/citylitics/citylitics-secrets.sh" ]; then
-    source $HOME/.dotfiles/citylitics/citylitics-secrets.sh
+  source "$HOME/.dotfiles/citylitics/citylitics-secrets.sh"
 fi
-
-# opencode
-export PATH=/Users/admin/.opencode/bin:$PATH
-export PATH="$HOME/.cache/node/corepack/v1/yarn/1.22.22/bin:$PATH"
+{{- end }}

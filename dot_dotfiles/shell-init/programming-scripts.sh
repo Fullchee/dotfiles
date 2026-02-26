@@ -143,21 +143,14 @@ killport() {
 
 ##################### Node
 
-# TODO: override fnm and let just run fnm as is unless you explicitly type fnm use
 eval "$(fnm env --use-on-cd --corepack-enabled)"
 
 function fnm-use() {
 	fnm list | awk '{print $2}' | fzf --header "Pick node version" | xargs fnm use
 }
 
-### pnpm
-setup_pnpm_corepack() {
-  npm install --global corepack@latest
-  corepack enable pnpm
-}
 export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
-### pnpm end
 
 #################### Node end ####################
 

@@ -1,16 +1,16 @@
 #!/bin/zsh
 
-set -euxo pipefail
+set -euo pipefail
 
 # extend sudo timeout for this script only (120 minutes)
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
-# single template for both macOS and Ubuntu; define helpers to avoid
-# duplicating package lines. ugly branching is okay because the helper
-# functions centralize commands.
-
-# TODO: don't need chezmoi for this, use regular bash
-OS={{- if eq .chezmoi.os "darwin" }}darwin{{- else if eq .chezmoi.os "linux" }}linux{{- else }}unknown{{- end }}
+OS="$(uname -s)"
+case "$OS" in
+  Darwin) OS=darwin ;;  # macOS
+  Linux)  OS=linux  ;;  # most Linux distros
+  *)      OS=unknown ;;
+esac
 
 install_pkg() {
   case "$OS" in
@@ -37,6 +37,7 @@ if [ "$OS" = darwin ]; then
   fi
 
   brew update
+  export HOMEBREW_NO_AUTO_UPDATE=1  # when you run `brew install`, don't run `brew update` first, we already did it here
 fi
 
 if [ "$OS" = linux ]; then
