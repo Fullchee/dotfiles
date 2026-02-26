@@ -1,5 +1,8 @@
 # Executes commands at the start of an interactive session.
 
+# Docker CLI completions - must be before compinit
+fpath=($HOME/.docker/completions $fpath)
+
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
