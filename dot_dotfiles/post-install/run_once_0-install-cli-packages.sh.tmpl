@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+set -euxo pipefail
+
 # extend sudo timeout for this script only (120 minutes)
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
@@ -82,11 +84,6 @@ install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
 install_pkg just      # a better `Make` and `Makefile` replacement for tasks
 install_pkg mosh      # ssh for bad (mobile) connections
-
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
-install_pkg mycli     # mysql CLI with completion
-install_pkg mysql@8.4 # versioned formula / package
-{{- end }}
 
 # node environment (fnm) ----------------------------------------------------
 if [ ! -d "$HOME/.fnm" ]; then

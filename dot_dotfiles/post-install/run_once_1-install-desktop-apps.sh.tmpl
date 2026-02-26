@@ -1,6 +1,8 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/bin/zsh
 
+set -euxo pipefail
+
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
 install_cask adobe-acrobat-reader
@@ -66,4 +68,4 @@ mas install 1406676254 # Splice Crop: crop the middle of an image (M1 macs only)
 mas install 1122008420 # TableTool, view CSVs
 
 sudo rm /etc/sudoers.d/timeout
-{{ end -}}
+{{- end }}

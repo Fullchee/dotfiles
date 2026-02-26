@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
+#!/bin/zsh
+
+set -euxo pipefail
+
+
+install_pkg mycli     # mysql CLI with completion
+install_pkg mysql@8.4 # versioned formula / package
+{{- end }}
