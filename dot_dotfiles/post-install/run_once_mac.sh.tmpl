@@ -38,29 +38,6 @@ defaults write com.apple.dock showhidden -bool TRUE
 defaults write com.apple.dock tilesize -int 36
 defaults write com.apple.dock persistent-apps -array # remove all the default permanent apps on the dock
 
-# Add Chrome to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Add iTerm2 to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Add Obsidian to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Obsidian.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Add VSCode to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Visual Studio Code.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Add Session to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Session.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-
-# spacer tiles in the dock
-defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
-# Add Messenger to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Messenger.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Add WeChat to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/WeChat.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Add WhatsApp to Dock
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/WhatsApp.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# spacer tiles in the dock
-defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
-defaults write com.apple.dock wvous-br-corner -int 0 # remove hot corner to quickly create new note
-killall Dock >/dev/null 2>&1 || true
 
 ### FINDER
 # Path at the top of finder
