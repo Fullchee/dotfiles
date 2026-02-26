@@ -165,17 +165,6 @@ function dropshadow () {
     convert "$1" \( +clone -background black -shadow 50x10+5+5 \) +swap -background none -layers merge +repage "$basename$suffix"
 }
 
-### Text
-
-function md2word() {
-	if [ -z "$1" ] ; then
-		echo 'Usage: md2word src dest'
-		return
-	fi
-	pandoc -o "$2" -f markdown -t docx "$1"
-}
-
-
 #### PDF
 # requires ghostscript (gs)
 # usage: compresspdf <pdf filename>
@@ -189,7 +178,7 @@ function compresspdf() {
 
 function compressresume() {
 	rm -f ~/projects/portfolio/public/assets/Fullchee-Resume.pdf;
-	compresspdf ~/Downloads/Fullchee-Resume.pdf ~/projects/portfolio/public/assets/Fullchee-Resume.pdf;
+	compresspdf ~/Desktop/Fullchee-Resume.pdf ~/projects/portfolio/public/assets/Fullchee-Resume.pdf;
 }
 alias resume="cd ~/projects/portfolio/public/assets"
 
@@ -213,33 +202,3 @@ ssh-update-pihole-config() {
 
 
 ### end of pihole
-
-download-site-offline() {
-	args=(
-		--limit-rate=200k 	#  limit download to 200 Kb /sec
-		--no-clobber 		#  don't overwrite any existing files (used in case the download is interrupted and resumed)
-		--convert-links 	#  links work locally, offline, instead of pointing to a website online
-		--random-wait  		#  random waits between download - websites dont like their websites downloaded
-		-r  				#  recursive - downloads full website
-		-p 					#  downloads everything even pictures (same as --page-requsites, downloads the images, css stuff and so on)
-		-E 					#  gets the right extension of the file, without most html and other files have no extension
-		-e robots=off 		#  act like we are not a robot/crawler - websites dont like robots/crawlers unless they're a search engine
-		-U mozilla 			#  pretends to be just like a browser Mozilla
-		# --no-parent : don't ascend in the path hierarchy (useful for just getting a "/docs/" section)
-	    # --domains=domain-list # Set domains to be followed.  domain-list is a comma-separated list of domains.  Note that it does not turn on -H.
-		# --exclude-domains domain-list  # Specify the domains that are not to be followed.
-	)
-	wget "${args[@]}" $1
-}
-
-
-## VSCode
-alias vsc=code
-copy-vscode-to-vscodium() {
-	# Copy all extensions
-	cp -R ~/.vscode/extensions ~/.vscode-oss/
-
-	# Copy keybindings.json and settings.json files
-	cp ~/Library/Application\ Support/Code/User/keybindings.json ~/Library/Application\ Support/VSCodium/User
-	cp ~/Library/Application\ Support/Code/User/settings.json ~/Library/Application\ Support/VSCodium/User
-}

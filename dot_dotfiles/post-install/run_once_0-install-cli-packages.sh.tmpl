@@ -55,9 +55,6 @@ install_pkg chezmoi   # dotfiles manager
 install_pkg coreutils
 install_pkg choose-rust  # eg: easily get the 3rd item in each line
 install_pkg difftastic  # better git diff
-install_pkg duckdb    # embeddable SQL OLAP
-install_pkg duti      # set default applications (mac only)
-install_pkg entr      # run commands when files change
 install_pkg eza       # better ls & tree with icons
 
 install_pkg fd        # on linux it's fd-find
@@ -159,7 +156,12 @@ sudo chflags schg /etc/hosts  # makes the file immutable, can't sudo
 
 
 # common post‑install actions ------------------------------------------------
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME' $@
+
+config() {
+    /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
+}
+
+
 rm -rf ~/.zprezto
 rm -rf ~/.zprofile
 
