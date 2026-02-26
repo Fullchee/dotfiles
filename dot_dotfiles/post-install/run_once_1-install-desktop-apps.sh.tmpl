@@ -1,9 +1,7 @@
+{{ if eq .chezmoi.os "darwin" -}}
 #!/bin/zsh
 
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
-
-# 2026-03: I'd only install desktop apps on a mac
-{{- if eq .chezmoi.os "darwin" }}
 
 install_cask adobe-acrobat-reader
 install_cask anki
@@ -38,7 +36,10 @@ install_cask karabiner-elements
 install_cask keycastr
 install_cask modern-csv
 install_cask notion
+
 install_cask obsidian
+git -C ~/projects clone git@github.com:Fullchee/notes.git
+
 install_cask raspberry-pi-imager
 install_cask raycast
 install_cask rectangle
@@ -52,18 +53,17 @@ install_cask whatsapp
 install_cask wispr-flow
 install_cask zoom
 
+mas install 1440147259 # ad guard for Safari
 
-mas install 1440147259; # ad guard for Safari
-
-mas install 937984704;  # Amphetamine: keep mac working
+mas install 937984704 # Amphetamine: keep mac working
 wget https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
 hdiutil attach Amphetamine\ Enhancer.dmg
 cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
 
-mas install 1352778147; # BitWarden: app store version has more features, like TouchID
-mas install 540348655;  # Monosnap
-mas install 1406676254; # Splice Crop: crop the middle of an image (M1 macs only)
-mas install 1122008420; # TableTool, view CSVs
+mas install 1352778147 # BitWarden: app store version has more features, like TouchID
+mas install 540348655  # Monosnap
+mas install 1406676254 # Splice Crop: crop the middle of an image (M1 macs only)
+mas install 1122008420 # TableTool, view CSVs
 
 sudo rm /etc/sudoers.d/timeout
-{{- end }}
+{{ end -}}

@@ -145,43 +145,25 @@ uv tool install sqlfluff
 install_pkg vim
 install_pkg wget
 install_pkg zoxide
+install_pkg zsh
 
-# TODO: use blocked-domains repo to do this instead
-# add to /etc/hosts to block certain sites
-echo "0.0.0.0     www.webtoons.com webtoons.com" | sudo tee -a /etc/hosts
-sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder  # flush DNS
+if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
+  git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+  config config --local status.showUntrackedFiles no
+  echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ~/.zshrc
+  config reset --hard origin/main
 
-sudo chflags schg /etc/hosts  # makes the file immutable, can't sudo
+  touch ~/.lc_history
 
+  setopt EXTENDED_GLOB
+  for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+    ln -sf "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+  done
+fi
 
-
-# common post‑install actions ------------------------------------------------
-
-config() {
-    /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
-}
-
-
-rm -rf ~/.zprezto
-rm -rf ~/.zprofile
-
-git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-config config --local status.showUntrackedFiles no
-echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ~/.zshrc
-config reset --hard origin/main
-
-touch ~/.lc_history
-
-setopt EXTENDED_GLOB
-for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
-  ln -sf "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
-done
 
 # create the folder if it doesn't exist
 mkdir -p ~/projects
-cd ~/projects
-git clone git@github.com:Fullchee/notes.git
-cd -
 
 
 # Remove the temporary timeout when done
