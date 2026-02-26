@@ -1,27 +1,6 @@
 export EDITOR="subl -w"
 export VISUAL="subl -w"
 
-# --- CONFIG
-# use 'config' instead of 'git' to manage this git repo, lose all git auto-complete commands :(
-config() {
-    /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
-}
-
-function configpush() {
-    config add -u
-    if [ -z "$1" ] ; then
-        config commit -m "$(date)"
-    else
-        config commit -m $1
-    fi
-    config pull
-    config push
-}
-alias pushconfig="configpush"
-alias dotfilespush="configpush"
-alias pushdotfiles="configpush"
-
-
 ##############
 
 alias it="git"  # common typo
