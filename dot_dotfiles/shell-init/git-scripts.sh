@@ -92,7 +92,22 @@ delete_remote_and_local_branch() {
 
 # https://www.youtube.com/watch?v=lZehYwOfJAs
 recent-branch() {
-    git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff {1} --color=always" | xargs git checkout
+    local branch
+    branch=$(git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff {1} --color=always")
+    [[ -z "$branch" ]] && return 0
+
+    # Trim leading whitespace and the "* " prefix for the current branch
+    branch=$(echo "$branch" | sed 's/^[* ]*//')
+
+    # If the branch is checked out in a worktree, cd there instead
+    local worktree_path
+    worktree_path=$(git worktree list | awk -v b="[$branch]" '$3 == b {print $1}')
+
+    if [[ -n "$worktree_path" ]]; then
+        cd "$worktree_path"
+    else
+        git checkout "$branch"
+    fi
 }
 alias rb=recent-branch
 
