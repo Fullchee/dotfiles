@@ -112,12 +112,12 @@ recent-branch() {
 alias rb=recent-branch
 
 rm_branch() {
-    branch_name=`git rev-parse --abbrev-ref HEAD`;
-    git stash;
-    git checkout main;
-    git branch -D $branch_name;
-    git pull;
-    git stash pop;
+    branch_name=$(git rev-parse --abbrev-ref HEAD)
+    git stash
+    git checkout main
+    git branch -D "$branch_name"
+    git pull
+    git stash pop
 }
 
 
