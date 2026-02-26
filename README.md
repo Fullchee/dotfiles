@@ -8,7 +8,8 @@
 2. Search for `Full Disk Access`
 3. Give the built-in `Terminal` Full Disk Access
 4. Open the `Terminal`
-5. Run the script to setup the chezmoi `dotfiles` repo
+5. Set the hostname
+6. Run the script to setup the chezmoi `dotfiles` repo
 
 ```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee
