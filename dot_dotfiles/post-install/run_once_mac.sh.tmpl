@@ -24,7 +24,7 @@ done
 
 ### Calendar
 defaults write com.apple.iCal "Default duration in minutes for new event" -int 30
-killall Calendar || true
+killall Calendar >/dev/null 2>&1 || true
 
 ### DOCK
 # Speed up dock show/hide
@@ -59,7 +59,7 @@ defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</
 # spacer tiles in the dock
 defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
 defaults write com.apple.dock wvous-br-corner -int 0 # remove hot corner to quickly create new note
-killall Dock || true
+killall Dock >/dev/null 2>&1 || true
 
 ### FINDER
 # Path at the top of finder
@@ -67,7 +67,7 @@ defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 # show dotfiles in Finder
 defaults write com.apple.finder AppleShowAllFiles YES
 defaults write com.apple.finder ShowPathbar -bool true # doesn't seem to work
-killall Finder || true
+killall Finder >/dev/null 2>&1 || true
 
 ### Keyboard shortcuts
 
@@ -75,14 +75,14 @@ killall Finder || true
 # show bluetooth in menu bar
 /usr/bin/defaults write com.apple.controlcenter.plist Bluetooth -int 18
 defaults write ~/Library/Preferences/ByHost/com.apple.controlcenter.plist BatteryShowPercentage -bool true
-killall ControlCenter || true
+killall ControlCenter >/dev/null 2>&1 || true
 
 ### Night Shift
 defaults write com.apple.CoreBrightness CBBlueReductionSchedule -dict \
   enabled -bool true \
   start -float 20.0 \
   end -float 6.0
-killall CoreBrightness || true
+killall CoreBrightness >/dev/null 2>&1 || true
 
 ### SAFARI
 # Show the full website address in Safari's address bar
@@ -91,11 +91,11 @@ defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 defaults write com.apple.Safari IncludeDevelopMenu -bool true
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
-killall Safari || true
+killall Safari >/dev/null 2>&1 || true
 
 ### Screenshot
 defaults write com.apple.screencapture type clipboard
-killall SystemUIServer || true
+killall SystemUIServer >/dev/null 2>&1 || true
 
 ### TRACKPAD
 # increase trackpad sensitivity
