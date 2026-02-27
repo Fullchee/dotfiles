@@ -5,20 +5,18 @@ set -euo pipefail
 # extend sudo timeout for this script only (120 minutes)
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
-# determine OS using chezmoi template variable instead of uname
-# .chezmoi.os yields darwin, linux, or unknown
-OS="{{ .chezmoi.os }}"
-# helper flags for easier shell conditionals (boolean commands)
-# they expand to the literal `true` or `false` program so we can do `if $IS_MAC`
 IS_MAC={{ if eq .chezmoi.os "darwin" }}true{{ else }}false{{ end }}
 IS_LINUX={{ if eq .chezmoi.os "linux" }}true{{ else }}false{{ end }}
 
 install_pkg() {
-  case "$OS" in
-    darwin) brew install "$@" ;;       # shortcuts, no "-y"
-    linux)  sudo apt-get install -y "$@" ;; # apt always -y
-    *)      echo "[install_pkg] unsupported OS: $OS" ;;
-  esac
+  if $IS_MAC; then
+    brew install "$@"       # shortcuts, no "-y"
+  elif $IS_LINUX; then
+    sudo apt-get install -y "$@"  # apt always -y
+  else
+    echo "[install_pkg] only works for Linux and Mac" >&2
+    exit 1
+  fi
 }
 
 # bootstrap helpers ----------------------------------------------------------
