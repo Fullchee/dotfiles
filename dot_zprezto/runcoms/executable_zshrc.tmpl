@@ -35,8 +35,8 @@ source "$HOME/.dotfiles/shell-init/terminal.sh"
 {{ if eq .chezmoi.hostname "Fullchee-Citylitics" -}}
 source "$HOME/.dotfiles/shell-init/citylitics.sh"
 
-# TODO: encrypt with age and chezmoi
-if [ -f "$HOME/.dotfiles/citylitics/citylitics-secrets.sh" ]; then
-  source "$HOME/.dotfiles/citylitics/citylitics-secrets.sh"
+# initialized in run_once_citylitics.sh.tmpl but not in chezmoi since it has secrets that aren't mine to encrypt
+if [ -f "$HOME/.dotfiles/shell-init/citylitics-secrets.sh" ]; then
+  source "$HOME/.dotfiles/shell-init/citylitics-secrets.sh"
 fi
 {{- end }}

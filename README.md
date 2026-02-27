@@ -2,19 +2,23 @@
 
 ## Usage
 
-### Mac usage
+### Mac pre-install steps
 
-1. Open System Settings
-2. Search for `Full Disk Access`
-3. Give the built-in `Terminal` Full Disk Access
-4. Open the `Terminal`
-5. Set the hostname(s)
+1. Grant the `Terminal` Full Disk Access (so that chezmoi can edit files in /Library folders )
+   1. Open System Settings
+   2. Search for `Full Disk Access`
+   3. Give the built-in `Terminal` Full Disk Access
+
+## Common steps
+
+1. Open the `Terminal`
+2. Set the hostname(s)
    - **macOS:**
-     - `sudo scutil --set HostName <your-hostname>`  # the canonical name used by DNS
-     - `sudo scutil --set LocalHostName <your-local-hostname>`  # Bonjour/local network name (no spaces)
-     - `sudo scutil --set ComputerName <your-friendly-name>`  # shown in Sharing preferences and login screen
+     - `sudo scutil --set HostName <your-hostname>` # the canonical name used by DNS
+     - `sudo scutil --set LocalHostName <your-local-hostname>` # Bonjour/local network name (no spaces)
+     - `sudo scutil --set ComputerName <your-friendly-name>` # shown in Sharing preferences and login screen
    - **Linux:** `sudo hostnamectl set-hostname <your-hostname>`
-6. Run the script to setup the chezmoi `dotfiles` repo
+3. Run the script to setup the chezmoi `dotfiles` repo
 
 ```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee
@@ -29,12 +33,15 @@ While it's running
    1. <https://github.com/settings/keys>
 3. Log into the App Store (for `mas` CLI to work)
 
-#### Mac manual steps
+### Mac manual steps
 
-##### Settings
+#### Work Mac
+
+- Set the values of `$HOME/.dotfiles/shell-init/citylitics-secrets.sh` from Bitwarden
+
+#### Settings
 
 - Finder: View -> Show Path bar
--
 - System Settings
   - Accessibility
     - Zoom -> Use scroll gesture with modifier keys to zoom
@@ -67,7 +74,7 @@ While it's running
     - Tap to click
     - -> Scroll & Save: Natural scrolling: disable
 
-##### External devices
+#### External devices
 
 - Connect to Bluetooth devices
   - portable speaker
