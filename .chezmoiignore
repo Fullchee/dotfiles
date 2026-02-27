@@ -2,3 +2,7 @@
 dot_dotfiles/citylitics.gitconfig
 dot_dotfiles/citylitics/**
 {{- end }}
+
+# only want pre commit config in ~/.local/share/chezmoi source, not destination (actual ~/prek.toml)
+prek.toml
+.secrets.baseline
