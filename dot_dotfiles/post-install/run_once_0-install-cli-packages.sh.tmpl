@@ -5,12 +5,13 @@ set -euo pipefail
 # extend sudo timeout for this script only (120 minutes)
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
-OS="$(uname -s)"
-case "$OS" in
-  Darwin) OS=darwin ;;  # macOS
-  Linux)  OS=linux  ;;  # most Linux distros
-  *)      OS=unknown ;;
-esac
+# determine OS using chezmoi template variable instead of uname
+# .chezmoi.os yields darwin, linux, or unknown
+OS="{{ .chezmoi.os }}"
+# helper flags for easier shell conditionals (boolean commands)
+# they expand to the literal `true` or `false` program so we can do `if $IS_MAC`
+IS_MAC={{ if eq .chezmoi.os "darwin" }}true{{ else }}false{{ end }}
+IS_LINUX={{ if eq .chezmoi.os "linux" }}true{{ else }}false{{ end }}
 
 install_pkg() {
   case "$OS" in
@@ -21,7 +22,7 @@ install_pkg() {
 }
 
 # bootstrap helpers ----------------------------------------------------------
-if [ "$OS" = darwin ]; then
+if $IS_MAC; then
   # Extend sudo timeout to 120 minutes
   if ! command -v brew &> /dev/null; then
     echo "Installing homebrew"
@@ -40,7 +41,7 @@ if [ "$OS" = darwin ]; then
   export HOMEBREW_NO_AUTO_UPDATE=1  # when you run `brew install`, don't run `brew update` first, we already did it here
 fi
 
-if [ "$OS" = linux ]; then
+if $IS_LINUX; then
   sudo apt-get update -y
   sudo apt-get upgrade -y
 fi
@@ -62,7 +63,7 @@ install_pkg difftastic  # better git diff
 install_pkg eza       # better ls & tree with icons
 
 install_pkg fd        # on linux it's fd-find
-if [ "$OS" = linux ]; then
+if $IS_LINUX; then
   # make fd available as 'fd' (Ubuntu packages it as fdfind)
   if [ ! -e /usr/local/bin/fd ]; then
       sudo ln -s "$(command -v fdfind)" /usr/local/bin/fd
@@ -100,7 +101,7 @@ corepack use pnpm@latest
 install_pkg ni        # figures out npm/pnpm/yarn
 
 install_pkg pgcli
-if [ "$OS" = darwin ]; then
+if $IS_MAC; then
   POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
   install_pkg "$POSTGRES_NAME"
   brew services start postgresql

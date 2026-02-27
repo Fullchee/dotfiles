@@ -3,7 +3,9 @@
 
 set -euo pipefail
 
+brew tap atlassian/homebrew-acli
 
-install_pkg mycli     # mysql CLI with completion
-install_pkg mysql@8.4 # versioned formula / package
+brew install acli      # atlassian CLI, for interacting with Jira and Confluence from the terminal
+brew install mycli     # mysql CLI with completion
+brew install mysql@8.4 # versioned formula / package
 {{- end }}

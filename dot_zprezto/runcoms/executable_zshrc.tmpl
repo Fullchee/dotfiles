@@ -33,7 +33,7 @@ source "$HOME/.dotfiles/shell-init/programming-scripts.sh"
 source "$HOME/.dotfiles/shell-init/terminal.sh"
 
 {{ if eq .chezmoi.hostname "Fullchee-Citylitics" -}}
-source "$HOME/.dotfiles/citylitics/citylitics.sh"
+source "$HOME/.dotfiles/shell-init/citylitics.sh"
 
 # TODO: encrypt with age and chezmoi
 if [ -f "$HOME/.dotfiles/citylitics/citylitics-secrets.sh" ]; then
