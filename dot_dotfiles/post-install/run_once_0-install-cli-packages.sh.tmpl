@@ -70,7 +70,6 @@ if $IS_LINUX; then
 fi
 
 sh -c "$(curl -fsLS get.chezmoi.io)"
-
 cargo install --locked cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 install_pkg coreutils
 cargo install --locked choose  # eg: easily get the 3rd item in each line
@@ -152,6 +151,7 @@ install_pkg shfmt
 cargo install --locked tealdeer  # prompt
 tldr --update
 
+install_pkg tmux
 install_pkg ugrep   # drop-in grep API when LLM still uses grep
 install_pkg vim
 install_pkg wget
