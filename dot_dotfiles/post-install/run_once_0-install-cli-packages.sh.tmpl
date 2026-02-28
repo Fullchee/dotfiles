@@ -19,6 +19,10 @@ install_pkg() {
   fi
 }
 
+# download rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+. "$HOME/.cargo/env"  # add cargo to current session to install software below
+
 # bootstrap helpers ----------------------------------------------------------
 if $IS_MAC; then
   # Extend sudo timeout to 120 minutes
@@ -52,22 +56,27 @@ install_pkg ansible   # Automate deployment, configuration, and upgrading
 {{- end }}
 
 install_pkg bash      # apple ships bash 3, linux has newer version
-install_pkg bat       # better cat
-install_pkg chezmoi   # dotfiles manager
-install_pkg copilot-cli  # GitHub Copilot CLI, for code generation in the terminal
-install_pkg coreutils
-install_pkg choose-rust  # eg: easily get the 3rd item in each line
-install_pkg difftastic  # better git diff
-install_pkg eza       # better ls & tree with icons
 
-install_pkg fd        # on linux it's fd-find
+install_pkg bat       # better cat
 if $IS_LINUX; then
-  # make fd available as 'fd' (Ubuntu packages it as fdfind)
-  if [ ! -e /usr/local/bin/fd ]; then
-      sudo ln -s "$(command -v fdfind)" /usr/local/bin/fd
+  # on linux, bat is called "batcat" to avoid conflict with another package
+  if [ ! -e /usr/local/bin/bat ]; then
+      sudo ln -s "$(command -v batcat)" /usr/local/bin/bat
   fi
 fi
 
+if $IS_LINUX; then
+  sudo apt install build-essential  # for cargo install to work on linux, provides cc for compiling dependencies
+fi
+
+sh -c "$(curl -fsLS get.chezmoi.io)"
+
+cargo install --locked cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
+install_pkg coreutils
+cargo install --locked choose  # eg: easily get the 3rd item in each line
+cargo install --locked difftastic  # better git diff
+install_pkg eza       # better ls & tree with icons
+cargo install --locked fd-find  # faster find
 install_pkg fzf       # interactive filter
 install_pkg ffmpeg
 
@@ -76,27 +85,37 @@ install_pkg gh        # GitHub CLI
 install_pkg git-filter-repo  # remove a file from git history
 install_pkg git-delta  # git pager, works better for larger files as a pager than difftastic
 
-install_pkg graphviz
-install_pkg helix
-install_pkg hwatch
+if $IS_MAC; then
+  install_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
+fi
+
+if $IS_LINUX; then
+  sudo add-apt-repository -y ppa:maveonair/helix-editor
+  sudo apt update
+fi
+install_pkg helix  # vim with batteries included, no need to manage plugins
+
 install_pkg hyperfine # command benchmarking
-install_pkg imagemagick
+install_pkg imagemagick  # like ffmpeg for images
 install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
 install_pkg just      # a better `Make` and `Makefile` replacement for tasks
+
+if $IS_MAC; then
+  eval "$(~/.local/bin/mise activate zsh)"
+fi
+if $IS_LINUX; then
+  eval "$(~/.local/bin/mise activate zsh)"
+fi
+
 install_pkg mosh      # ssh for bad (mobile) connections
 
 # node environment (fnm) ----------------------------------------------------
-if [ ! -d "$HOME/.fnm" ]; then
-  curl -fsSL https://fnm.vercel.app/install | bash
-  . "$HOME/.fnm/fnm.sh"
-fi
-fnm install --lts
-fnm default lts-latest
+mise use -g node@lts
 npm install --global corepack@latest
+npm i -g npm
 corepack enable pnpm
 corepack use pnpm@latest
-install_pkg ni        # figures out npm/pnpm/yarn
 
 install_pkg pgcli
 if $IS_MAC; then
@@ -112,53 +131,54 @@ else
   sudo -u postgres createdb "$USER" || true
 fi
 
-install_pkg prek     # faster pre-commit
+cargo install --locked prek
 prek install || true
 
 # python ------------------------------------------------------------------
-install_pkg pyenv
-pyenv init
-LATEST_PYTHON_VERSION=$(pyenv install --list | grep --extended-regexp "^\s*[0-9][0-9.]*[0-9]\s*$" | tail -1 | tr -d ' ')
-pyenv install -s $LATEST_PYTHON_VERSION
-pyenv global $LATEST_PYTHON_VERSION
-pyenv local $LATEST_PYTHON_VERSION
-install_pkg pipx
+# uv (Python tool manager)
+if ! command -v uv >/dev/null; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+uv python install --default
+uv tool install ptpython
+uv tool install sqlfluff
 
 install_pkg ripgrep   # faster grep
 install_pkg sd        # faster sed
 install_pkg shellcheck
 install_pkg shfmt
 
-install_pkg tealdeer
+cargo install --locked tealdeer  # prompt
 tldr --update
 
-install_pkg ugrep   # closer to drop-in faster grep than ripgrep
-
-# uv (Python tool manager)
-if ! command -v uv >/dev/null; then
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-fi
-uv tool install ptpython
-uv tool install sqlfluff
-
+install_pkg ugrep   # drop-in grep API when LLM still uses grep
 install_pkg vim
 install_pkg wget
 install_pkg zoxide
 install_pkg zsh
+if $IS_MAC; then
+  if [ ! -f "$HOME/.iterm2_shell_integration.zsh" ]; then
+    curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.zsh
+  fi
+fi
 
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
   git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
   config config --local status.showUntrackedFiles no
   echo 'source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"' >> ~/.zshrc
-  config reset --hard origin/main
 
   touch ~/.lc_history
+
+  zsh
 
   setopt EXTENDED_GLOB
   for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
     ln -sf "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
   done
 fi
+
+
+chsh -s $(which zsh)
 
 
 # create the folder if it doesn't exist
