@@ -25,9 +25,9 @@ Host pihole
     # ForwardX11Trusted yes
 
 
-Host home-assistant
-    HostName 192.168.50.45
-    User root
+Host server
+    HostName 192.168.50.11
+    User fullchee
     AddKeysToAgent yes
     UseKeychain yes
     # ForwardX11 yes
