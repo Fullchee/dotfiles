@@ -3,7 +3,10 @@
 
 set -euo pipefail
 
-# TODO: install lazydocker, can't apt-get install
-# TODO: install docker CLI only
+# docker
+curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+
+# lazydocker
+curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
 {{- end }}
