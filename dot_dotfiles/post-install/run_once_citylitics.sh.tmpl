@@ -5,15 +5,14 @@ set -euo pipefail
 
 brew tap atlassian/homebrew-acli
 
-brew install acli      # atlassian CLI, for interacting with Jira and Confluence from the terminal
-brew install mycli     # mysql CLI with completion
-brew install mysql@8.4 # versioned formula / package
-
+brew install acli       # atlassian CLI, for interacting with Jira and Confluence from the terminal
+brew install mycli      # mysql CLI with completion
+brew install mysql@8.4  # versioned formula / package
 
 # ensure citylitics secrets file exists with placeholders
 SECRETS_FILE="$HOME/.dotfiles/shell-init/citylitics-secrets.sh"
 if [ ! -f "$SECRETS_FILE" ]; then
-  cat <<'EOF' > "$SECRETS_FILE"
+  cat <<'EOF' >"$SECRETS_FILE"
 # staging
 export EJSON_PUBLIC_KEY=
 export EJSON_PRIVATE_KEY=
