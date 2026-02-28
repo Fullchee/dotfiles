@@ -4,63 +4,6 @@
 # Databases
 # Networking
 
-## -------- General --------
-alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
-
-alias sz="source ~/.zshrc"
-eval "$(zoxide init zsh)"
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-
-
-set-terminal-tab-title() {
-  # XTerm Control Sequences, OSC: Operating System Commands
-  # \033 Escape character
-  # ]: OSC: Operating System Command
-  # 1: Change Icon Name Only
-  # ;: separator
-  osc_header="\033]1;"
-  osc_terminator="\007"  # bell character, historically, rang a bell
-  content="$1"
-
-  # Print using %b for escapes and %s for strings
-  printf "%b%s%b" "$osc_header" "$content" "$osc_terminator"
-}
-
-# write current command location to `.zsh_history_ext` whenever a command is ran
-# `.zsh_history_ext` is used in `lc` command
-function zshaddhistory() {
-  # ignore empty commands
-  if [[ $1 == $'\n' ]]; then return; fi
-
-  # ignore specific commands
-  local COMMANDS_TO_IGNORE=( last ls ll cd j git gss gap lc ggpush ggpull);
-  for i in "${COMMANDS_TO_IGNORE[@]}"
-  do
-    # return if the run commands starts with the ignored commands
-    if [[ $1 == "$i"* ]]; then
-      return;
-    fi
-  done
-
-  echo "${1%%$'\n'}${LC_DELIMITER_START}${PWD}${LC_DELIMITER_END}" >> ~/.lc_history
-}
-
-# `lc`:  last command
-function last() {
-  SELECTED_COMMAND=$(grep -a --color=never "${PWD}${LC_DELIMITER_END}" ~/.lc_history | cut -f1 -d "${LC_DELIMITER_START}" | tail -r | fzf);
-
-  # handle case of selecting no command via fzf
-  if [[ ${#SELECTED_COMMAND} -gt 0 ]]; then
-    echo "Running '$SELECTED_COMMAND'..."
-    echo "**************************"
-    eval " $SELECTED_COMMAND";
-  fi
-}
-
-
-## -------- General end  --------
-
 ## -------- Android --------
 export ANDROID_SDK=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_SDK/tools

@@ -1,0 +1,108 @@
+alias ...="cd ../.."
+alias ....="cd ../../.."
+
+# use fd so that it respects .gitignore
+# https://github.com/junegunn/fzf#respecting-gitignore
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
+
+diffdir() {
+	diff -r $1 $2 | grep $1 | awk '{print $4}'
+}
+
+# asdf/fileName.ext => fileName
+extract-filename() {
+	fullfile="$1"
+	filename=$(basename "$fullfile")  # asdf/fieleName.ext => fileName.ext
+	echo "${filename%.*}"  # fileName.ext => fileName
+}
+
+alias grep=ugrep
+
+alias la="eza --icons --grid --all"
+alias ll='eza -la --git --icons'
+
+ls() {
+  # 1. Define the default flags as a Zsh **array** for correct expansion.
+  local default_flags=(--git --icons --grid --git-ignore)
+
+  # 2. Check if any of the exclusion flags are present in the arguments provided to 'ls'.
+  if [[ " $@ " =~ " -a " || " $@ " =~ " --all " || " $@ " =~ " --no-git " ]]; then
+    # 3. If an exclusion flag is found, remove '--git-ignore' from the default_flags array.
+    # The '=${arrayname/(pattern)/}' syntax is a Zsh array removal/substitution.
+    default_flags=(${default_flags[@]/:#--git-ignore/})
+  fi
+
+  # 4. Execute 'eza' using "${default_flags[@]}" to expand the array
+  # correctly into separate, quoted arguments, followed by the user's arguments ($@).
+  eza "${default_flags[@]}" "$@"
+}
+
+# `lc`:  last command
+last() {
+  SELECTED_COMMAND=$(grep -a --color=never "${PWD}${LC_DELIMITER_END}" ~/.lc_history | cut -f1 -d "${LC_DELIMITER_START}" | tail -r | fzf);
+
+  # handle case of selecting no command via fzf
+  if [[ ${#SELECTED_COMMAND} -gt 0 ]]; then
+    echo "Running '$SELECTED_COMMAND'..."
+    echo "**************************"
+    eval " $SELECTED_COMMAND";
+  fi
+}
+
+#### File and folder helpers START
+
+mkcd() {
+  mkdir "$1"
+  cd "$1"
+}
+
+alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
+
+# Arguments:
+#   Depth (int) (optional, default=2)
+# Usage:
+#	tree . 1
+# 	tree folder_name 2
+tree() {
+	eza --tree --icons --git-ignore -L "${2:-2}" "${1:-.}"
+}
+alias searchtree='eza --tree --icons --git-ignore | fzf'
+
+set-terminal-tab-title() {
+  # XTerm Control Sequences, OSC: Operating System Commands
+  # \033 Escape character
+  # ]: OSC: Operating System Command
+  # 1: Change Icon Name Only
+  # ;: separator
+  osc_header="\033]1;"
+  osc_terminator="\007"  # bell character, historically, rang a bell
+  content="$1"
+
+  # Print using %b for escapes and %s for strings
+  printf "%b%s%b" "$osc_header" "$content" "$osc_terminator"
+}
+
+## zsh
+alias sz="source ~/.zshrc"
+eval "$(zoxide init zsh)"
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+
+# write current command location to `.zsh_history_ext` whenever a command is ran
+# `.zsh_history_ext` is used in `lc` command
+zshaddhistory() {
+  # ignore empty commands
+  if [[ $1 == $'\n' ]]; then return; fi
+
+  # ignore specific commands
+  local COMMANDS_TO_IGNORE=( last ls ll cd j git gss gap lc ggpush ggpull);
+  for i in "${COMMANDS_TO_IGNORE[@]}"
+  do
+    # return if the run commands starts with the ignored commands
+    if [[ $1 == "$i"* ]]; then
+      return;
+    fi
+  done
+
+  echo "${1%%$'\n'}${LC_DELIMITER_START}${PWD}${LC_DELIMITER_END}" >> ~/.lc_history
+}

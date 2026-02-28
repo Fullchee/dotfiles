@@ -1,8 +1,9 @@
-{{- if .chezmoi.os == "linux" }}
+{{- if eq .chezmoi.os "linux" }}
 #!/bin/zsh
 
 set -euo pipefail
 
 # TODO: install lazydocker, can't apt-get install
+# TODO: install docker CLI only
 
 {{- end }}
