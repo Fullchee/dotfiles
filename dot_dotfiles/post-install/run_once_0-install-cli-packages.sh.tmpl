@@ -101,12 +101,8 @@ install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
 install_pkg just      # a better `Make` and `Makefile` replacement for tasks
 
-if $IS_MAC; then
-  eval "$(~/.local/bin/mise activate zsh)"
-fi
-if $IS_LINUX; then
-  eval "$(~/.local/bin/mise activate zsh)"
-fi
+curl https://mise.run | sh
+eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
 
 install_pkg mosh      # ssh for bad (mobile) connections
 
@@ -176,9 +172,6 @@ if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
     ln -sf "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
   done
 fi
-
-
-chsh -s $(which zsh)
 
 
 # create the folder if it doesn't exist
