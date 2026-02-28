@@ -13,12 +13,22 @@
 
 1. Open the `Terminal`
 2. Set the hostname(s)
-   - **macOS:**
-     - `sudo scutil --set HostName <your-hostname>` # the canonical name used by DNS
-     - `sudo scutil --set LocalHostName <your-local-hostname>` # Bonjour/local network name (no spaces)
-     - `sudo scutil --set ComputerName <your-friendly-name>` # shown in Sharing preferences and login screen
-   - **Linux:** `sudo hostnamectl set-hostname <your-hostname>`
-3. Run the script to setup the chezmoi `dotfiles` repo
+
+**macOS:**
+
+```sh
+sudo scutil --set HostName fullchee-mac      # the canonical name used by DNS
+sudo scutil --set LocalHostName fullchee-mac # Bonjour/local network name (no spaces)
+sudo scutil --set ComputerName fullchee-mac  # shown in Sharing preferences and login screen
+```
+
+- **Linux:**
+
+```sh
+sudo hostnamectl set-hostname fullchee-home-server
+```
+
+Run the script to setup the chezmoi `dotfiles` repo
 
 ```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee

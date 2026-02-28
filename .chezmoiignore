@@ -1,6 +1,7 @@
 {{- if ne .chezmoi.hostname "Fullchee-Citylitics" }}
-dot_dotfiles/citylitics.gitconfig
-dot_dotfiles/citylitics/**
+.dotfiles/citylitics.gitconfig
+.dotfiles/citylitics/**
+.dotfiles/shell-init/citylitics.sh
 {{- end }}
 
 # only want pre commit config in ~/.local/share/chezmoi source, not destination (actual ~/prek.toml)

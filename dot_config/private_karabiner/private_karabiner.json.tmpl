@@ -6,7 +6,11 @@
                 "rules": [
                     {
                         "description": "Remap grave_accent_and_tilde (ù key) to left_shift",
+                        {{- if eq .chezmoi.hostname "fullchee-mac" }}
+                        "enabled": true,
+                        {{- else }}
                         "enabled": false,
+                        {{- end }}
                         "manipulators": [
                             {
                                 "from": {
@@ -20,7 +24,11 @@
                     },
                     {
                         "description": "Remap non_us_backslash to backtick (`) and all modifiers + non_us_backslash to corresponding modifiers + grave_accent_and_tilde",
+                        {{- if eq .chezmoi.hostname "fullchee-mac" }}
+                        "enabled": true,
+                        {{- else }}
                         "enabled": false,
+                        {{- end }}
                         "manipulators": [
                             {
                                 "from": {
