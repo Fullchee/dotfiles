@@ -140,7 +140,12 @@ if ! command -v uv >/dev/null; then
   curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 uv python install --default
+uv tool install bandit  # security linter
+uv tool install httpie  # test APIs from terminal, like Postman but CLI
 uv tool install ptpython
+uv tool install pyright  # type checker that's faster than mypy
+uv tool install rich-cli # highlight and format text
+uv tool install ruff@latest
 uv tool install sqlfluff
 
 install_pkg ripgrep   # faster grep
@@ -156,11 +161,6 @@ install_pkg vim
 install_pkg wget
 install_pkg zoxide
 install_pkg zsh
-if $IS_MAC; then
-  if [ ! -f "$HOME/.iterm2_shell_integration.zsh" ]; then
-    curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.zsh
-  fi
-fi
 
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
   git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
