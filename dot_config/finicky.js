@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
+// ~/.finicky.js
 export default {
   // defaultBrowser: "Orion",
   defaultBrowser: "Google Chrome",
@@ -35,4 +35,3 @@ export default {
     },
   ],
 };
-{{- end }}

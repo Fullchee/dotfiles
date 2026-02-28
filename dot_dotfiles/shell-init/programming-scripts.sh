@@ -5,12 +5,11 @@
 # Networking
 
 ## -------- General --------
-alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
-
 alias sz="source ~/.zshrc"
 eval "$(zoxide init zsh)"
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-window=right,70% | xargs tldr'
 
+source "$HOME/.iterm2_shell_integration.zsh"
 
 
 set-terminal-tab-title() {
