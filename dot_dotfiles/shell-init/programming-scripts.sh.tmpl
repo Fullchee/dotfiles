@@ -69,7 +69,9 @@ export PATH=$PATH:$ANDROID_SDK/platform-tools
 ## -------- Android end --------
 
 ## -------- Databases --------
+{{ if eq .chezmoi.os "darwin" -}}
 export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
+{{- end }}
 alias copydb=createdb -O postgres -T
 
 renamedb() {
