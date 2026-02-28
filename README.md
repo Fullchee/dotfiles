@@ -25,7 +25,10 @@ sudo scutil --set ComputerName fullchee-mac  # shown in Sharing preferences and 
 - **Linux:**
 
 ```sh
-sudo hostnamectl set-hostname fullchee-home-server
+sudo hostnamectl set-hostname fullchee-server
+sudo apt install -y zsh
+chsh -s $(which zsh)
+zsh
 ```
 
 Run the script to setup the chezmoi `dotfiles` repo
@@ -44,6 +47,8 @@ While it's running
 3. Log into the App Store (for `mas` CLI to work)
 
 ### Mac manual steps
+
+- `git -C ~/projects clone git@github.com:Fullchee/notes.git`
 
 #### Work Mac
 
