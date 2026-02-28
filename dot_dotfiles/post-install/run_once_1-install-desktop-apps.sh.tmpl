@@ -32,16 +32,19 @@ install_cask google-chrome
 install_cask handbrake
 install_cask imageoptim
 install_cask iina
+
 install_cask iterm2
-install_cask jordanbaird-ice
+if [ ! -f "$HOME/.iterm2_shell_integration.zsh" ]; then
+  curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.zsh
+fi
+
+install_cask jordanbaird-ice@beta  # 2026: non beta wasn't working on MacOS Tahoe 26
 install_cask karabiner-elements
 install_cask keycastr
 install_cask modern-csv
 install_cask notion
 
 install_cask obsidian
-git -C ~/projects clone git@github.com:Fullchee/notes.git
-
 install_cask raspberry-pi-imager
 install_cask raycast
 install_cask rectangle
