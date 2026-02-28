@@ -27,14 +27,14 @@ compressmp4() {
 	ffmpeg -i "$1" -acodec mp2 "compressed-$1"
 }
 
-function compressmp4folder() {
+compressmp4folder() {
 	for file in "$PWD"/*; do
 		ffmpeg -i "$file" -acodec mp2 "${file/.mp4/s.mp4}"
 	done
 }
 
 # ~/youtube-dl --extract-audio --audio-format mp3 "$url"
-function youtube-worst-audio() {
+youtube-worst-audio() {
 	if [ -z "$1" ] ; then
 		echo 'Usage: youtube-worst-audio url1 url2 url3 ...'
 		return
@@ -45,7 +45,7 @@ function youtube-worst-audio() {
 	done
 }
 
-function youtube-best-audio() {
+youtube-best-audio() {
 	if [ -z "$1" ] ; then
 		echo 'Usage: youtube-best-audio url1 url2 url3 ...'
 		return
@@ -60,7 +60,7 @@ alias y3-best=youtube-best-audio
 # downloads a webm video
 #yt-dlp "$url"
 
-function youtube-worst-video() {
+youtube-worst-video() {
 	for url in "$@"
 	do
 		yt-dlp -f "b[filesize_approx<50M]" --no-playlist $url || \
@@ -124,7 +124,7 @@ mp3tomp4() {
 
 alias create-blank-jpg="ffmpeg -f lavfi -i color=c=black:s=1280x720 -t 1 blank.jpg"
 
-function mp3slice() {
+mp3slice() {
     if [ -z "$1" ] ; then
         echo 'Usage: mp3slice input.mp3 HH:MM:SS.mmm HH:MM:SS:mmm output.mp3'
         return
@@ -132,7 +132,7 @@ function mp3slice() {
     ffmpeg -i "$1" -ss "$2" -to "$3" -c copy "$4"
 }
 
-function concatmp3() {
+concatmp3() {
 	if [ -z "$3" ] ; then
 		echo 'Usage: concatmp3 file1.mp3 file2.mp3 output.mp3'
 		return
@@ -142,7 +142,7 @@ function concatmp3() {
 
 ### Images
 
-function shrinkimage() {
+shrinkimage() {
 	if [ -z "$1" ] ; then
 		echo 'Usage: shrinkimage src dest size'
 		return
@@ -151,7 +151,7 @@ function shrinkimage() {
 }
 
 # adds a dropshadown to an image
-function dropshadow () {
+dropshadow () {
 	if [ -z "$1" ] ; then
         echo 'Usage: dropshadow filename.png'
         return
@@ -168,7 +168,7 @@ function dropshadow () {
 #### PDF
 # requires ghostscript (gs)
 # usage: compresspdf <pdf filename>
-function compresspdf() {
+compresspdf() {
 	if [ -z "$1" ] ; then
 	        echo 'Usage: compresspdf <pdf filename>'
         	return
@@ -176,7 +176,7 @@ function compresspdf() {
     /usr/local/bin/gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 -sOutputFile="$2" "$1"
 }
 
-function compressresume() {
+compressresume() {
 	rm -f ~/projects/portfolio/public/assets/Fullchee-Resume.pdf;
 	compresspdf ~/Desktop/Fullchee-Resume.pdf ~/projects/portfolio/public/assets/Fullchee-Resume.pdf;
 }

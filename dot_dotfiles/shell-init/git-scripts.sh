@@ -11,7 +11,7 @@ alias fetchmerge="git fetch && git merge origin/main --no-edit"
 alias fm=fetchmerge
 
 
-function git-clone-personal() {
+git-clone-personal() {
     local REPO_URL="$1"
     # 1. Define the command once
     local SSH_CMD="ssh -i ~/.ssh/personal_id_ed25519 -o IdentitiesOnly=yes"

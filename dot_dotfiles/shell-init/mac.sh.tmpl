@@ -7,7 +7,7 @@ eval "$(/usr/local/bin/brew shellenv)"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 {{- end }}
 
-function lockafter() {
+lockafter() {
   # Check if a parameter was provided
   if [[ $# -eq 0 ]]; then
     echo "Usage: lockafter <minutes>"
@@ -31,7 +31,7 @@ function lockafter() {
   nohup bash -c "sleep $seconds && pmset displaysleepnow" >/dev/null 2>&1 &
 }
 
-function notify() {
+notify() {
 	if [ -z "$1" ] ; then
 		echo 'Usage: notify <message> time'
 		return
