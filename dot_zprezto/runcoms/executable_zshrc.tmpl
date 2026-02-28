@@ -26,9 +26,12 @@ export PATH="$HOME/.local/bin:$PATH"
 
 source "$HOME/.dotfiles/shell-init/file-scripts.sh"
 source "$HOME/.dotfiles/shell-init/git-scripts.sh"
-source "$HOME/.dotfiles/shell-init/mac.sh"
 source "$HOME/.dotfiles/shell-init/programming-scripts.sh"
 source "$HOME/.dotfiles/shell-init/terminal.sh"
+
+{{ if eq .chezmoi.os "darwin" -}}
+source "$HOME/.dotfiles/shell-init/mac.sh"
+{{- end }}
 
 {{ if eq .chezmoi.hostname "Fullchee-Citylitics" -}}
 source "$HOME/.dotfiles/shell-init/citylitics.sh"
