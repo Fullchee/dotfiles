@@ -21,7 +21,7 @@ alias grep=ugrep
 alias la="eza --icons --grid --all"
 alias ll='eza -la --git --icons'
 
-ls() {
+function ls() {
   # 1. Define the default flags as a Zsh **array** for correct expansion.
   local default_flags=(--git --icons --grid --git-ignore)
 
