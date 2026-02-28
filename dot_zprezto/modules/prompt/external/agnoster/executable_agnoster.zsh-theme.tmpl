@@ -145,7 +145,11 @@ prompt_agnoster_main() {
 
 prompt_agnoster_precmd() {
   vcs_info
+  {{ if eq .chezmoi.os "darwin" -}}
   PROMPT=' %{%f%b%k%}$(prompt_agnoster_main) '
+  {{- else }}
+  PROMPT='🐧 %{%f%b%k%}$(prompt_agnoster_main) '
+  {{- end }}
 }
 
 prompt_agnoster_setup() {
