@@ -1,4 +1,3 @@
-alias -s {js,json,env,gitignore,md,html,css,toml}=bat # https://www.stefanjudis.com/today-i-learned/suffix-aliases-in-zsh/
 source <(fzf --zsh)
 
 alias grep=ugrep
