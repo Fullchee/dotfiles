@@ -1,20 +1,14 @@
-# dotfiles
+# dotfiles setup guide
 
-## Usage
+## 1.1 Pre-install steps
 
-### Mac pre-install steps
+### 1.🍎 Mac pre-install steps
 
 1. Grant the `Terminal` Full Disk Access (so that chezmoi can edit files in /Library folders )
    1. Open System Settings
    2. Search for `Full Disk Access`
    3. Give the built-in `Terminal` Full Disk Access
-
-## Common steps
-
-1. Open the `Terminal`
-2. Set the hostname(s)
-
-**macOS:**
+2. Open the terminal and set the `hostname`
 
 ```sh
 sudo scutil --set HostName fullchee-mac      # the canonical name used by DNS
@@ -22,11 +16,19 @@ sudo scutil --set LocalHostName fullchee-mac # Bonjour/local network name (no sp
 sudo scutil --set ComputerName fullchee-mac  # shown in Sharing preferences and login screen
 ```
 
-- **Linux:**
+### 1.🐧 Linux pre-install steps
+
+1. Set the hostname
+2. Set zsh as the default shell
 
 ```sh
-sudo hostnamectl set-hostname fullchee-home-server
+sudo hostnamectl set-hostname fullchee-server
+sudo apt install -y zsh
+chsh -s $(which zsh)
+zsh
 ```
+
+## 2. Run the script
 
 Run the script to setup the chezmoi `dotfiles` repo
 
@@ -34,16 +36,21 @@ Run the script to setup the chezmoi `dotfiles` repo
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee
 ```
 
-While it's running
+## 3. Post-install steps
 
-1. Copy the value of the public SSH key
+1. Mac: Log into the App Store (for `mas` CLI to work)
+2. Copy the value of the public SSH key
    1. `cat ~/.ssh/id_ed25519.pub | pbcopy`
       1. if this changes, update [`.ssh/config`](https://github.com/Fullchee/mac-dotfiles/blob/main/.ssh/config)
-2. Add the key to GitHub twice (authentication + signing)
+3. Add the key to GitHub twice (authentication + signing)
    1. <https://github.com/settings/keys>
-3. Log into the App Store (for `mas` CLI to work)
 
-### Mac manual steps
+
+`git -C ~/projects clone git@github.com:Fullchee/notes.git`
+
+```sh
+gh auth login
+```
 
 #### Work Mac
 
