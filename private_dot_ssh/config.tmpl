@@ -20,7 +20,9 @@ Host pihole
     HostName 192.168.50.8
     User pihole
     AddKeysToAgent yes
+    {{ if eq .chezmoi.os "darwin" -}}
     UseKeychain yes
+    {{- end }}
     # ForwardX11 yes
     # ForwardX11Trusted yes
 
@@ -29,6 +31,8 @@ Host server
     HostName 192.168.50.11
     User fullchee
     AddKeysToAgent yes
+    {{ if eq .chezmoi.os "darwin" -}}
     UseKeychain yes
+    {{- end }}
     # ForwardX11 yes
     # ForwardX11Trusted yes
