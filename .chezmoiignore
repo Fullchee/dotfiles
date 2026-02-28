@@ -4,6 +4,6 @@
 .dotfiles/shell-init/citylitics.sh
 {{- end }}
 
-# only want pre commit config in ~/.local/share/chezmoi source, not destination (actual ~/prek.toml)
-prek.toml
 .secrets.baseline
+prek.toml  # only want pre commit config in ~/.local/share/chezmoi source, not destination (actual ~/prek.toml)
+README.md
