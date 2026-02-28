@@ -23,6 +23,13 @@ install_pkg() {
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 . "$HOME/.cargo/env"  # add cargo to current session to install software below
 
+
+# uv needed here to install other global python packages below
+if ! command -v uv >/dev/null; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+uv python install --default
+
 # bootstrap helpers ----------------------------------------------------------
 if $IS_MAC; then
   # Extend sudo timeout to 120 minutes
@@ -55,6 +62,7 @@ install_pkg age       # file encryption for chezmoi
 install_pkg ansible   # Automate deployment, configuration, and upgrading
 {{- end }}
 
+uv tool install bandit  # security linter
 install_pkg bash      # apple ships bash 3, linux has newer version
 
 install_pkg bat       # better cat
@@ -94,6 +102,9 @@ if $IS_LINUX; then
 fi
 install_pkg helix  # vim with batteries included, no need to manage plugins
 
+uv tool install httpie  # test APIs from terminal, like Postman but CLI
+
+
 install_pkg hyperfine # command benchmarking
 install_pkg imagemagick  # like ffmpeg for images
 install_pkg jc        # convert plain text data into JSON (to plug into jq)
@@ -130,23 +141,15 @@ cargo install --locked prek
 prek install || true
 
 # python ------------------------------------------------------------------
-# uv (Python tool manager)
-if ! command -v uv >/dev/null; then
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-fi
-uv python install --default
-uv tool install bandit  # security linter
-uv tool install httpie  # test APIs from terminal, like Postman but CLI
 uv tool install ptpython
 uv tool install pyright  # type checker that's faster than mypy
 uv tool install rich-cli # highlight and format text
-uv tool install ruff@latest
-uv tool install sqlfluff
-
 install_pkg ripgrep   # faster grep
+uv tool install ruff@latest
 install_pkg sd        # faster sed
 install_pkg shellcheck
 install_pkg shfmt
+uv tool install sqlfluff
 
 cargo install --locked tealdeer  # prompt
 tldr --update
