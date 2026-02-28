@@ -41,7 +41,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee
 1. Mac: Log into the App Store (for `mas` CLI to work)
 2. Copy the value of the public SSH key
    1. `cat ~/.ssh/id_ed25519.pub | pbcopy`
-      1. if this changes, update [`.ssh/config`](https://github.com/Fullchee/mac-dotfiles/blob/main/.ssh/config)
+      1. if this changes, update [`.ssh/config`](https://github.com/Fullchee/dotfiles/blob/main/.ssh/config)
 3. Add the key to GitHub twice (authentication + signing)
    1. <https://github.com/settings/keys>
 
