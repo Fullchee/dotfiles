@@ -92,12 +92,19 @@ delete_remote_and_local_branch() {
 
 # https://www.youtube.com/watch?v=lZehYwOfJAs
 recent-branch() {
+    # verify we're inside a git repository
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "❌ Not a git repository." >&2
+        return 1
+    }
+
     local branch
     branch=$(git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff {1} --color=always")
     [[ -z "$branch" ]] && return 0
 
-    # Trim leading whitespace and the "* " prefix for the current branch
-    branch=$(echo "$branch" | sed 's/^[* ]*//')
+    # Trim leading whitespace, '*' (current) and '+' (indicates worktree or other markers)
+    # also strip any trailing spaces just in case
+    branch=$(echo "$branch" | sed -E 's/^[\*+[:space:]]+//;s/[[:space:]]+$//')
 
     # If the branch is checked out in a worktree, cd there instead
     local worktree_path
