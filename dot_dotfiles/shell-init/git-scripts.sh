@@ -89,7 +89,6 @@ delete_current_branch() {
     fi
 }
 alias delete-current-branch=delete_current_branch
-alias rm-branch=delete_current_branch
 
 delete_remote_branch() {
     if read -q "choice?Delete remote branch? (Y/y)"; then
