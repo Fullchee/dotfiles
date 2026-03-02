@@ -193,6 +193,10 @@ BE_WORKSTATION_URL() {
 # global shared pre-commit cache dir so that every worktree doesn't have to install its own pre-commit hook environments
 export PRE_COMMIT_HOME=~/.cache/pre-commit
 
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"
+
 ############ SSH: Connect to server ########
 
 ssh-staging() {
