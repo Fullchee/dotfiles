@@ -99,16 +99,31 @@ recent-branch() {
     }
 
     local branch
-    branch=$(git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff {1} --color=always")
+    # ask git for branches without color so fzf doesn't pull in ANSI codes
+    branch=$(git branch --sort=-committerdate --no-color |
+             fzf --header "Checkout Recent Branch" \
+                 --preview "git diff {1} --color=always")
     [[ -z "$branch" ]] && return 0
 
-    # Trim leading whitespace, '*' (current) and '+' (indicates worktree or other markers)
-    # also strip any trailing spaces just in case
-    branch=$(echo "$branch" | sed -E 's/^[\*+[:space:]]+//;s/[[:space:]]+$//')
+    # strip any ANSI escape sequences left by fzf or git
+    branch=$(echo "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
 
-    # If the branch is checked out in a worktree, cd there instead
+    # Trim leading whitespace, '*' (current) and '+' (indicates worktree or
+    # other markers).  Also strip any trailing spaces or stray carriage
+    # returns just in case.
+    branch=$(echo "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]$\r]+$//')
+
+    # If the branch is checked out in a worktree, cd there instead.  Use the
+    # porcelain output which is easier to parse reliably than the human form.
     local worktree_path
-    worktree_path=$(git worktree list | awk -v b="[$branch]" '$3 == b {print $1}')
+    worktree_path=$(git worktree list --porcelain | awk -v b="$branch" '
+        $1 == "worktree" { path=$2 }
+        $1 == "branch" {
+            br=$2
+            sub("^refs/heads/", "", br)
+            if (br == b) print path
+        }
+    ')
 
     if [[ -n "$worktree_path" ]]; then
         cd "$worktree_path"
