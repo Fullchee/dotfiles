@@ -5,16 +5,16 @@ set -euo pipefail
 
 # docker
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
-# dokploy - manage and deploy dotfiles and other files across machines, using git and rsync under the hood
+sudo usermod -aG docker "$USER"
 
-
-# TODO: bitwarden
-
-# DOCKER
 # dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
 
 # TODO: Immich (Google Photos)
+mkdir "$HOME/immich"
+cd "$HOME/immich"
+wget -O docker-compose.yml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
 
 # TODO: jellyfin
 # https://jellyfin.org/docs/general/installation/container/?method=docker-compose
@@ -28,6 +28,9 @@ curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/i
 curl -fsSL https://opencode.ai/install | bash
 
 # TODO: tailscale
+
+# VaultWarden
+docker run -d --name vaultwarden -v /vw-data:/data --restart unless-stopped vaultwarden/server:latest
 
 # TODO: Whatsapp bot (Baileys)
 
