@@ -5,26 +5,31 @@ set -euo pipefail
 
 # docker
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+rm -f get-docker.sh
 sudo usermod -aG docker "$USER"
 
 # TODO: dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
 
+# Home assistant: http://192.168.50.11:8123
 # TODO: Home assistant
 docker run -d --name homeassistant --privileged -v /etc/localtime:/etc/localtime:ro -v /home/fullchee/.homeassistant:/config -v /run/dbus:/run/dbus --network=host ghcr.io/home-assistant/home-assistant:stable
 
 # TODO: Immich (Google Photos)
+# http://192.168.50.11:2283
 mkdir "$HOME/immich"
 cd "$HOME/immich"
 wget -O docker-compose.yml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
 wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
 
+# Jellyfin: http://192.168.50.11:8096
 # TODO: jellyfin
 docker run -d --name jellyfin -p 8096:8096 -p 8920:8920 -v jellyfin-config:/config -v jellyfin-media:/media jellyfin/jellyfin
 
 # lazydocker
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
+# n8n: http://192.168.50.11:5678
 # TODO: n8n (self hosted Zapier)
 docker run -d --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n
 
@@ -34,6 +39,7 @@ curl -fsSL https://opencode.ai/install | bash
 # TODO: tailscale
 curl -fsSL https://tailscale.com/install.sh | sh
 
+# VaultWarden: http://192.168.50.11:8080
 # TODO: VaultWarden
 docker run -d --name vaultwarden -v /vw-data:/data --restart unless-stopped vaultwarden/server:latest
 
@@ -44,6 +50,6 @@ pnpm add -g pm2  # keep your bot running (auto-restart on crash)
 pnpm add -g qrcode-terminal
 pnpm add -g @whiskeysockets/baileys
 
-# TODO: zigbee server
+# TODO: zigbee server?
 
 {{- end }}
