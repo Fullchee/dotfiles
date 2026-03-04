@@ -82,6 +82,10 @@ cargo install --locked cargo-update  # manage cargo-installed binaries, `cargo i
 install_pkg coreutils
 cargo install --locked choose  # eg: easily get the 3rd item in each line
 cargo install --locked difftastic  # better git diff
+
+install_pkg docker
+sudo usermod -aG docker "$USER"
+
 install_pkg eza       # better ls & tree with icons
 cargo install --locked fd-find  # faster find
 install_pkg ffmpeg
