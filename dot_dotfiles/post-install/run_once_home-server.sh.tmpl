@@ -7,8 +7,11 @@ set -euo pipefail
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 sudo usermod -aG docker "$USER"
 
-# dockploy (local vercel)
+# TODO: dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
+
+# TODO: Home assistant
+docker run -d --name homeassistant --privileged -v /etc/localtime:/etc/localtime:ro -v /home/fullchee/.homeassistant:/config -v /run/dbus:/run/dbus --network=host ghcr.io/home-assistant/home-assistant:stable
 
 # TODO: Immich (Google Photos)
 mkdir "$HOME/immich"
@@ -17,22 +20,29 @@ wget -O docker-compose.yml https://github.com/immich-app/immich/releases/latest/
 wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
 
 # TODO: jellyfin
-# https://jellyfin.org/docs/general/installation/container/?method=docker-compose
+docker run -d --name jellyfin -p 8096:8096 -p 8920:8920 -v jellyfin-config:/config -v jellyfin-media:/media jellyfin/jellyfin
 
 # lazydocker
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 
 # TODO: n8n (self hosted Zapier)
+docker run -d --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n
 
 # opencode
 curl -fsSL https://opencode.ai/install | bash
 
 # TODO: tailscale
+curl -fsSL https://tailscale.com/install.sh | sh
 
-# VaultWarden
+# TODO: VaultWarden
 docker run -d --name vaultwarden -v /vw-data:/data --restart unless-stopped vaultwarden/server:latest
 
+sudo apt-get install -y w3m  # terminal based browser
+
 # TODO: Whatsapp bot (Baileys)
+pnpm add -g pm2  # keep your bot running (auto-restart on crash)
+pnpm add -g qrcode-terminal
+pnpm add -g @whiskeysockets/baileys
 
 # TODO: zigbee server
 
