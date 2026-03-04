@@ -23,6 +23,7 @@ install_pkg() {
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 . "$HOME/.cargo/env"  # add cargo to current session to install software below
 
+export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
 # uv needed here to install other global python packages below
 if ! command -v uv >/dev/null; then
@@ -157,7 +158,23 @@ tldr --update
 install_pkg tmux
 install_pkg ugrep   # drop-in grep API when LLM still uses grep
 install_pkg vim
+
+# weave: language aware merger
+cargo install --git https://github.com/Ataraxy-Labs/weave weave-cli
+cargo install --git https://github.com/Ataraxy-Labs/weave weave-driver
+weave setup
+
 install_pkg wget
+
+# yt-dlp
+rm -rf "$HOME/.local/bin/yt-dlp"
+{{ if eq .chezmoi.os "darwin" }}
+curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o "$HOME/.local/bin/yt-dlp"
+{{ else }}
+curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "$HOME/.local/bin/yt-dlp"
+{{ end }}
+chmod +x "$HOME/.local/bin/yt-dlp"
+
 install_pkg zoxide
 install_pkg zsh
 

@@ -114,31 +114,24 @@
 [interactive]
     diffFilter = delta --color-only
 [merge]
-	tool = vscode
+	# manual fallback tool
+	tool = weave
+	# use zdiff3 when conflicts do happen
 	conflictstyle = zdiff3
+[merge "weave"]
+    Use Weave as the automatic background driver
+    name = Weave semantic merge driver
+    driver = weave merge %O %A %B %L %P
+    recursive = binary
 [mergetool "vscode"]
-	cmd = "code --wait "
-
-[mergetool "sourcetree"]
-	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
-[submodule]
-	recurse = true
+	cmd = code --wait $MERGED
+[open "https://ssh.github.com"]
+	domain = github.com
 [push]
 	# always push the local branch to a remote branch with the same name
 	autoSetupRemote = true
 	default = simple
 	followTags = true
-[user]
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
-	email = 243146669+fullchee-citylitics@users.noreply.github.com
-{{- else }}
-	email = 11246258+Fullchee@users.noreply.github.com
-{{- end }}
-	name = Fullchee Zhang
-	signingkey = ~/.ssh/id_ed25519.pub
-[open "https://ssh.github.com"]
-	domain = github.com
 [pull]
 	# convenient: if rebase works, great!
 	# if it doesn't work: just `git rebase --abort` and `git merge origin/main`
@@ -154,10 +147,20 @@
 	# remember how you resolved merge conflicts during `git rebase` and auto resolves conflicts when it can
 	enabled = true
 	autoupdate = true
+[submodule]
+	recurse = true
 [tag]
 	sort = version:refname
 [url "git@github.com:"]
 	insteadOf = "https://github.com/"
+[user]
+{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
+	email = 243146669+fullchee-citylitics@users.noreply.github.com
+{{- else }}
+	email = 11246258+Fullchee@users.noreply.github.com
+{{- end }}
+	name = Fullchee Zhang
+	signingkey = ~/.ssh/id_ed25519.pub
 
 {{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 # must be at bottom to override above
