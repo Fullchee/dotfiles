@@ -6,13 +6,13 @@ services:
       - 8096:8096/tcp
       - 7359:7359/udp
     volumes:
-      - /path/to/config:/config
-      - /path/to/cache:/cache
+      - /home/fullchee/jellyfin/config:/config          # config files & metadata
+      - /home/fullchee/jellyfin/cache:/cache            # temp/cache storage
       - type: bind
-        source: /path/to/media
+        source: /mnt/media/movies
         target: /media
       - type: bind
-        source: /path/to/media2
+        source: /mnt/media/tv
         target: /media2
         read_only: true
     restart: 'unless-stopped'
