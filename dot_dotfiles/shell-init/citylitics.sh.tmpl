@@ -308,6 +308,13 @@ upload-migration() {
 
   if [[ $STATUS_STAGING -eq 0 && $STATUS_PROD -eq 0 ]]; then
     echo "🎉 All migrations uploaded successfully!"
+
+    echo
+    echo "Staging URL:"
+    echo "https://console.cloud.google.com/storage/browser/django-data-migration-files-staging/$TICKET_ID;tab=objects?project=$STAGING_PROJECT&prefix=&forceOnObjectsSortingFiltering=false"
+    echo
+    echo "Production URL:"
+    echo "https://console.cloud.google.com/storage/browser/django-data-migration-files/$TICKET_ID;tab=objects?project=$PROD_PROJECT&prefix=&forceOnObjectsSortingFiltering=false"
   else
     return 1
   fi
