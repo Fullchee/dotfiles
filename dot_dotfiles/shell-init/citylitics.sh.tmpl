@@ -271,5 +271,47 @@ yarntest() {
     command yarn --cwd /Users/admin/watrhub-django/app/frontend/app test --no-watchAll --collectCoverage=false "$@"
 }
 
-#######################
+####################### END OF LOCAL DEV
+
+
+
+####### STORAGE
+upload-migration() {
+  local FILE="APPEND__target_reports__Subscription.csv"
+  local TICKET_ID="DEV_4419"
+
+  if [[ ! -f "$FILE" ]]; then
+    echo "❌ Error: $FILE not found."
+    return 1
+  fi
+
+  echo "🚀 Starting parallel uploads for $TICKET_ID..."
+
+  # 1. Staging Upload (Backgrounded)
+  gcloud storage cp "$FILE" "gs://django-data-migration-files-staging/$TICKET_ID/" --project=dev-review-env > /dev/null 2>&1 &
+  local PID_STAGING=$!
+
+  # 2. Production Upload (Backgrounded)
+  gcloud storage cp "$FILE" "gs://django-data-migration-files/$TICKET_ID/" --project=crawler-147820 > /dev/null 2>&1 &
+  local PID_PROD=$!
+
+  # Wait for both background processes to finish
+  wait $PID_STAGING
+  local STATUS_STAGING=$?
+
+  wait $PID_PROD
+  local STATUS_PROD=$?
+
+  # --- Results Check ---
+  [[ $STATUS_STAGING -eq 0 ]] && echo "✅ Staging upload complete." || echo "❌ Staging upload FAILED."
+  [[ $STATUS_PROD -eq 0 ]] && echo "✅ Production upload complete." || echo "❌ Production upload FAILED."
+
+  if [[ $STATUS_STAGING -eq 0 && $STATUS_PROD -eq 0 ]]; then
+    echo "🎉 All migrations uploaded successfully!"
+  else
+    return 1
+  fi
+}
+
+############ END OF STORAGE
 {{- end }}

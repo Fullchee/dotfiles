@@ -9,6 +9,12 @@
 Library/**
 {{- end }}
 
+
+{{- if ne .chezmoi.hostname "fullchee-server" }}
+immich/**
+jellyfin/**
+{{- end }}
+
 .secrets.baseline
 prek.toml  # only want pre commit config in ~/.local/share/chezmoi source, not destination (actual ~/prek.toml)
 README.md
