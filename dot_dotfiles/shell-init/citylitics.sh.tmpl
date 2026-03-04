@@ -273,51 +273,57 @@ yarntest() {
 
 ####################### END OF LOCAL DEV
 
-
-
 ####### STORAGE
 upload-migration() {
-  local FILE="APPEND__target_reports__Subscription.csv"
-  local TICKET_ID="DEV_4419"
+    FILE=${1:-"APPEND__target_reports__Subscription.csv"}
 
-  if [[ ! -f "$FILE" ]]; then
-    echo "❌ Error: $FILE not found."
-    return 1
-  fi
+    # derive ticket ID from current git branch name; fail if not in expected format
+    BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+    # require branch to start with 3 or 4 letters, a hyphen, then exactly 4 digits
+    # examples: DEV-4419, AB-1234 (although two letters isn't allowed), TEST-0001
+    if ! printf '%s' "$BRANCH" | grep -q -E '^[A-Za-z]{3,4}-[0-9]{4}'; then
+        echo "❌ Error: git branch '$BRANCH' must start with 3-4 letters, a hyphen, and 4 numbers."
+        exit 1
+    fi
 
-  echo "🚀 Starting parallel uploads for $TICKET_ID..."
+    if [[ ! -f "$FILE" ]]; then
+        echo "❌ Error: $FILE not found."
+        return 1
+    fi
 
-  # 1. Staging Upload (Backgrounded)
-  gcloud storage cp "$FILE" "gs://django-data-migration-files-staging/$TICKET_ID/" --project=dev-review-env > /dev/null 2>&1 &
-  local PID_STAGING=$!
+    echo "🚀 Starting parallel uploads for $TICKET_ID..."
 
-  # 2. Production Upload (Backgrounded)
-  gcloud storage cp "$FILE" "gs://django-data-migration-files/$TICKET_ID/" --project=crawler-147820 > /dev/null 2>&1 &
-  local PID_PROD=$!
+    # 1. Staging Upload (Backgrounded)
+    gcloud storage cp "$FILE" "gs://django-data-migration-files-staging/$TICKET_ID/" --project=dev-review-env >/dev/null 2>&1 &
+    local PID_STAGING=$!
 
-  # Wait for both background processes to finish
-  wait $PID_STAGING
-  local STATUS_STAGING=$?
+    # 2. Production Upload (Backgrounded)
+    gcloud storage cp "$FILE" "gs://django-data-migration-files/$TICKET_ID/" --project=crawler-147820 >/dev/null 2>&1 &
+    local PID_PROD=$!
 
-  wait $PID_PROD
-  local STATUS_PROD=$?
+    # Wait for both background processes to finish
+    wait $PID_STAGING
+    local STATUS_STAGING=$?
 
-  # --- Results Check ---
-  [[ $STATUS_STAGING -eq 0 ]] && echo "✅ Staging upload complete." || echo "❌ Staging upload FAILED."
-  [[ $STATUS_PROD -eq 0 ]] && echo "✅ Production upload complete." || echo "❌ Production upload FAILED."
+    wait $PID_PROD
+    local STATUS_PROD=$?
 
-  if [[ $STATUS_STAGING -eq 0 && $STATUS_PROD -eq 0 ]]; then
-    echo "🎉 All migrations uploaded successfully!"
+    # --- Results Check ---
+    [[ $STATUS_STAGING -eq 0 ]] && echo "✅ Staging upload complete." || echo "❌ Staging upload FAILED."
+    [[ $STATUS_PROD -eq 0 ]] && echo "✅ Production upload complete." || echo "❌ Production upload FAILED."
 
-    echo
-    echo "Staging URL:"
-    echo "https://console.cloud.google.com/storage/browser/django-data-migration-files-staging/$TICKET_ID;tab=objects?project=$STAGING_PROJECT&prefix=&forceOnObjectsSortingFiltering=false"
-    echo
-    echo "Production URL:"
-    echo "https://console.cloud.google.com/storage/browser/django-data-migration-files/$TICKET_ID;tab=objects?project=$PROD_PROJECT&prefix=&forceOnObjectsSortingFiltering=false"
-  else
-    return 1
-  fi
+    if [[ $STATUS_STAGING -eq 0 && $STATUS_PROD -eq 0 ]]; then
+        echo "🎉 All migrations uploaded successfully!"
+
+        echo
+        echo "Staging URL:"
+        echo "https://console.cloud.google.com/storage/browser/django-data-migration-files-staging/$TICKET_ID;tab=objects?project=$STAGING_PROJECT&prefix=&forceOnObjectsSortingFiltering=false"
+        echo
+        echo "Production URL:"
+        echo "https://console.cloud.google.com/storage/browser/django-data-migration-files/$TICKET_ID;tab=objects?project=$PROD_PROJECT&prefix=&forceOnObjectsSortingFiltering=false"
+    else
+        return 1
+    fi
 }
 
 ############ END OF STORAGE
