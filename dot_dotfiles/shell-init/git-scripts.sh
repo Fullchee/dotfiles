@@ -3,13 +3,12 @@ export VISUAL="subl -w"
 
 ##############
 
-alias it="git"  # common typo
+alias it="git" # common typo
 # alias gc="git commit -a --no-verify -m"
 alias gc="git commit -a -m"
 alias gs="git st"
 alias fetchmerge="git fetch && git merge origin/main --no-edit"
 alias fm=fetchmerge
-
 
 git-clone-personal() {
     local REPO_URL="$1"
@@ -38,7 +37,6 @@ git-clone-personal() {
     fi
 }
 
-
 alias pull='git stash && git pull && git stash pop'
 push() {
     git add -u
@@ -64,15 +62,38 @@ push() {
 ############### BRANCHES #####################
 
 delete_current_branch() {
-    branch_name=`git rev-parse --abbrev-ref HEAD`;
-    git checkout main
-    git branch -D $branch_name
+    branch_name="$(git rev-parse --abbrev-ref HEAD)"
+
+    # if this repo is actually a worktree, git will report the path of the
+    # superproject; we can use that to clean up the worktree directory and
+    # return the user to the original repo root after deleting the branch.
+    local superpath
+    superpath=$(git rev-parse --show-superproject-working-tree 2>/dev/null)
+
+    if [[ -n "$superpath" ]]; then
+        # remember where we started so we can remove it and cd back
+        local cwd="$PWD"
+
+        cd "$superpath" || echo "⚠️  could not cd to superproject at $superpath"
+        git checkout main
+        git branch -D "$branch_name"
+
+        # remove the worktree folder and leap back to the superproject
+        git worktree remove "$cwd" && echo "✅ worktree removed: $cwd"
+
+        # prune any stale worktree references
+        git worktree prune
+    else
+        git checkout main
+        git branch -D "$branch_name"
+    fi
 }
+alias delete-current-branch=delete_current_branch
 
 delete_remote_branch() {
     if read -q "choice?Delete remote branch? (Y/y)"; then
-        branch_name=`git rev-parse --abbrev-ref HEAD`;
-        git push origin --delete $branch_name;
+        branch_name="$(git rev-parse --abbrev-ref HEAD)"
+        git push origin --delete "$branch_name"
     else
         echo "Not deleting remote branch"
         exit 1
@@ -81,8 +102,8 @@ delete_remote_branch() {
 
 delete_remote_and_local_branch() {
     if read -q "choice?Delete remote branch? (Y/y)"; then
-        branch_name=`git rev-parse --abbrev-ref HEAD`;
-        git push origin --delete $branch_name;
+        branch_name="$(git rev-parse --abbrev-ref HEAD)"
+        git push origin --delete "$branch_name"
         delete_current_branch
     else
         echo "Not deleting remote branch"
@@ -92,16 +113,38 @@ delete_remote_and_local_branch() {
 
 # https://www.youtube.com/watch?v=lZehYwOfJAs
 recent-branch() {
+    # verify we're inside a git repository
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "❌ Not a git repository." >&2
+        return 1
+    }
+
     local branch
-    branch=$(git branch --sort=-committerdate | fzf --header "Checkout Recent Branch" --preview "git diff {1} --color=always")
+    # ask git for branches without color so fzf doesn't pull in ANSI codes
+    branch=$(git branch --sort=-committerdate --no-color |
+        fzf --header "Checkout Recent Branch" \
+            --preview "git diff {1} --color=always")
     [[ -z "$branch" ]] && return 0
 
-    # Trim leading whitespace and the "* " prefix for the current branch
-    branch=$(echo "$branch" | sed 's/^[* ]*//')
+    # strip any ANSI escape sequences left by fzf or git
+    branch=$(echo "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
 
-    # If the branch is checked out in a worktree, cd there instead
+    # Trim leading whitespace, '*' (current) and '+' (indicates worktree or
+    # other markers).  Also strip any trailing spaces or stray carriage
+    # returns just in case.
+    branch=$(echo "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]$\r]+$//')
+
+    # If the branch is checked out in a worktree, cd there instead.  Use the
+    # porcelain output which is easier to parse reliably than the human form.
     local worktree_path
-    worktree_path=$(git worktree list | awk -v b="[$branch]" '$3 == b {print $1}')
+    worktree_path=$(git worktree list --porcelain | awk -v b="$branch" '
+        $1 == "worktree" { path=$2 }
+        $1 == "branch" {
+            br=$2
+            sub("^refs/heads/", "", br)
+            if (br == b) print path
+        }
+    ')
 
     if [[ -n "$worktree_path" ]]; then
         cd "$worktree_path"
@@ -111,18 +154,8 @@ recent-branch() {
 }
 alias rb=recent-branch
 
-rm_branch() {
-    branch_name=$(git rev-parse --abbrev-ref HEAD)
-    git stash
-    git checkout main
-    git branch -D "$branch_name"
-    git pull
-    git stash pop
-}
-
 
 #################### Pull requests ####################
-
 
 createpr() {
     local branch_name=""
@@ -144,12 +177,18 @@ createpr() {
     # 1. Parse flags
     while getopts "m:h" opt; do
         case "$opt" in
-            m) commit_msg=$OPTARG ;;
-            h) usage; return 0 ;;
-            *) usage; return 1 ;;
+        m) commit_msg=$OPTARG ;;
+        h)
+            usage
+            return 0
+            ;;
+        *)
+            usage
+            return 1
+            ;;
         esac
     done
-    shift $((OPTIND-1))
+    shift $((OPTIND - 1))
 
     # The first remaining argument is the branch name
     branch_name=$1
@@ -161,8 +200,8 @@ createpr() {
     fi
 
     # 2. Git Operations
-    git stash;
-    git switch -c "$branch_name";
+    git stash
+    git switch -c "$branch_name"
 
     if [[ -n "$commit_msg" ]]; then
         # Create a real commit. --allow-empty is used so it doesn't fail
@@ -170,11 +209,11 @@ createpr() {
         git commit -m "$commit_msg" --allow-empty
     else
         # Fallback to your custom .gitconfig alias
-        git empty-commit;
+        git empty-commit
     fi
 
-    git push origin "$branch_name";
-    git set-upstream;
+    git push origin "$branch_name"
+    git set-upstream
 
     # 3. Validation & Extraction
     CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -199,18 +238,17 @@ createpr() {
 
     # 5. Create PR via GitHub CLI
     gh pr create \
-    --title "$PR_TITLE" \
-    --body "$PR_BODY" \
-    --assignee "@me" \
-    --draft;
+        --title "$PR_TITLE" \
+        --body "$PR_BODY" \
+        --assignee "@me" \
+        --draft
 
-    git stash pop;
-    gh pr view --web;
+    git stash pop
+    gh pr view --web
 }
 
 # gh cuts off the URL
 alias gh-pr-checks='gh pr checks | cat'
-
 
 prfiles() {
     PR_URL=$(gh pr view --json url --jq '.url')
@@ -218,7 +256,7 @@ prfiles() {
 }
 
 pulls() {
-	GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
+    GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
 }
 
 switchpr() {
@@ -226,7 +264,6 @@ switchpr() {
 }
 
 alias viewpr="gh pr view --web"
-
 
 ############### WORKTREES ###################
 
@@ -286,10 +323,12 @@ cwt() {
     fi
 }
 
-
 worktree() {
     # 1. Check if we're in a git repo
-    git rev-parse --is-inside-work-tree > /dev/null 2>&1 || { echo "Not a git repository"; return 1; }
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "Not a git repository"
+        return 1
+    }
 
     # 2. Format the list: [Folder Name] [Branch] [Full Path (Hidden)]
     # We use awk to print the last part of the path, the branch, and the full path
