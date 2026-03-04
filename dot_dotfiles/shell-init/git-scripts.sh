@@ -164,7 +164,7 @@ createpr() {
 
     # Function to display help
     usage() {
-        echo "Usage: createpr [-m \"message\"] [-h] <branch-name>"
+        echo "Usage: createpr [-m \"message\"] [-h] [branch-name]  # branch-name defaults to current branch"
         echo ""
         echo "Options:"
         echo "  -m \"message\"  Create a real commit with the specified message."
@@ -190,11 +190,18 @@ createpr() {
     done
     shift $((OPTIND - 1))
 
-    # The first remaining argument is the branch name
+    # The first remaining argument is the branch name (optional)
     branch_name=$1
 
+    # If no branch was passed, fall back to the current checked‑out branch.
     if [[ -z "$branch_name" ]]; then
-        echo "Error: Branch name is required." >&2
+        branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+        echo "⚙️  No branch argument provided, using current branch: $branch_name"
+    fi
+
+    # if we still don't have a branch (e.g. not in a repo), bail out
+    if [[ -z "$branch_name" ]]; then
+        echo "Error: Branch name is required and couldn't be determined." >&2
         usage
         return 1
     fi
