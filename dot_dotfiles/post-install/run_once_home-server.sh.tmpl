@@ -11,6 +11,10 @@ sudo usermod -aG docker "$USER"  # grant access to docker socket (don't need to 
 # TODO: dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
 
+# TODO: File explorer (accessible online storage)
+# http://192.168.50.11:8090
+docker run -d --name filebrowser -v /:/srv -p 8090:80 -e PUID=1000 -e PGID=1000 filebrowser/filebrowser
+
 # Home assistant: http://192.168.50.11:8123
 # TODO: Home assistant
 docker run -d --name homeassistant --privileged -v /etc/localtime:/etc/localtime:ro -v /home/fullchee/.homeassistant:/config -v /run/dbus:/run/dbus --network=host ghcr.io/home-assistant/home-assistant:stable
