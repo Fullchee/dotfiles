@@ -6,7 +6,7 @@ set -euo pipefail
 # docker
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 rm -f get-docker.sh
-sudo usermod -aG docker "$USER"
+sudo usermod -aG docker "$USER"  # grant access to docker socket (don't need to run sudo for docker)
 
 # TODO: dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
