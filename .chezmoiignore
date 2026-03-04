@@ -4,6 +4,11 @@
 .dotfiles/shell-init/citylitics.sh
 {{- end }}
 
+
+{{- if ne .chezmoi.os "darwin" }}
+Library/**
+{{- end }}
+
 .secrets.baseline
 prek.toml  # only want pre commit config in ~/.local/share/chezmoi source, not destination (actual ~/prek.toml)
 README.md
