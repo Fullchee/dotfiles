@@ -8,6 +8,9 @@ curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 rm -f get-docker.sh
 sudo usermod -aG docker "$USER"  # grant access to docker socket (don't need to run sudo for docker)
 
+# Cloudflare Tunnels
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o ~/.local/bin/cloudflared && chmod +x ~/.local/bin/cloudflared
+
 # TODO: dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
 

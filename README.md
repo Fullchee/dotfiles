@@ -102,6 +102,12 @@ gh auth login
   - [Brother printer driver](https://support.brother.com/g/b/downloadtop.aspx?c=ca&lang=en&prod=hl2240_us_eu)
     - Doesn't support Mac anymore: need to download from <https://www.freeprinterdriverdownload.org/download-brother-hl-2240-driver/amp/>
 
+
+### Linux post-install manual steps
+
+- `cloudflared tunnel login`
+
+
 ## Background
 
 - used git bare repo for a decade
