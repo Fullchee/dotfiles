@@ -88,10 +88,11 @@ eval "$(/usr/local/bin/mise activate zsh)"
 eval "$(~/.local/bin/mise activate zsh)"
 {{- end }}
 
-{{ if eq .chezmoi.os "darwin" -}}
-export PNPM_HOME="$HOME/Library/pnpm"
-{{- end}}
-export PATH="$PNPM_HOME:$PATH"
+export PNPM_HOME="$HOME/.local/share/pnpm"
+case ":$PATH:" in
+   *":$PNPM_HOME:"*) ;;
+   *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 
 #################### Node end ####################
 
