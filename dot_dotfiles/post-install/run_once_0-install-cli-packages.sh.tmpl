@@ -126,14 +126,12 @@ if $IS_MAC; then
   POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
   install_pkg "$POSTGRES_NAME"
   brew services start postgresql
-
-  /opt/homebrew/opt/$POSTGRES_NAME/bin/createdb "$USER"
-  /opt/homebrew/bin/createuser -s postgres
 else
   install_pkg postgresql postgresql-contrib
-  sudo -u postgres createuser -s "$USER" || true
-  sudo -u postgres createdb "$USER" || true
 fi
+createuser -s postgres
+createuser -s "$USER"
+createdb "$USER"
 
 cargo install --locked prek
 prek install || true
