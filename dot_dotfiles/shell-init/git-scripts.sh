@@ -356,11 +356,18 @@ worktree() {
 }
 
 rm-worktree() {
-    # Select the worktree
-    local selected=$(git worktree list | fzf --header "Delete Worktree (Enter to Confirm)" --preview "git log --oneline -n 10 {3}")
+    # Supports optional argument: path to remove. Otherwise show interactive fzf picker.
+    local target
 
-    # Extract the path (first column)
-    local target=$(echo "$selected" | awk '{print $1}')
+    if [[ -n "$1" ]]; then
+        target="$1"
+    else
+        # Select the worktree interactively
+        local selected
+        selected=$(git worktree list | fzf --header "Delete Worktree (Enter to Confirm)" --preview "git log --oneline -n 10 {3}")
+        # Extract the path (first column)
+        target=$(echo "$selected" | awk '{print $1}')
+    fi
 
     if [ -n "$target" ]; then
         # Check if it's the main/current worktree to prevent accidents
@@ -373,14 +380,19 @@ wt-collapse() {
     local branch_name=$(git rev-parse --abbrev-ref HEAD)
     local worktree_path=$(git rev-parse --show-toplevel)
 
-    # 2. Move to the parent/main repository
-    # (Assumes your main repo is one level up, adjust if your structure differs)
-    cd ..
+    # 2. Figure out if we're in a submodule/worktree of a superproject.
+    #    If so, `git rev-parse --show-superproject-working-tree` will return
+    #    the path to the superproject; otherwise it prints nothing.
+    local superpath
+    superpath=$(git rev-parse --show-superproject-working-tree 2>/dev/null)
 
-    # 3. Remove the worktree using git's built-in command
+    echo "📁 Detected superproject at $superpath, switching there..."
+    cd "$superpath" || echo "⚠️ could not cd to superproject at $superpath"
+
+    # 3. Remove the worktree using the helper function (can be interactive elsewhere)
     # This removes the directory and cleans up .git/worktrees/
     echo "Removing worktree at $worktree_path..."
-    git worktree remove "$worktree_path"
+    rm-worktree "$worktree_path"
 
     # 4. Checkout the branch in the main repo
     echo "Switching to branch '$branch_name' in the main repository..."
