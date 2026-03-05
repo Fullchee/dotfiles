@@ -20,9 +20,9 @@ setopt PROMPT_SP
 export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-{{- if and (ne .chezmoi.hostname "Fullchee-Citylitics") (eq .chezmoi.os "darwin") -}}
-export PATH="/opt/homebrew/bin/zoxide:$PATH"
-{{- end -}}
+{{ if and (ne .chezmoi.hostname "Fullchee-Citylitics") (eq .chezmoi.os "darwin") -}}
+export PATH="/opt/homebrew/bin:$PATH"
+{{- end }}
 
 source "$HOME/.dotfiles/shell-init/file-scripts.sh"
 source "$HOME/.dotfiles/shell-init/git-scripts.sh"
