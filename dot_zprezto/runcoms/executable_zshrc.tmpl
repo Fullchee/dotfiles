@@ -17,12 +17,12 @@ setopt PROMPT_SP
 
 # RPROMPT='[%D{%L:%M:%S}] '$RPROMPTE
 
-# fpath=(~/path/to/wd $fpath)
-# export HTTPS=true
-# export SSL_CRT_FILE=~/.localhost-ssl/localhost.crt
-# export SSL_KEY_FILE=~/.localhost-ssl/localhost.key
 export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+{{- if and (ne .chezmoi.hostname "Fullchee-Citylitics") (eq .chezmoi.os "darwin") -}}
+export PATH="/opt/homebrew/bin/zoxide:$PATH"
+{{- end -}}
 
 source "$HOME/.dotfiles/shell-init/file-scripts.sh"
 source "$HOME/.dotfiles/shell-init/git-scripts.sh"
