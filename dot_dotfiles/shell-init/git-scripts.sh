@@ -367,3 +367,22 @@ rm-worktree() {
         git worktree remove "$target" && echo "Worktree at $target removed."
     fi
 }
+
+wt-collapse() {
+    # 1. Identify the branch name of the current worktree
+    local branch_name=$(git rev-parse --abbrev-ref HEAD)
+    local worktree_path=$(git rev-parse --show-toplevel)
+
+    # 2. Move to the parent/main repository
+    # (Assumes your main repo is one level up, adjust if your structure differs)
+    cd ..
+
+    # 3. Remove the worktree using git's built-in command
+    # This removes the directory and cleans up .git/worktrees/
+    echo "Removing worktree at $worktree_path..."
+    git worktree remove "$worktree_path"
+
+    # 4. Checkout the branch in the main repo
+    echo "Switching to branch '$branch_name' in the main repository..."
+    git checkout "$branch_name"
+}
