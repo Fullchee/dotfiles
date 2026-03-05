@@ -5,19 +5,19 @@ set -euo pipefail
 
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
-install_cask adobe-acrobat-reader
-install_cask anki
-install_cask balenaetcher
-install_cask cap
-install_cask chatgpt
-install_cask claude
-install_cask db-browser-for-sqlite
-install_cask dbngin
-install_cask discord
-install_cask docker
-install_cask figma
-install_cask finicky
-install_cask firefox
+brew install adobe-acrobat-reader
+brew install anki
+brew install balenaetcher
+brew install cap
+brew install chatgpt
+brew install claude
+brew install db-browser-for-sqlite
+brew install dbngin
+brew install discord
+brew install docker
+brew install figma
+brew install finicky
+brew install firefox
 
 # firefox policies
 if [ "$OS" = darwin ]; then
@@ -25,38 +25,38 @@ if [ "$OS" = darwin ]; then
   cp ~/.dotfiles/post-install/browser/firefox-policies.json ~/Library/Application\ Support/Firefox/distribution/policies.json
 fi
 
-install_cask font-hack-nerd-font
-install_cask font-jetbrains-mono
-install_cask freedom
-install_cask google-chrome
-install_cask handbrake
-install_cask imageoptim
-install_cask iina
+brew install font-hack-nerd-font
+brew install font-jetbrains-mono
+brew install freedom
+brew install google-chrome
+brew install handbrake
+brew install imageoptim
+brew install iina
 
-install_cask iterm2
+brew install iterm2
 if [ ! -f "$HOME/.iterm2_shell_integration.zsh" ]; then
   curl -L https://iterm2.com/shell_integration/bash -o ~/.iterm2_shell_integration.zsh
 fi
 
-install_cask jordanbaird-ice@beta  # 2026: non beta wasn't working on MacOS Tahoe 26
-install_cask karabiner-elements
-install_cask keycastr
-install_cask modern-csv
-install_cask notion
+brew install jordanbaird-ice@beta  # 2026: non beta wasn't working on MacOS Tahoe 26
+brew install karabiner-elements
+brew install keycastr
+brew install modern-csv
+brew install notion
 
-install_cask obsidian
-install_cask raspberry-pi-imager
-install_cask raycast
-install_cask rectangle
-install_cask sejda-pdf
-install_cask sublime-text
-install_cask tableplus
-install_cask todoist
-install_cask visual-studio-code
-install_cask wechat
-install_cask whatsapp
-install_cask wispr-flow
-install_cask zoom
+brew install obsidian
+brew install raspberry-pi-imager
+brew install raycast
+brew install rectangle
+brew install sejda-pdf
+brew install sublime-text
+brew install tableplus
+brew install todoist
+brew install visual-studio-code
+brew install wechat
+brew install whatsapp
+brew install wispr-flow
+brew install zoom
 
 mas install 1440147259 # ad guard for Safari
 
