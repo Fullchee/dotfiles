@@ -28,8 +28,8 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true
 # uv needed here to install other global python packages below
 if ! command -v uv >/dev/null; then
   curl -LsSf https://astral.sh/uv/install.sh | sh
+  uv python install --default
 fi
-uv python install --default
 
 # bootstrap helpers ----------------------------------------------------------
 if $IS_MAC; then
