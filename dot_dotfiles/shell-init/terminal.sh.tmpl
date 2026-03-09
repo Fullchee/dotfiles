@@ -4,16 +4,17 @@ alias ....="cd ../../.."
 # use fd so that it respects .gitignore
 # https://github.com/junegunn/fzf#respecting-gitignore
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
+[ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
 
 diffdir() {
-	diff -r $1 $2 | grep $1 | awk '{print $4}'
+  diff -r $1 $2 | grep $1 | awk '{print $4}'
 }
 
 # asdf/fileName.ext => fileName
 extract-filename() {
-	fullfile="$1"
-	filename=$(basename "$fullfile")  # asdf/fieleName.ext => fileName.ext
-	echo "${filename%.*}"  # fileName.ext => fileName
+  fullfile="$1"
+  filename=$(basename "$fullfile") # asdf/fieleName.ext => fileName.ext
+  echo "${filename%.*}"            # fileName.ext => fileName
 }
 
 alias grep=ugrep
@@ -39,13 +40,13 @@ function ls() {
 
 # `lc`:  last command
 last() {
-  SELECTED_COMMAND=$(grep -a --color=never "${PWD}${LC_DELIMITER_END}" ~/.lc_history | cut -f1 -d "${LC_DELIMITER_START}" | tail -r | fzf);
+  SELECTED_COMMAND=$(grep -a --color=never "${PWD}${LC_DELIMITER_END}" ~/.lc_history | cut -f1 -d "${LC_DELIMITER_START}" | tail -r | fzf)
 
   # handle case of selecting no command via fzf
   if [[ ${#SELECTED_COMMAND} -gt 0 ]]; then
     echo "Running '$SELECTED_COMMAND'..."
     echo "**************************"
-    eval " $SELECTED_COMMAND";
+    eval " $SELECTED_COMMAND"
   fi
 }
 
@@ -64,7 +65,7 @@ alias tldrf='tldr --list | fzf --preview "tldr {1} --color=always" --preview-win
 #	tree . 1
 # 	tree folder_name 2
 tree() {
-	eza --tree --icons --git-ignore -L "${2:-2}" "${1:-.}"
+  eza --tree --icons --git-ignore -L "${2:-2}" "${1:-.}"
 }
 alias searchtree='eza --tree --icons --git-ignore | fzf'
 
@@ -75,7 +76,7 @@ set-terminal-tab-title() {
   # 1: Change Icon Name Only
   # ;: separator
   osc_header="\033]1;"
-  osc_terminator="\007"  # bell character, historically, rang a bell
+  osc_terminator="\007" # bell character, historically, rang a bell
   content="$1"
 
   # Print using %b for escapes and %s for strings
@@ -87,7 +88,6 @@ alias sz="source ~/.zshrc"
 eval "$(zoxide init zsh)"
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-
 # write current command location to `.zsh_history_ext` whenever a command is ran
 # `.zsh_history_ext` is used in `lc` command
 zshaddhistory() {
@@ -95,14 +95,13 @@ zshaddhistory() {
   if [[ $1 == $'\n' ]]; then return; fi
 
   # ignore specific commands
-  local COMMANDS_TO_IGNORE=( last ls ll cd j git gss gap lc ggpush ggpull);
-  for i in "${COMMANDS_TO_IGNORE[@]}"
-  do
+  local COMMANDS_TO_IGNORE=(last ls ll cd j git gss gap lc ggpush ggpull)
+  for i in "${COMMANDS_TO_IGNORE[@]}"; do
     # return if the run commands starts with the ignored commands
     if [[ $1 == "$i"* ]]; then
-      return;
+      return
     fi
   done
 
-  echo "${1%%$'\n'}${LC_DELIMITER_START}${PWD}${LC_DELIMITER_END}" >> ~/.lc_history
+  echo "${1%%$'\n'}${LC_DELIMITER_START}${PWD}${LC_DELIMITER_END}" >>~/.lc_history
 }
