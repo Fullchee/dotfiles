@@ -126,16 +126,11 @@ recent-branch() {
             --preview "git diff {1} --color=always")
     [[ -z "$branch" ]] && return 0
 
-    # strip any ANSI escape sequences left by fzf or git
-    branch=$(echo "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
+    # strip ANSI color codes (escape sequences) so fzf output is clean
+    branch=$(printf '%s' "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
+    # remove leading markers (*, +, or whitespace) and trailing whitespace/carriage return
+    branch=$(printf '%s' "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]]+\r?$//')
 
-    # Trim leading whitespace, '*' (current) and '+' (indicates worktree or
-    # other markers).  Also strip any trailing spaces or stray carriage
-    # returns just in case.
-    branch=$(echo "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]$\r]+$//')
-
-    # If the branch is checked out in a worktree, cd there instead.  Use the
-    # porcelain output which is easier to parse reliably than the human form.
     local worktree_path
     worktree_path=$(git worktree list --porcelain | awk -v b="$branch" '
         $1 == "worktree" { path=$2 }
