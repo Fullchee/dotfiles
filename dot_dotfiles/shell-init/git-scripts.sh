@@ -5,7 +5,28 @@ export VISUAL="subl -w"
 
 alias it="git" # common typo
 # alias gc="git commit -a --no-verify -m"
-alias gc="git commit -a -m"
+
+gc() {
+    git add -u
+
+    # Attempt the commit
+    if git commit -m "$*"; then
+        return 0
+    else
+        echo "⚠️  Commit failed (pre-commit hook). Retrying once..."
+
+        # Second attempt
+        git add -u
+        if git commit -m "$*"; then
+            echo "✅ Success on second try."
+            return 0
+        else
+            echo "❌ Commit failed a second time. Please check your code."
+            return 1
+        fi
+    fi
+}
+
 alias gs="git st"
 alias fetchmerge="git fetch && git merge origin/main --no-edit"
 alias fm=fetchmerge
