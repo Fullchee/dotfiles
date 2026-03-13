@@ -261,6 +261,11 @@ sf() {
     cd ~/watrhub-django || exit
     make start-frontend
 }
+
+pt() {
+    docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s "${args[@]}"
+}
+
 alias cdf="cd ~/watrhub-django/app/frontend/app"
 
 y() {
