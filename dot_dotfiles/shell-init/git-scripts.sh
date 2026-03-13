@@ -1,10 +1,7 @@
-export EDITOR="subl -w"
-export VISUAL="subl -w"
-
-##############
-
 alias it="git" # common typo
-# alias gc="git commit -a --no-verify -m"
+
+# Ensure we can define gc as a function even if an alias exists from elsewhere
+unalias gc 2>/dev/null
 
 gc() {
     git add -u
