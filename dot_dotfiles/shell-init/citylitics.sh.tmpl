@@ -263,7 +263,11 @@ sf() {
 }
 
 pt() {
-    docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s "${args[@]}"
+    if [ $# -eq 0 ]; then
+        docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s
+    else
+        docker-compose -f local-dev/docker-compose.yml run --rm django pytest -s "$@"
+    fi
 }
 
 alias cdf="cd ~/watrhub-django/app/frontend/app"
