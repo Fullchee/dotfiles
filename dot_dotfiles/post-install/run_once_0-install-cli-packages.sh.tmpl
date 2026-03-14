@@ -57,6 +57,14 @@ if $IS_LINUX; then
 fi
 
 # platform-independent package installs -------------------------------------
+
+# adb
+if $IS_LINUX; then
+  sudo apt update && sudo apt install android-tools-adb android-tools-fastboot
+elif $IS_MAC; then
+  brew install --cask android-platform-tools
+fi
+
 install_pkg age       # file encryption for chezmoi
 
 {{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
