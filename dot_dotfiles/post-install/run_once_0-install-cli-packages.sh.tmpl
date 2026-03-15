@@ -19,6 +19,10 @@ install_pkg() {
   fi
 }
 
+if $IS_LINUX; then
+  sudo apt-get install -y build-essential  # for cargo install, bitwarden CLI to work on linux, provides cc for compiling dependencies
+fi
+
 # download rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 . "$HOME/.cargo/env"  # add cargo to current session to install software below
@@ -81,12 +85,8 @@ if $IS_LINUX; then
       sudo ln -s "$(command -v batcat)" /usr/local/bin/bat
   fi
 fi
-
-if $IS_LINUX; then
-  sudo apt install build-essential  # for cargo install to work on linux, provides cc for compiling dependencies
-fi
-
-sh -c "$(curl -fsLS get.chezmoi.io)"
+pnpm add -g @bitwarden/cli  # to work with varlock
+sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
 cargo install --locked cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 install_pkg coreutils
 cargo install --locked choose  # eg: easily get the 3rd item in each line
@@ -107,7 +107,7 @@ fi
 
 if $IS_LINUX; then
   sudo add-apt-repository -y ppa:maveonair/helix-editor
-  sudo apt update
+  sudo apt-get update
 fi
 install_pkg helix  # vim with batteries included, no need to manage plugins
 uv tool install httpie  # test APIs from terminal, like Postman but CLI
@@ -160,6 +160,7 @@ tldr --update
 
 install_pkg tmux
 install_pkg ugrep   # drop-in grep API when LLM still uses grep
+curl -sSfL https://varlock.dev/install.sh | sh -s  # varlock: AI-safe .env files: Schemas for agents, Secrets for humans.
 install_pkg vim
 
 # weave: language aware merger
