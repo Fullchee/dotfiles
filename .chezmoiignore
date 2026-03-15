@@ -7,6 +7,7 @@
 
 {{- if ne .chezmoi.os "darwin" }}
 Library/**
+.iterm2/**
 {{- end }}
 
 
