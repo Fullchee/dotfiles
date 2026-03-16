@@ -19,42 +19,7 @@ applyTo: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 - for short one line JSDocs, use the single line /\*_ comment _/ style
 - don't explicitly import `import React from "react";`
 - always use absolute imports
-
-## Atomic design
-
-- Follow Atomic Design principles
-  - Atom examples: wrapped third party components, Button, Text, Label, Icon, Image, Input, Checkbox, Radio, Tag, Badge, Avatar, Spinner, Divider, Tooltip, Heading, Link, TextArea, Select, Switch, ErrorText, HelperText, FormLabel, Skeleton, CloseButton, Loader, HorizontalRule, StatusDot, IconButton
-  - Molecule examples: FormField, FieldWithError, InputGroup, CardHeader, TableRow, ModalHeader, ModalFooter, SearchBar, FilterBar, UserInfoBlock, ButtonGroup, StatBadge, DropdownMenu, TabBar, ProgressStep, PaginationControls, ToastMessage, AvatarWithName, LabelValueRow, TagList, DateRangePicker, RatingStars, FileInputGroup, TooltipWithIcon, ToggleSwitchGroup, SelectWithLabel, IconButtonWithBadge, InfoBanner, StepIndicator, TextWithSubtext
-  - Organism examples: All Forms, All Modals, Cards, Tables, Sidebar, TopNav, SettingsPanel, NotificationList, ReportViewer, Charts, ChartsPanel, FileUploadSection, StepperForm, UserManagementPanel, AuditTrail, SearchResultsPanel, FilterSidebar, DetailViewPanel, CommentThread
-
-- Use WAI-ARIA roles to help with component naming and type inference
-
-### Component colocation
-
-Prefer
-
-```
-src/
-└── organisms/
-    └── forms/
-        └── ContactForm/
-            ├── index.tsx
-            ├── ContactFormFooterMolecule.tsx
-            └── ContactFormFiltersMolecule.tsx
-```
-
-and avoid this
-
-```
-src/
-├── molecules/
-│   ├── ContactFormFooter.tsx
-│   └── ContactFormFilters.tsx
-└── organisms/
-    └── forms/
-        └── ContactForm/
-            └── index.tsx
-```
+- use ESM imports for antd, material, @ant-design/icons like `import TeamOutlined from "@ant-design/icons/TeamOutlined";` and not `import { TeamOutlined } from "@ant-design/icons";`
 
 ## TypeScript
 
@@ -67,3 +32,7 @@ src/
 ## React
 
 - don't use React.FC type for components
+
+## Styling
+
+- when using colors, import from `colors.ts`

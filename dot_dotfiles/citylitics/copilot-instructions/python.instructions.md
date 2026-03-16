@@ -14,6 +14,7 @@ applyTo: "**/*.py"
 
 - use `list` instead of `List` from `typing` (same for `dict`, `tuple`, `set`, etc.)
 - don't import or use `Any` from `typing`
+- Use `Union` and not `|` for union types (because we use Python 3.9)
 
 ## Django
 
@@ -22,3 +23,8 @@ applyTo: "**/*.py"
 - use drf `Response` instead of `JsonResponse` for API responses
 - Django ORM: minimize the number of database calls
 - import ValidationError from `django.core.exceptions`, not from `django.forms`
+
+## Database
+
+- We use MySQL 8.4 and SQLite in tests
+- we don't use Postgres
