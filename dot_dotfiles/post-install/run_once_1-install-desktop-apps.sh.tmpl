@@ -58,17 +58,24 @@ brew install whatsapp
 brew install wispr-flow
 brew install zoom
 
-mas install 1440147259 # ad guard for Safari
+install_mas() {
+  local app_id="$1"
+  if ! mas list | awk '{print $1}' | grep -q "^${app_id}$"; then
+    mas install "$app_id"
+  fi
+}
 
-mas install 937984704 # Amphetamine: keep mac working
+install_mas 1440147259 # ad guard for Safari
+
+install_mas 937984704 # Amphetamine: keep mac working
 wget https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
 hdiutil attach Amphetamine\ Enhancer.dmg
 cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
 
-mas install 1352778147 # BitWarden: app store version has more features, like TouchID
-mas install 540348655  # Monosnap
-mas install 1406676254 # Splice Crop: crop the middle of an image (M1 macs only)
-mas install 1122008420 # TableTool, view CSVs
+install_mas 1352778147 # BitWarden: app store version has more features, like TouchID
+install_mas 540348655  # Monosnap
+install_mas 1406676254 # Splice Crop: crop the middle of an image (M1 macs only)
+install_mas 1122008420 # TableTool, view CSVs
 
 sudo rm /etc/sudoers.d/timeout
 {{- end }}

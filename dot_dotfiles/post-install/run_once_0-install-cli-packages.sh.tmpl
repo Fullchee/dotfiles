@@ -19,12 +19,67 @@ install_pkg() {
   fi
 }
 
+ensure_command() {
+  local cmd="$1"
+  if ! command -v "$cmd" &> /dev/null; then
+    return 1
+  fi
+  return 0
+}
+
+ensure_cargo_crate() {
+  # Usage: ensure_cargo_crate <bin> [crate]
+  # If only <bin> is provided, assume the crate name matches the binary name.
+  local bin="$1"; shift
+  local crate="$bin"
+  if [ "$#" -gt 0 ]; then
+    crate="$1"
+  fi
+
+  if ! ensure_command "$bin"; then
+    cargo install --locked "$crate"
+  fi
+}
+
+ensure_uv_tool() {
+  local bin="$1" ; shift
+  if ! ensure_command "$bin"; then
+    uv tool install "$@"
+  fi
+}
+
+ensure_npm_global() {
+  local pkg="$1" ; shift
+  if ! npm list -g --depth=0 "$pkg" 2>/dev/null | grep -q "$pkg@"; then
+    npm i -g "$pkg"
+  fi
+}
+
+ensure_brew_cask() {
+  local pkg="$1"
+  if ! brew list --cask | grep -q "^$pkg$"; then
+    brew install --cask "$pkg"
+  fi
+}
+
+ensure_mas_app() {
+  local app_id="$1"
+  if ! mas list | awk '{print $1}' | grep -q "^${app_id}$"; then
+    mas install "$app_id"
+  fi
+}
+
 if $IS_LINUX; then
   sudo apt-get install -y build-essential  # for cargo install, bitwarden CLI to work on linux, provides cc for compiling dependencies
 fi
 
-# download rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# Rust toolchain
+if ! ensure_command rustup; then
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+else
+  rustup self update
+  rustup update
+fi
 . "$HOME/.cargo/env"  # add cargo to current session to install software below
 
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
@@ -75,7 +130,7 @@ install_pkg age       # file encryption for chezmoi
 install_pkg ansible   # Automate deployment, configuration, and upgrading
 {{- end }}
 
-uv tool install bandit  # security linter
+ensure_uv_tool bandit bandit  # security linter
 install_pkg bash      # apple ships bash 3, linux has newer version
 
 install_pkg bat       # better cat
@@ -85,14 +140,23 @@ if $IS_LINUX; then
       sudo ln -s "$(command -v batcat)" /usr/local/bin/bat
   fi
 fi
-pnpm add -g @bitwarden/cli  # to work with varlock
-sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
-cargo install --locked cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
+
+if command -v npm &> /dev/null; then
+  ensure_npm_global @bitwarden/cli  # to work with varlock
+fi
+
+if ! ensure_command chezmoi; then
+  sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
+fi
+
+ensure_cargo_crate cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 install_pkg coreutils
-cargo install --locked choose  # eg: easily get the 3rd item in each line
-cargo install --locked difftastic  # better git diff
+ensure_cargo_crate choose  # eg: easily get the 3rd item in each line
+if ! ensure_command difft && ! ensure_command difftastic; then
+  cargo install --locked difftastic  # better git diff
+fi
 install_pkg eza       # better ls & tree with icons
-cargo install --locked fd-find  # faster find
+ensure_cargo_crate fd fd-find  # faster find
 install_pkg ffmpeg
 install_pkg fzf       # interactive filter
 
@@ -110,14 +174,16 @@ if $IS_LINUX; then
   sudo apt-get update
 fi
 install_pkg helix  # vim with batteries included, no need to manage plugins
-uv tool install httpie  # test APIs from terminal, like Postman but CLI
+ensure_uv_tool httpie httpie  # test APIs from terminal, like Postman but CLI
 install_pkg hyperfine # command benchmarking
 install_pkg imagemagick  # like ffmpeg for images
 install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
 install_pkg just      # a better `Make` and `Makefile` replacement for tasks
 
-curl https://mise.run | sh
+if ! ensure_command mise; then
+  curl https://mise.run | sh
+fi
 eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
 
 install_pkg mosh      # ssh for bad (mobile) connections
@@ -145,39 +211,52 @@ cargo install --locked prek
 prek install || true
 
 # python ------------------------------------------------------------------
-uv tool install ptpython
-uv tool install pyright  # type checker that's faster than mypy
-uv tool install rich-cli # highlight and format text
+ensure_uv_tool ptpython ptpython
+ensure_uv_tool pyright pyright  # type checker that's faster than mypy
+ensure_uv_tool rich-cli rich-cli # highlight and format text
 install_pkg ripgrep   # faster grep
-uv tool install ruff@latest
+ensure_uv_tool ruff ruff@latest
 install_pkg sd        # faster sed
 install_pkg shellcheck
 install_pkg shfmt
-uv tool install sqlfluff
+ensure_uv_tool sqlfluff sqlfluff
 
-cargo install --locked tealdeer  # prompt
+if ! ensure_command tldr && ! ensure_command tealdeer; then
+  cargo install --locked tealdeer  # prompt
+fi
 tldr --update
 
 install_pkg tmux
 install_pkg ugrep   # drop-in grep API when LLM still uses grep
-curl -sSfL https://varlock.dev/install.sh | sh -s  # varlock: AI-safe .env files: Schemas for agents, Secrets for humans.
+if ! ensure_command varlock; then
+  curl -sSfL https://varlock.dev/install.sh | sh -s  # varlock: AI-safe .env files: Schemas for agents, Secrets for humans.
+fi
 install_pkg vim
 
 # weave: language aware merger
-cargo install --git https://github.com/Ataraxy-Labs/weave weave-cli
-cargo install --git https://github.com/Ataraxy-Labs/weave weave-driver
+if ! ensure_command weave; then
+  cargo install --git https://github.com/Ataraxy-Labs/weave weave-cli
+fi
+if ! ensure_command weave-driver; then
+  cargo install --git https://github.com/Ataraxy-Labs/weave weave-driver
+fi
 weave setup
 
 install_pkg wget
 
 # yt-dlp
-rm -rf "$HOME/.local/bin/yt-dlp"
-{{ if eq .chezmoi.os "darwin" }}
-curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o "$HOME/.local/bin/yt-dlp"
-{{ else }}
-curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "$HOME/.local/bin/yt-dlp"
-{{ end }}
-chmod +x "$HOME/.local/bin/yt-dlp"
+if command -v yt-dlp >/dev/null 2>&1; then
+  # Update in-place when already installed
+  yt-dlp -U || true
+else
+  mkdir -p "$HOME/.local/bin"
+  {{ if eq .chezmoi.os "darwin" }}
+  curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o "$HOME/.local/bin/yt-dlp"
+  {{ else }}
+  curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "$HOME/.local/bin/yt-dlp"
+  {{ end }}
+  chmod +x "$HOME/.local/bin/yt-dlp"
+fi
 
 install_pkg zoxide
 install_pkg zsh
