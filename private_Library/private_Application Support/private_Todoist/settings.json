@@ -1,0 +1,12 @@
+{
+	"stay_in_tray": false,
+	"show_in_dock": true,
+	"show_in_menu_bar": false,
+	"global_shortcuts": {
+		"activate": null,
+		"quick_add": null,
+		"quick_add_ramble": "Shift+Alt+Space"
+	},
+	"open_on_system_startup": true,
+	"system_startup_minimized": false
+}
