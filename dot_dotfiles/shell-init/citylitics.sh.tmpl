@@ -263,11 +263,28 @@ sf() {
 }
 
 pt() {
-    if [ $# -eq 0 ]; then
-        docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s
+    # If we're in a DEV-/PROD- workspace clone (even inside a nested subfolder), run from the top-level workspace dir.
+    local workdir
+    if [[ "$PWD" == "$HOME/DEV-"* ]]; then
+        local devdir=${PWD#$HOME/}
+        devdir=${devdir%%/*}
+        workdir="$HOME/$devdir"
+    elif [[ "$PWD" == "$HOME/PROD-"* ]]; then
+        local prodir=${PWD#$HOME/}
+        prodir=${prodir%%/*}
+        workdir="$HOME/$prodir"
     else
-        docker-compose -f local-dev/docker-compose.yml run --rm django pytest -s "$@"
+        workdir="$HOME/watrhub-django"
     fi
+
+    (cd "$workdir" || return 1
+        if [ $# -eq 0 ]; then
+            docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s
+        else
+            docker-compose -f local-dev/docker-compose.yml run --rm django pytest -s "$@"
+        fi
+    )
+    cd -
 }
 
 alias cdf="cd ~/watrhub-django/app/frontend/app"
