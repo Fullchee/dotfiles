@@ -50,6 +50,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee
 
 ```sh
 gh auth login
+gt init
 ```
 
 #### Work Mac
