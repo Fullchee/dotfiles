@@ -182,6 +182,120 @@ delete_current_branch() {
 }
 alias delete-current-branch=delete_current_branch
 
+split_branch_files() {
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "❌ Not a git repository." >&2
+        return 1
+    }
+
+    if ! command -v gt >/dev/null 2>&1; then
+        echo "❌ Graphite (gt) not found on PATH." >&2
+        return 1
+    fi
+
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo "❌ fzf is required for selecting files." >&2
+        return 1
+    fi
+
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "❌ Please commit or stash your working tree changes before running split_branch_files." >&2
+        return 1
+    fi
+
+    local original_branch
+    original_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    # Determine parent branch using Graphite's down command.
+    local parent_branch=""
+    if gt down --no-interactive >/dev/null 2>&1; then
+        parent_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+        git checkout "$original_branch" >/dev/null 2>&1 || true
+    fi
+
+    if [[ -z "$parent_branch" ]]; then
+        echo "❌ Unable to determine parent branch (not stacked?)." >&2
+        return 1
+    fi
+
+    # Get modified files between current branch and parent branch.
+    mapfile -t modified_files < <(git diff --name-only --diff-filter=ACMRTUXB "$parent_branch"..."$original_branch" | sort -u)
+    if [[ ${#modified_files[@]} -eq 0 ]]; then
+        echo "✅ No modified files between '$parent_branch' and '$original_branch'."
+        return 0
+    fi
+
+    # Present the changed files via fzf. Use a tree preview for context.
+    local selected
+    selected=$(printf '%s\n' "${modified_files[@]}" | fzf --multi --ansi --prompt "Select files to split (TAB to multi-select): " \
+        --header "Press TAB to select multiple files, ENTER to continue" \
+        --preview "(command -v tree >/dev/null 2>&1 && tree -C -fi --noreport --dirsfirst \$(dirname {}) || ls -R \$(dirname {}))" \
+        --preview-window=right:60%)
+
+    if [[ -z "$selected" ]]; then
+        echo "⚠️  No files selected." >&2
+        return 1
+    fi
+
+    mapfile -t selected_files < <(printf '%s\n' "$selected")
+
+    # Build a new branch name based on the DEV-#### prefix, or fallback.
+    local ticket
+    ticket=$(echo "$original_branch" | grep -oE 'DEV-[0-9]+' || true)
+    local default_new_branch
+    if [[ -n "$ticket" ]]; then
+        default_new_branch="${ticket}-split"
+    else
+        default_new_branch="${original_branch}-split"
+    fi
+
+    # If this name already exists, append a suffix.
+    local new_branch="$default_new_branch"
+    local suffix=1
+    while git show-ref --verify --quiet "refs/heads/$new_branch"; do
+        new_branch="${default_new_branch}-${suffix}"
+        ((suffix++))
+    done
+
+    read -e -p "New branch name [${new_branch}]: " user_branch
+    new_branch=${user_branch:-$new_branch}
+
+    # 1) Create the new branch from the parent branch
+    git checkout -b "$new_branch" "$parent_branch"
+
+    # 2) Populate it with only the selected files from the original branch
+    git checkout "$original_branch" -- "${selected_files[@]}"
+    git add -- "${selected_files[@]}"
+    if ! git diff --cached --quiet; then
+        git commit -m "split: extract selected files into $new_branch" --no-verify
+    else
+        echo "⚠️  No changes to commit on $new_branch (selected files were already up to date)."
+    fi
+
+    # Ensure Graphite parent relationship for the new branch
+    gt track --parent "$parent_branch" 2>/dev/null || true
+
+    # 3) Return to the original branch and remove the selected files (they live in the new branch now)
+    git checkout "$original_branch"
+    git checkout "$parent_branch" -- "${selected_files[@]}"
+    git add -- "${selected_files[@]}"
+    if ! git diff --cached --quiet; then
+        git commit -m "split: move selected files into $new_branch" --no-verify
+    else
+        echo "⚠️  No changes to commit on $original_branch; selected files already match $parent_branch."
+    fi
+
+    # 4) Rebase the original branch onto the new branch so it becomes a child of it.
+    git rebase --onto "$new_branch" "$parent_branch" "$original_branch"
+
+    # 5) Update Graphite parent/child relationships.
+    gt track --parent "$new_branch" 2>/dev/null || true
+
+    echo "✅ Split complete."
+    echo "New branch: $new_branch (parent: $parent_branch)"
+    echo "Original branch now based on: $new_branch"
+}
+
 delete_remote_branch() {
     if read -q "choice?Delete remote branch? (Y/y)"; then
         branch_name="$(git rev-parse --abbrev-ref HEAD)"
