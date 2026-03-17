@@ -320,7 +320,7 @@ pt() {
 cdf() {
     local repo_root
     repo_root=$(citylitics_repo_root --allow-default) || return 1
-    printf '%s' "$repo_root/app/frontend/app"
+    cd "$repo_root/app/frontend/app" || return 1
 }
 
 frontend() {
