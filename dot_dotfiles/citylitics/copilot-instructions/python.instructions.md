@@ -23,6 +23,7 @@ applyTo: "**/*.py"
 - use drf `Response` instead of `JsonResponse` for API responses
 - Django ORM: minimize the number of database calls
 - import ValidationError from `django.core.exceptions`, not from `django.forms`
+- URLs and the path name should be in snake case
 
 ## Database
 

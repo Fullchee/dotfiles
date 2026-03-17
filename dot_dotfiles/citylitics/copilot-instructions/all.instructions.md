@@ -9,6 +9,7 @@ applyTo: "**/*"
 - Do not use find. Use `fd` for finding files and directories
 - use `gh` (GitHub CLI) instead of `git` when appropriate
     - use `GH_PAGER=cat` to disable paging when using `gh` commands that output to the terminal
+- at the end, run "say" to summarize the response
 
 ## Citylitics
 
