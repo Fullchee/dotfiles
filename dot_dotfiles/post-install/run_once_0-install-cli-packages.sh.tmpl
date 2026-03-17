@@ -151,12 +151,14 @@ fi
 if command -v npm &> /dev/null; then
   ensure_npm_global @bitwarden/cli  # to work with varlock
 fi
-
+ensure_cargo_crate cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 if ! ensure_command chezmoi; then
   sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
 fi
 
-ensure_cargo_crate cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
+if ! ensure_command claude; then
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
 install_pkg coreutils
 ensure_cargo_crate choose  # eg: easily get the 3rd item in each line
 if ! ensure_command difft && ! ensure_command difftastic; then
