@@ -8,12 +8,11 @@ set -euo pipefail
 # Called by chezmoi when it writes the target file. The target path is passed as
 # the first argument.
 
-if [ "$#" -lt 1 ]; then
-  echo "Usage: $0 <target-file>" >&2
-  exit 1
-fi
+# The target is the MonoSnap preferences plist in the user home directory.
+# ChezMoi may invoke this script without providing the target path as an argument,
+# so we default to the known destination.
 
-target="$1"
+target="${1:-$HOME/Library/Containers/com.monosnap.monosnap/Data/Library/Preferences/com.monosnap.monosnap.plist}"
 
 # Ensure the target exists before attempting to modify it.
 [ -e "$target" ] || exit 0
@@ -24,13 +23,14 @@ import plistlib
 import sys
 from pathlib import Path
 
+# Determine the destination path (arg overrides default).
 path = Path(sys.argv[1])
-
-# Load existing plist (can be binary or XML)
 try:
     data = plistlib.loads(path.read_bytes())
 except Exception as e:
     raise SystemExit(f"failed to read plist {path}: {e}")
+
+in_place = True
 
 # Desired fixed settings
 # (These settings are merged into the existing plist.)
@@ -74,5 +74,8 @@ for k, v in new_values.items():
     data[k] = v
 
 # Write back as binary plist (matches what MonoSnap uses)
-path.write_bytes(plistlib.dumps(data, fmt=plistlib.FMT_BINARY))
+if in_place:
+    path.write_bytes(plistlib.dumps(data, fmt=plistlib.FMT_BINARY))
+else:
+    sys.stdout.buffer.write(plistlib.dumps(data, fmt=plistlib.FMT_BINARY))
 PY
