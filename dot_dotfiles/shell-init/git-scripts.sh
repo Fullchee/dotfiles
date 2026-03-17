@@ -171,16 +171,32 @@ recent-branch() {
     }
 
     local branch
-    # ask git for branches without color so fzf doesn't pull in ANSI codes
-    branch=$(git branch --sort=-committerdate --no-color |
-        fzf --header "Checkout Recent Branch" \
-            --preview "git diff {1} --color=always")
+
+    # Prefer Graphite's `gt log` when available (shows branch hierarchy)
+    if command -v gt >/dev/null 2>&1; then
+        # Extract only the branch list lines (ignore help/intro text if Graphite isn't initialized)
+        local gt_branches
+        gt_branches=$(gt log short --no-interactive 2>/dev/null | grep -E '^[[:space:]]*[◉○●*]' || true)
+
+        if [[ -n "$gt_branches" ]]; then
+            branch=$(printf '%s' "$gt_branches" | fzf --header "Checkout Recent Branch" \
+                --preview "git diff {2} --color=always")
+        fi
+    fi
+
+    # Fallback to plain git branches when Graphite isn't available/initialized
+    if [[ -z "$branch" ]]; then
+        branch=$(git branch --sort=-committerdate --no-color |
+            fzf --header "Checkout Recent Branch" \
+                --preview "git diff {1} --color=always")
+    fi
+
     [[ -z "$branch" ]] && return 0
 
     # strip ANSI color codes (escape sequences) so fzf output is clean
     branch=$(printf '%s' "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
-    # remove leading markers (*, +, or whitespace) and trailing whitespace/carriage return
-    branch=$(printf '%s' "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]]+\r?$//')
+    # remove leading markers (Graphite bullet, git marker, or whitespace) and trailing whitespace/carriage return
+    branch=$(printf '%s' "$branch" | sed -E 's/^[^[:alnum:]]*//;s/[[:space:]]+\r?$//')
 
     local worktree_path
     worktree_path=$(git worktree list --porcelain | awk -v b="$branch" '
