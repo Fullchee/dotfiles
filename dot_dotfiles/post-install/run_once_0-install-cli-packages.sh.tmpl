@@ -115,6 +115,13 @@ if $IS_LINUX; then
   sudo apt-get upgrade -y
 fi
 
+# node environment ----------------------------------------------------
+mise use -g node@lts
+npm i -g corepack@latest
+npm i -g npm
+corepack enable pnpm
+corepack use pnpm@latest
+
 # platform-independent package installs -------------------------------------
 
 # adb
@@ -169,6 +176,8 @@ install_pkg git       # up-to-date git
 install_pkg gh        # GitHub CLI
 install_pkg git-filter-repo  # remove a file from git history
 install_pkg git-delta  # git pager, works better for larger files as a pager than difftastic
+pnpm add -g @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
+
 
 if $IS_MAC; then
   install_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
@@ -192,13 +201,6 @@ fi
 eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
 
 install_pkg mosh      # ssh for bad (mobile) connections
-
-# node environment ----------------------------------------------------
-mise use -g node@lts
-npm i -g corepack@latest
-npm i -g npm
-corepack enable pnpm
-corepack use pnpm@latest
 
 install_pkg pgcli
 if $IS_MAC; then

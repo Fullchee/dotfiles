@@ -1,8 +1,9 @@
 alias it="git" # common typo
 
 # Ensure we can define gc as a function even if an alias exists from elsewhere
-unalias gc 2>/dev/null
-unalias gt 2>/dev/null
+# TODO: double check that I can remove these
+# unalias gc 2>/dev/null
+# unalias gt 2>/dev/null
 
 # Some hooks (pre-commit, husky, etc.) may spawn background processes that
 # write files after git exits. If that happens, the commit can fail and the

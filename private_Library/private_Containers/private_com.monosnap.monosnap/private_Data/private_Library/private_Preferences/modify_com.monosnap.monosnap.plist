@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This modify script merges a small set of desired MonoSnap preferences into the
+# existing plist without overwriting other runtime-managed values (like last-open
+# directory state).
+#
+# Called by chezmoi when it writes the target file. The target path is passed as
+# the first argument.
+
+if [ "$#" -lt 1 ]; then
+  echo "Usage: $0 <target-file>" >&2
+  exit 1
+fi
+
+target="$1"
+
+# Ensure the target exists before attempting to modify it.
+[ -e "$target" ] || exit 0
+
+# Update specific keys, leaving everything else untouched.
+python3 - "$target" <<'PY'
+import plistlib
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+
+# Load existing plist (can be binary or XML)
+try:
+    data = plistlib.loads(path.read_bytes())
+except Exception as e:
+    raise SystemExit(f"failed to read plist {path}: {e}")
+
+# Desired fixed settings
+# (These settings are merged into the existing plist.)
+new_values = {
+    "SaveAlways": 1,
+    "firstLaunch": True,
+    "first 10.15 launch": 1,
+    "dont_show": "1",
+    "dontshowal": "1",
+    "nowTheFirstLaunch": False,
+    "welcomeWindowShownToPromoteReferralProgram": False,
+    "welcome_window_showed": 1,
+    "status_bar_view": 4,
+}
+
+# Apply keyboard shortcut settings here if you know the keys.
+# The strings use macOS key-equivalent notation:
+#   @ = Cmd, ^ = Control, $ = Shift, ~ = Option
+# Example (uncomment and customize):
+# new_values["KeyboardShortcuts"] = {
+#     "Capture": "^~C",  # Cmd+Shift+C (example)
+# }
+# Set MonoSnap menu shortcuts for your desired actions (fallback if the app uses
+# the standard NSUserKeyEquivalents mechanism):
+new_values["NSUserKeyEquivalents"] = {
+    "Capture frozen area": "@~5",     # Cmd+Option+5
+    "Open latest image": "@^~$0",    # Cmd+Control+Shift+Option+0
+    "Drag and drop copy -> PNG": "@~6",  # Cmd+Option+6
+    "Copy to Clipboard -> PNG": "@~1",   # Cmd+Option+1
+}
+# Also include a common MonoSnap key if it uses a custom shortcuts dictionary.
+new_values["KeyboardShortcuts"] = {
+    "Capture frozen area": "@~5",
+    "Open latest image": "@^~$0",
+    "Drag and drop copy -> PNG": "@~6",
+    "Copy to Clipboard -> PNG": "@~1",
+}
+
+# Merge in new values (overwrites existing values if present)
+for k, v in new_values.items():
+    data[k] = v
+
+# Write back as binary plist (matches what MonoSnap uses)
+path.write_bytes(plistlib.dumps(data, fmt=plistlib.FMT_BINARY))
+PY
