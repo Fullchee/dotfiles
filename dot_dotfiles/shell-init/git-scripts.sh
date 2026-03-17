@@ -226,11 +226,11 @@ split-branch() {
         return 0
     fi
 
-    # Present the changed files via fzf. Use a tree preview for context.
+    # Present the changed files via fzf. Preview the git diff for the file (parent..current).
     local selected
     selected=$(printf '%s\n' "${modified_files[@]}" | fzf --multi --ansi --prompt "Select files to split (TAB to multi-select): " \
         --header "Press TAB to select multiple files, ENTER to continue" \
-        --preview "(command -v tree >/dev/null 2>&1 && tree -C -fi --noreport --dirsfirst \$(dirname {}) || ls -R \$(dirname {}))" \
+        --preview "git diff --color=always '$parent_branch'...'$original_branch' -- {}" \
         --preview-window=right:60%)
 
     if [[ -z "$selected" ]]; then
@@ -238,7 +238,8 @@ split-branch() {
         return 1
     fi
 
-    mapfile -t selected_files < <(printf '%s\n' "$selected")
+    # zsh doesn't have bash's mapfile; use zsh array capture instead.
+    selected_files=("${(@f)$(printf '%s\n' "$selected")}")
 
     # Build a new branch name based on the DEV-#### prefix, or fallback.
     local ticket
