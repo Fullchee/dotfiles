@@ -15,6 +15,42 @@ export PROJECT_ID=$STAGING_PROJECT # used when copy pasting from the docs
 alias standup="o 'https://citylitics.slack.com/archives/C05S32S0L3F'"
 alias standup-thread="o 'https://citylitics.slack.com/archives/C05S32S0L3F/p1770991207827789?thread_ts=1769702556.260099&cid=C05S32S0L3F'"
 
+# Helper to consistently resolve the Citylitics repo root
+# Usage:
+#   citylitics_repo_root           # errors if not in a git repo
+#   citylitics_repo_root --allow-default  # falls back to the default repo path
+citylitics_repo_root() {
+    local allow_default=0
+    if [[ $1 == "--allow-default" ]]; then
+        allow_default=1
+        shift
+    fi
+
+    local ROOT_PREFIX="$HOME/watrhub-django"
+    local DEFAULT_ROOT="$HOME/watrhub-django/main"
+
+    local repo_root
+    if ! repo_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+        if [[ $allow_default -eq 1 ]]; then
+            repo_root="$DEFAULT_ROOT"
+        else
+            echo "Error: not in a git repository (expected somewhere under $ROOT_PREFIX)." >&2
+            return 1
+        fi
+    fi
+
+    case "$repo_root" in
+        "$ROOT_PREFIX" | "$ROOT_PREFIX"/*)
+            ;; # ok
+        *)
+            echo "Error: repository root '$repo_root' is not under '$ROOT_PREFIX'." >&2
+            return 1
+            ;;
+    esac
+
+    printf '%s' "$repo_root"
+}
+
 ####################### CI/CD #######################
 
 deploy-sha-to-prod() {
@@ -22,8 +58,12 @@ deploy-sha-to-prod() {
     watch-cloud-build main
 }
 
-deploy-sha-to-staging() {
-    local COMMIT_SHA=$(git -C ~/watrhub-django rev-parse HEAD)
+deploy-current-branch-to-staging() {
+    local REPO_ROOT
+    REPO_ROOT=$(citylitics_repo_root) || return 1
+
+    local COMMIT_SHA
+    COMMIT_SHA=$(git -C "$REPO_ROOT" rev-parse HEAD)
 
     gcloud builds triggers run citylitics-app-ci-cd --sha="$COMMIT_SHA"
     watch-cloud-build "$COMMIT_SHA"
@@ -210,7 +250,7 @@ ssh-staging() {
 PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 
 copilot-instructions-repo-to-dotfiles() {
-    local SRC="$HOME/watrhub-django/.github/instructions"
+    local SRC="$HOME/watrhub-django/main/.github/instructions"
     local DEST="$HOME/.dotfiles/citylitics/copilot-instructions"
     rm -rf "$DEST"
     cp -r "$SRC" "$DEST"
@@ -218,27 +258,29 @@ copilot-instructions-repo-to-dotfiles() {
 }
 
 copilot-instructions-dotfiles-to-repo() {
-    local DEST="$HOME/watrhub-django/.github/instructions"
+    local DEST="$HOME/watrhub-django/main/.github/instructions"
     local SRC="$HOME/.dotfiles/citylitics/copilot-instructions"
     rm -rf "$DEST"
     cp -r "$SRC" "$DEST"
 }
 
-alias mw='make -C ~/watrhub-django'
-
 open-ticket() {
-    # 1. Get the current branch name
-    local branch=$(git -C ~/watrhub-django rev-parse --abbrev-ref HEAD 2>/dev/null)
+    local REPO_ROOT
+    REPO_ROOT=$(citylitics_repo_root --allow-default) || return 1
 
-    # Check if we are actually in a git repo
+    # 1. Get the current branch name
+    local branch
+    branch=$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null) || branch=""
+
     if [ -z "$branch" ]; then
-        echo "Error: Could not find git repo at ~/watrhub-django"
+        echo "Error: Could not find a git branch in '$REPO_ROOT'." >&2
         return 1
     fi
 
     # 2. Extract the ticket ID (e.g., DEV-4421) using regex
     # This looks for any uppercase letters followed by a dash and numbers
-    local ticket=$(echo "$branch" | grep -oE '[A-Z]+-[0-9]+')
+    local ticket
+    ticket=$(echo "$branch" | grep -oE '[A-Z]+-[0-9]+')
 
     if [ -n "$ticket" ]; then
         local url="https://citylitics.atlassian.net/browse/$ticket"
@@ -250,32 +292,20 @@ open-ticket() {
     fi
 }
 
-sb() {
-    set-terminal-tab-title start-backend
-    cd ~/watrhub-django || exit
-    make start-backend
-}
-
 sf() {
     set-terminal-tab-title start-frontend
-    cd ~/watrhub-django || exit
+
+    local REPO_ROOT
+    REPO_ROOT=$(citylitics_repo_root --allow-default) || return 1
+
+    cd "$REPO_ROOT" || exit
     make start-frontend
 }
 
 pt() {
-    # If we're in a DEV-/PROD- workspace clone (even inside a nested subfolder), run from the top-level workspace dir.
+    # Prefer running in the citylitics repo root (fallback to default if not inside a git repo).
     local workdir
-    if [[ "$PWD" == "$HOME/DEV-"* ]]; then
-        local devdir=${PWD#$HOME/}
-        devdir=${devdir%%/*}
-        workdir="$HOME/$devdir"
-    elif [[ "$PWD" == "$HOME/PROD-"* ]]; then
-        local prodir=${PWD#$HOME/}
-        prodir=${prodir%%/*}
-        workdir="$HOME/$prodir"
-    else
-        workdir="$HOME/watrhub-django"
-    fi
+    workdir=$(citylitics_repo_root --allow-default) || return 1
 
     (cd "$workdir" || return 1
         if [ $# -eq 0 ]; then
@@ -287,14 +317,22 @@ pt() {
     cd -
 }
 
-alias cdf="cd ~/watrhub-django/app/frontend/app"
+cdf() {
+    local repo_root
+    repo_root=$(citylitics_repo_root --allow-default) || return 1
+    printf '%s' "$repo_root/app/frontend/app"
+}
+
+frontend() {
+    cd "$(citylitics_frontend_app_dir)" || return 1
+}
 
 y() {
-    command yarn --cwd /Users/admin/watrhub-django/app/frontend/app "$@"
+    command yarn --cwd "$(citylitics_frontend_app_dir)" "$@"
 }
 
 yarntest() {
-    command yarn --cwd /Users/admin/watrhub-django/app/frontend/app test --no-watchAll --collectCoverage=false "$@"
+    command yarn --cwd "$(citylitics_frontend_app_dir)" test --no-watchAll --collectCoverage=false "$@"
 }
 
 ####################### END OF LOCAL DEV
