@@ -50,7 +50,8 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Fullchee
 
 ```sh
 gh auth login
-gt init
+gt init  # maybe? or gt repo init?
+llm keys set anthropic
 ```
 
 #### Work Mac

@@ -197,6 +197,9 @@ install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
 install_pkg just      # a better `Make` and `Makefile` replacement for tasks
 
+ensure_uv_tool llm  # pipe LLM input & output from the terminal
+llm install llm-anthropic
+
 if ! ensure_command mise; then
   curl https://mise.run | sh
 fi
