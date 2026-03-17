@@ -811,9 +811,13 @@
 			<key>AWDS Tab Option</key>
 			<string>Recycle</string>
 			<key>AWDS Window Directory</key>
-			<string>/Users/admin/watrhub-django</string>
+			<string>/Users/admin/watrhub-django/main</string>
 			<key>AWDS Window Option</key>
 			<string>Yes</string>
+			<key>Allow Change Cursor Blink</key>
+			<true/>
+			<key>Allow Title Reporting</key>
+			<true/>
 			<key>Ambiguous Double Width</key>
 			<false/>
 			<key>Ansi 0 Color</key>
@@ -1024,6 +1028,8 @@
 				<key>Red Component</key>
 				<real>0.83509939908981323</real>
 			</dict>
+			<key>Automatically Enable Alternate Mouse Scroll</key>
+			<true/>
 			<key>BM Growl</key>
 			<true/>
 			<key>Background Color</key>
@@ -1125,17 +1131,21 @@
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
-			<string>Advanced</string>
+			<string>Recycle</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
 			<string>Default</string>
-			<key>Disable Window Resizing</key>
+			<key>Disable Printing</key>
 			<true/>
+			<key>Disable Smcup Rmcup</key>
+			<true/>
+			<key>Disable Window Resizing</key>
+			<false/>
 			<key>Draw Powerline Glyphs</key>
 			<false/>
 			<key>Flashing Bell</key>
-			<false/>
+			<true/>
 			<key>Foreground Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -1498,7 +1508,7 @@
 				<real>0.34170839190483093</real>
 			</dict>
 			<key>Mouse Reporting</key>
-			<false/>
+			<true/>
 			<key>Name</key>
 			<string>Hotkey Window</string>
 			<key>Non Ascii Font</key>
@@ -1515,6 +1525,8 @@
 			<integer>2</integer>
 			<key>Prompt Before Closing 2</key>
 			<integer>2</integer>
+			<key>Prompt Path Click Opens Navigator</key>
+			<true/>
 			<key>Right Option Key Changeable</key>
 			<true/>
 			<key>Right Option Key Sends</key>
@@ -1557,10 +1569,12 @@
 			<integer>10</integer>
 			<key>Shortcut</key>
 			<string></string>
+			<key>Show Status Bar</key>
+			<false/>
 			<key>Show Timestamps</key>
 			<integer>2</integer>
 			<key>Silence Bell</key>
-			<false/>
+			<true/>
 			<key>Space</key>
 			<integer>-1</integer>
 			<key>Sync Title</key>
@@ -1588,7 +1602,7 @@
 			<key>Window Type</key>
 			<integer>2</integer>
 			<key>Working Directory</key>
-			<string>/Users/fullchee.zhang@ibm.com</string>
+			<string></string>
 		</dict>
 	</array>
 	<key>OpenArrangementAtStartup</key>
