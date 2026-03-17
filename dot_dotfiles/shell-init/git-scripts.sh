@@ -116,6 +116,27 @@ push() {
 delete_current_branch() {
     branch_name="$(git rev-parse --abbrev-ref HEAD)"
 
+    # Graphite (gt) can move between branches in a stack with `gt up` / `gt down`.
+    # Capture the branches we'd switch to, without leaving the current branch.
+    local gt_up_branch=""
+    local gt_down_branch=""
+
+    if command -v gt >/dev/null 2>&1; then
+        local original_branch="$branch_name"
+
+        # If there is a downstack branch (parent), capture it.
+        if gt down --no-interactive >/dev/null 2>&1; then
+            gt_down_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+            git checkout "$original_branch" >/dev/null 2>&1 || true
+        fi
+
+        # If there is an upstack branch (child), capture it.
+        if gt up --no-interactive >/dev/null 2>&1; then
+            gt_up_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+            git checkout "$original_branch" >/dev/null 2>&1 || true
+        fi
+    fi
+
     # if this repo is actually a worktree, git will report the path of the
     # superproject; we can use that to clean up the worktree directory and
     # return the user to the original repo root after deleting the branch.
@@ -127,7 +148,14 @@ delete_current_branch() {
         local cwd="$PWD"
 
         cd "$superpath" || echo "⚠️  could not cd to superproject at $superpath"
-        git checkout main
+
+        # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main.
+        if [[ -n "$gt_up_branch" ]]; then
+            git checkout "$gt_up_branch"
+        else
+            git checkout main
+        fi
+
         git branch -D "$branch_name"
 
         # remove the worktree folder and leap back to the superproject
@@ -136,8 +164,20 @@ delete_current_branch() {
         # prune any stale worktree references
         git worktree prune
     else
-        git checkout main
+        # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main.
+        if [[ -n "$gt_up_branch" ]]; then
+            git checkout "$gt_up_branch"
+        else
+            git checkout main
+        fi
+
         git branch -D "$branch_name"
+    fi
+
+    # If we captured a downstack branch, update the new current branch to track it.
+    # This makes sure Graphite's parent/child relationships remain wired after deletion.
+    if command -v gt >/dev/null 2>&1 && [[ -n "$gt_down_branch" ]]; then
+        gt track --parent "$gt_down_branch" 2>/dev/null || true
     fi
 }
 alias delete-current-branch=delete_current_branch
