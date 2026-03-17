@@ -160,6 +160,11 @@ ensure_cargo_crate fd fd-find  # faster find
 install_pkg ffmpeg
 install_pkg fzf       # interactive filter
 
+if $IS_LINUX; then
+  # get newer git version
+  sudo apt-add-repository -y ppa:git-core/ppa
+  sudo apt-get update
+fi
 install_pkg git       # up-to-date git
 install_pkg gh        # GitHub CLI
 install_pkg git-filter-repo  # remove a file from git history
