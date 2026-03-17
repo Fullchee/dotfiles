@@ -219,7 +219,8 @@ split-branch() {
     fi
 
     # Get modified files between current branch and parent branch.
-    mapfile -t modified_files < <(git diff --name-only --diff-filter=ACMRTUXB "$parent_branch"..."$original_branch" | sort -u)
+    modified_files=("${(@f)$(git diff --name-only --diff-filter=ACMRTUXB "$parent_branch"..."$original_branch" | sort -u)}")
+
     if [[ ${#modified_files[@]} -eq 0 ]]; then
         echo "✅ No modified files between '$parent_branch' and '$original_branch'."
         return 0
