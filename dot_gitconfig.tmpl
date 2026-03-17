@@ -133,9 +133,7 @@
 	default = simple
 	followTags = true
 [pull]
-	# convenient: if rebase works, great!
-	# if it doesn't work: just `git rebase --abort` and `git merge origin/main`
-	rebase = true
+	rebase = false
 [rebase]
 	# `git commit --fixup OLD_COMMIT_ID` sets the commit message to 'fixup! old_commit message'
 	# `git rebase --autosquash main` will combine all the fixup! commits with their targets
