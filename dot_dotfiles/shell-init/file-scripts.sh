@@ -72,6 +72,25 @@ youtube-worst-video() {
 alias y3=youtube-worst-audio
 alias y4=youtube-worst-video
 
+# Convert MP3 to YouTube-ready MP4 with a black background
+# Usage: mp3toyt input.mp3
+mp3toyt() {
+    if [ -z "$1" ]; then
+        echo "Usage: mp3toyt <filename.mp3>"
+        return 1
+    fi
+
+    local input="$1"
+    local output="${input%.*}.mp4"
+
+    ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 \
+           -i "$input" \
+           -c:v libx264 -tune stillimage -pix_fmt yuv420p \
+           -c:a copy -shortest "$output"
+
+    echo "Conversion complete: $output"
+}
+
 compress-video() {
     local input_file="$1"
 
