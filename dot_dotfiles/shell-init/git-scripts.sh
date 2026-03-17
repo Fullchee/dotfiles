@@ -182,7 +182,7 @@ delete_current_branch() {
 }
 alias delete-current-branch=delete_current_branch
 
-split_branch_files() {
+split-branch() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
         echo "❌ Not a git repository." >&2
         return 1
