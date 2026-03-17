@@ -33,7 +33,7 @@ zstyle ':prezto:load' pmodule \
   'utility' \
   'completion' \
   'autosuggestions' \
-  'git' \
+#  'git' \  # don't use git, I override gc and gt
   'prompt' \
   'archive' \
   'syntax-highlighting'
