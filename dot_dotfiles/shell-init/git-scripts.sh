@@ -2,6 +2,31 @@ alias it="git" # common typo
 
 # Ensure we can define gc as a function even if an alias exists from elsewhere
 unalias gc 2>/dev/null
+unalias gt 2>/dev/null
+
+# Some hooks (pre-commit, husky, etc.) may spawn background processes that
+# write files after git exits. If that happens, the commit can fail and the
+# working tree will have unstaged changes shortly after the hook exits.
+#
+# This helper polls for a few seconds and stages any discovered changes.
+_stage_pending_hook_changes() {
+    local -i max_attempts=50  # ~5s at 0.1s per attempt
+    local -i attempt=0
+
+    while (( attempt < max_attempts )); do
+        # `git diff --quiet` exits 1 when there are unstaged changes.
+        if ! git diff --quiet; then
+            git add -u
+            return 0
+        fi
+
+        sleep 0.1
+        ((attempt++))
+    done
+
+    # Final attempt to stage anything that might have appeared just after.
+    git add -u
+}
 
 gc() {
     git add -u
@@ -12,8 +37,12 @@ gc() {
     else
         echo "⚠️  Commit failed (pre-commit hook). Retrying once..."
 
+        # Some hook runners (e.g. `pre-commit`, `husky`) may spawn background
+        # processes that keep writing files after git exits. Poll for any unstaged
+        # changes and stage them before retrying.
+        _stage_pending_hook_changes
+
         # Second attempt
-        git add -u
         if git commit -m "$*"; then
             echo "✅ Success on second try."
             return 0
@@ -65,8 +94,12 @@ push() {
     else
         echo "⚠️  Commit failed (pre-commit hook). Retrying once..."
 
+        # Some hook runners (e.g. `pre-commit`, `husky`) may spawn background
+        # processes that keep writing files after git exits. Poll for any unstaged
+        # changes and stage them before retrying.
+        _stage_pending_hook_changes
+
         # Second attempt
-        git add -u
         if git commit -m "$*"; then
             echo "✅ Success on second try."
             git push
