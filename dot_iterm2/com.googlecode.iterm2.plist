@@ -34,6 +34,8 @@
 	<string></string>
 	<key>Default Bookmark Guid</key>
 	<string>DC8ED7B4-5398-4A27-8A77-D751B457AD55</string>
+	<key>Default Browser Profile Guid</key>
+	<string>DC8ED7B4-5398-4A27-8A77-D751B457AD55</string>
 	<key>DisableFullscreenTransparency</key>
 	<false/>
 	<key>EnableAPIServer</key>
@@ -444,6 +446,8 @@
 			<string>DC8ED7B4-5398-4A27-8A77-D751B457AD55</string>
 			<key>Horizontal Spacing</key>
 			<real>1</real>
+			<key>Icon</key>
+			<integer>1</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
@@ -738,6 +742,8 @@
 					<string>[1;5F</string>
 				</dict>
 			</dict>
+			<key>Load Shell Integration Automatically</key>
+			<true/>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
@@ -1145,7 +1151,7 @@
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
-			<string>Recycle</string>
+			<string>Advanced</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
@@ -1521,6 +1527,8 @@
 				<key>Red Component</key>
 				<real>0.34170839190483093</real>
 			</dict>
+			<key>Load Shell Integration Automatically</key>
+			<true/>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
@@ -1548,7 +1556,7 @@
 			<key>Rows</key>
 			<integer>10</integer>
 			<key>Screen</key>
-			<integer>-1</integer>
+			<integer>-2</integer>
 			<key>Scrollback Lines</key>
 			<integer>0</integer>
 			<key>Selected Text Color</key>
@@ -1605,6 +1613,8 @@
 			<true/>
 			<key>Use Bright Bold</key>
 			<true/>
+			<key>Use Custom Window Title</key>
+			<false/>
 			<key>Use Italic Font</key>
 			<true/>
 			<key>Use Non-ASCII Font</key>
