@@ -58,7 +58,47 @@ gc() {
 
 alias gs="git st"
 alias fetchmerge="git fetch && git merge origin/main --no-edit"
-alias fm=fetchmerge
+
+# Fetch, then walk the Graphite stack from the bottom up, merging each branch with its remote
+# and folding changes into its parent as we go.
+fm() {
+    git fetch
+
+    # 1) Descend to the bottom of the stack.
+    while gt down --no-interactive >/dev/null 2>&1; do
+        :
+    done
+
+    while true; do
+        local current_branch
+        current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        echo "🔄 Updating branch '$current_branch'"
+        git merge "origin/$current_branch" --no-edit || return 1
+
+        if [[ "$current_branch" != "main" ]]; then
+            git push
+        fi
+
+        local child_branch="$current_branch"
+
+        # 2) Move up to the parent branch (if any)
+        if ! gt up --no-interactive >/dev/null 2>&1; then
+            # We're at the top of the stack.
+            break
+        fi
+
+        local parent_branch
+        parent_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        echo "🔀 Merging '$child_branch' into parent '$parent_branch'"
+        git merge "$child_branch" --no-edit || return 1
+
+        # Continue the loop; the next iteration will operate on the parent branch.
+    done
+
+    echo "✅ fm complete."
+}
 
 git-clone-personal() {
     local REPO_URL="$1"
