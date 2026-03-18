@@ -284,11 +284,14 @@ split-branch() {
         echo "⚠️  No changes to commit on $original_branch; selected files already match $parent_branch."
     fi
 
-    # 4) Rebase the original branch onto the new branch so it becomes a child of it.
-    git rebase --onto "$new_branch" "$parent_branch" "$original_branch"
+    # 4) Merge the new branch into the original branch (do not rebase).
+    #    This keeps the original branch history intact while bringing in the split commits.
+    git checkout "$original_branch" || return 1
+    git merge --no-ff "$new_branch" -m "merge: incorporate changes from $new_branch into $original_branch" || return 1
 
-    # 5) Update Graphite parent/child relationships.
+    # 5) Update Graphite parent/child relationships and restack.
     gt track --parent "$new_branch" 2>/dev/null || true
+    gt restack 2>/dev/null || true
 
     echo "✅ Split complete."
     echo "New branch: $new_branch (parent: $parent_branch)"
