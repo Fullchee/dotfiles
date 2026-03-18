@@ -59,11 +59,65 @@ gc() {
 alias gs="git st"
 alias fetchmerge="git fetch && git merge origin/main --no-edit"
 
-# Fetch, then walk the Graphite stack from the bottom up, merging each branch with its remote
-# and folding changes into its parent as we go.
-fm() {
+_fm_push_if_not_main() {
+    local branch="$1"
+    [[ "$branch" != "main" ]] && git push
+}
+
+_fm_merge_from_origin() {
+    local branch="$1"
+    echo "🔄 Updating branch '$branch' from origin"
+    git merge "origin/$branch" --no-edit || return 1
+    _fm_push_if_not_main "$branch"
+}
+
+_fm_merge_into_parent() {
+    local child="$1"
+    local parent="$2"
+    echo "🔀 Merging '$child' into parent '$parent'"
+    git merge "$child" --no-edit || return 1
+}
+
+_fm_run() {
+    local mode="$1"        # "parent-only" or "full"
+    local restore="$2"     # "true" to return to the original branch
+
     git fetch
 
+    local original_branch
+    if [[ "$restore" == "true" ]]; then
+        original_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    fi
+
+    if [[ "$mode" == "parent-only" ]]; then
+        # 1) Ascend to the top of the stack.
+        while gt up --no-interactive >/dev/null 2>&1; do
+            :
+        done
+
+        # Update the top (parent-most) branch from remote, then propagate it down.
+        local parent_branch
+        parent_branch=$(git rev-parse --abbrev-ref HEAD)
+
+        echo "🔄 Updating parent branch '$parent_branch' from origin"
+        _fm_merge_from_origin "$parent_branch"
+
+        # 2) Descend through the stack, merging each parent into its child.
+        while gt down --no-interactive >/dev/null 2>&1; do
+            local child_branch
+            child_branch=$(git rev-parse --abbrev-ref HEAD)
+
+            echo "🔄 Updating branch '$child_branch' from parent '$parent_branch'"
+            git merge "$parent_branch" --no-edit || return 1
+            _fm_push_if_not_main "$child_branch"
+
+            parent_branch="$child_branch"
+        done
+
+        return 0
+    fi
+
+    # "full" mode: merge each branch from origin, then merge child -> parent.
     # 1) Descend to the bottom of the stack.
     while gt down --no-interactive >/dev/null 2>&1; do
         :
@@ -73,12 +127,7 @@ fm() {
         local current_branch
         current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-        echo "🔄 Updating branch '$current_branch'"
-        git merge "origin/$current_branch" --no-edit || return 1
-
-        if [[ "$current_branch" != "main" ]]; then
-            git push
-        fi
+        _fm_merge_from_origin "$current_branch"
 
         local child_branch="$current_branch"
 
@@ -91,13 +140,29 @@ fm() {
         local parent_branch
         parent_branch=$(git rev-parse --abbrev-ref HEAD)
 
-        echo "🔀 Merging '$child_branch' into parent '$parent_branch'"
-        git merge "$child_branch" --no-edit || return 1
+        _fm_merge_into_parent "$child_branch" "$parent_branch"
 
         # Continue the loop; the next iteration will operate on the parent branch.
     done
 
+    # Return to whatever branch we started on.
+    if [[ "$restore" == "true" && -n "$original_branch" ]]; then
+        git checkout "$original_branch" >/dev/null 2>&1 || true
+    fi
+}
+
+# Fetch, then walk the Graphite stack from the top down, pulling only from the parent branch.
+# This keeps each child branch up-to-date with its parent without pulling from remote for every branch.
+fm() {
+    _fm_run "parent-only"
     echo "✅ fm complete."
+}
+
+# Legacy behavior: fetch+merge from origin for every branch in the stack, then fold
+# each child into its parent. This mirrors the previous version of `fm`.
+fm-all() {
+    _fm_run "full" "true"
+    echo "✅ fm-all complete."
 }
 
 git-clone-personal() {
