@@ -244,19 +244,16 @@ split-branch() {
     # Build a new branch name based on the DEV-#### prefix, or fallback.
     local ticket
     ticket=$(echo "$original_branch" | grep -oE 'DEV-[0-9]+' || true)
-    local default_new_branch
+    local new_branch
     if [[ -n "$ticket" ]]; then
-        default_new_branch="${ticket}-split"
+        new_branch="${ticket}-split"
     else
-        default_new_branch="${original_branch}-split"
+        new_branch="${original_branch}-split"
     fi
 
-    # If this name already exists, append a suffix.
-    local new_branch="$default_new_branch"
-    local suffix=1
+    # If this name already exists, keep appending "-split" until it's unique.
     while git show-ref --verify --quiet "refs/heads/$new_branch"; do
-        new_branch="${default_new_branch}-${suffix}"
-        ((suffix++))
+        new_branch="${new_branch}-split"
     done
 
     read -e -p "New branch name [${new_branch}]: " user_branch
