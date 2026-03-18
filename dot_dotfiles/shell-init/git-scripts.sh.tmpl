@@ -162,6 +162,10 @@ git-clone-personal() {
 }
 
 alias pull='git stash && git pull && git stash pop'
+
+{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
+# On Fullchee-Citylitics we avoid defining a `push` function to prevent collisions.
+{{- else }}
 push() {
     git add -u
 
@@ -186,6 +190,7 @@ push() {
         fi
     fi
 }
+{{- end }}
 
 ############### BRANCHES #####################
 
