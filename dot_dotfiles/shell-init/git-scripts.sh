@@ -444,6 +444,14 @@ createpr() {
 ## Changes
 
 - ${DESCRIPTION_TITLE}
+
+## Review instructions
+
+1.
+
+## ``/verify-changes``
+
+
 "
 
     # 5. Create PR via GitHub CLI
