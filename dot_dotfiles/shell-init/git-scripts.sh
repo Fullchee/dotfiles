@@ -1,4 +1,6 @@
-alias it="git" # common typo
+# common typos for git
+alias it="git"
+alias gti="git"
 
 # Ensure we can define gc as a function even if an alias exists from elsewhere
 # TODO: double check that I can remove these
