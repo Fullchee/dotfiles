@@ -69,21 +69,21 @@ fm() {
         :
     done
 
-    # Update the top (parent-most) branch from its remote, then propagate it down.
+    # Update the top (parent-most) branch from origin, then propagate it down.
     local parent_branch
     parent_branch=$(git rev-parse --abbrev-ref HEAD)
 
-    echo "🔄 Pulling latest for parent branch '$parent_branch'"
-    git pull --no-edit || return 1
+    echo "🔄 Updating parent branch '$parent_branch' from origin"
+    git merge --ff-only "origin/$parent_branch" --no-edit 2>/dev/null || git merge "origin/$parent_branch" --no-edit || return 1
     [[ "$parent_branch" != "main" ]] && git push
 
-    # 2) Descend through the stack, pulling each branch and merging in the local parent.
+    # 2) Descend through the stack, updating each branch from origin and merging in the local parent.
     while gt down --no-interactive >/dev/null 2>&1; do
         local child_branch
         child_branch=$(git rev-parse --abbrev-ref HEAD)
 
-        echo "🔄 Pulling latest for branch '$child_branch'"
-        git pull --no-edit || return 1
+        echo "🔄 Updating branch '$child_branch' from origin"
+        git merge --ff-only "origin/$child_branch" --no-edit 2>/dev/null || git merge "origin/$child_branch" --no-edit || return 1
 
         echo "🔄 Merging parent branch '$parent_branch' into '$child_branch'"
         git merge "$parent_branch" --no-edit || return 1
@@ -112,8 +112,8 @@ fm-all() {
         local current_branch
         current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-        echo "🔄 Pulling latest for branch '$current_branch'"
-        git pull --no-edit || return 1
+        echo "🔄 Updating branch '$current_branch' from origin"
+        git merge --ff-only "origin/$current_branch" --no-edit 2>/dev/null || git merge "origin/$current_branch" --no-edit || return 1
         [[ "$current_branch" != "main" ]] && git push
 
         # Move up to the parent branch (if any)
