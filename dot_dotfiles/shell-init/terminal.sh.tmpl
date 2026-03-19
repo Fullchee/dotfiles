@@ -83,6 +83,8 @@ set-terminal-tab-title() {
   printf "%b%s%b" "$osc_header" "$content" "$osc_terminator"
 }
 
+export VISUAL=hx
+
 ## zsh
 alias sz="source ~/.zshrc"
 eval "$(zoxide init zsh)"
