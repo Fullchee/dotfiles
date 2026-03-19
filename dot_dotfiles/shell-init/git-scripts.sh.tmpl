@@ -357,18 +357,32 @@ split-branch() {
         new_branch="$original_branch"
     fi
 
-    # If the suggested branch already exists, prompt the user for an alternate name.
-    while git show-ref --verify --quiet "refs/heads/$new_branch"; do
-        read -e -p "Branch '$new_branch' already exists. Enter a new name: " user_branch
-        if [[ -z "$user_branch" ]]; then
-            echo "Please provide a different branch name."
+    # Ensure the branch name starts with the same DEV-#### ticket as the parent branch.
+    local parent_ticket
+    parent_ticket=$(echo "$parent_branch" | grep -oE 'DEV-[0-9]+' || true)
+    if [[ -n "$parent_ticket" && "$new_branch" != "$parent_ticket"* ]]; then
+        new_branch="${parent_ticket}-${new_branch}"
+    fi
+
+    # Prompt the user for a branch name, ensuring it remains unique and uses the correct ticket prefix.
+    while true; do
+        read -e -p "New branch name [${new_branch}]: " user_branch
+        user_branch=${user_branch:-$new_branch}
+
+        if [[ -n "$parent_ticket" && "$user_branch" != "$parent_ticket"* ]]; then
+            echo "Branch must start with '$parent_ticket'."
+            user_branch="${parent_ticket}-${user_branch}"
+        fi
+
+        if git show-ref --verify --quiet "refs/heads/$user_branch"; then
+            echo "Branch '$user_branch' already exists."
+            new_branch="$user_branch"
             continue
         fi
-        new_branch="$user_branch"
-    done
 
-    read -e -p "New branch name [${new_branch}]: " user_branch
-    new_branch=${user_branch:-$new_branch}
+        new_branch="$user_branch"
+        break
+    done
 
     # 1) Create the new branch from the parent branch
     git checkout -b "$new_branch" "$parent_branch"
