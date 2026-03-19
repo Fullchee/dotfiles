@@ -133,7 +133,11 @@ venv() {
   if [[ -f "$1/venv/bin/activate" ]]; then
     source "$1/venv/bin/activate"
   elif [[ -f "$1/.venv/bin/activate" ]]; then
-    source "$1.venv/bin/activate"
+    source "$1/.venv/bin/activate"
+  elif [[ -f "$1/../venv/bin/activate" ]]; then
+    source "$1/../venv/bin/activate"
+  elif [[ -f "$1/../.venv/bin/activate" ]]; then
+    source "$1/../.venv/bin/activate"
   elif [[ -f "$1/bin/activate" ]]; then
     source "$1/bin/activate"
   else
