@@ -27,17 +27,27 @@ ensure_command() {
   return 0
 }
 
-ensure_cargo_crate() {
-  # Usage: ensure_cargo_crate <bin> [crate]
+ensure_cargo_install() {
+  # Usage: ensure_cargo_install <bin> [crate] [--git <git_url> [cargo args...]]
   # If only <bin> is provided, assume the crate name matches the binary name.
   local bin="$1"; shift
   local crate="$bin"
-  if [ "$#" -gt 0 ]; then
-    crate="$1"
+  if [ "$#" -gt 0 ] && [ "$1" != "--git" ]; then
+    crate="$1"; shift
+  fi
+
+  local git_url=""
+  if [ "$#" -gt 0 ] && [ "$1" = "--git" ]; then
+    shift
+    git_url="$1"; shift
   fi
 
   if ! ensure_command "$bin"; then
-    cargo install --locked "$crate"
+    if [ -n "$git_url" ]; then
+      cargo install --git "$git_url" "$crate" "$@"
+    else
+      cargo install --locked "$crate" "$@"
+    fi
   fi
 }
 
@@ -151,7 +161,7 @@ fi
 if command -v npm &> /dev/null; then
   ensure_npm_global @bitwarden/cli  # to work with varlock
 fi
-ensure_cargo_crate cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
+ensure_cargo_install cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 if ! ensure_command chezmoi; then
   sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
 fi
@@ -160,12 +170,12 @@ if ! ensure_command claude; then
   curl -fsSL https://claude.ai/install.sh | bash
 fi
 install_pkg coreutils
-ensure_cargo_crate choose  # eg: easily get the 3rd item in each line
+ensure_cargo_install choose  # eg: easily get the 3rd item in each line
 if ! ensure_command difft && ! ensure_command difftastic; then
-  cargo install --locked difftastic  # better git diff
+  ensure_cargo_install difftastic  # better git diff
 fi
 install_pkg eza       # better ls & tree with icons
-ensure_cargo_crate fd fd-find  # faster find
+ensure_cargo_install fd fd-find  # faster find
 install_pkg ffmpeg
 install_pkg fzf       # interactive filter
 
@@ -219,7 +229,7 @@ createuser -s postgres
 createuser -s "$USER"
 createdb "$USER"
 
-cargo install --locked prek
+ensure_cargo_install prek
 prek install || true
 
 # python ------------------------------------------------------------------
@@ -234,7 +244,7 @@ install_pkg shfmt
 ensure_uv_tool sqlfluff sqlfluff
 
 if ! ensure_command tldr && ! ensure_command tealdeer; then
-  cargo install --locked tealdeer  # prompt
+  ensure_cargo_install tealdeer  # prompt
 fi
 tldr --update
 
@@ -246,15 +256,14 @@ fi
 install_pkg vim
 
 # weave: language aware merger
-if ! ensure_command weave; then
-  cargo install --git https://github.com/Ataraxy-Labs/weave weave-cli
-fi
-if ! ensure_command weave-driver; then
-  cargo install --git https://github.com/Ataraxy-Labs/weave weave-driver
-fi
+ensure_cargo_install weave weave-cli --git https://github.com/Ataraxy-Labs/weave
+ensure_cargo_install weave-driver weave-driver --git https://github.com/Ataraxy-Labs/weave
 weave setup
 
 install_pkg wget
+
+ensure_cargo_install wt worktrunk
+wt config shell install
 
 # yt-dlp
 if command -v yt-dlp >/dev/null 2>&1; then
