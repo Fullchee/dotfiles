@@ -195,7 +195,25 @@ push() {
 ############### BRANCHES #####################
 
 delete_current_branch() {
+    local force=0
+    while getopts "f" opt; do
+        case "$opt" in
+            f) force=1 ;;
+            *) ;;
+        esac
+    done
+    shift $((OPTIND-1))
+
     branch_name="$(git rev-parse --abbrev-ref HEAD)"
+
+    # If we are inside a git worktree, opt out unless explicitly forced.
+    # This avoids accidentally deleting the branch while in a worktree checkout.
+    local superpath
+    superpath=$(git rev-parse --show-superproject-working-tree 2>/dev/null || true)
+    if [[ -n "$superpath" && "$force" -ne 1 ]]; then
+        echo "❌ Refusing to delete the current branch from within a git worktree. Run with -f to force." >&2
+        return 1
+    fi
 
     # Graphite (gt) can move between branches in a stack with `gt up` / `gt down`.
     # Capture the branches we'd switch to, without leaving the current branch.
@@ -221,8 +239,6 @@ delete_current_branch() {
     # if this repo is actually a worktree, git will report the path of the
     # superproject; we can use that to clean up the worktree directory and
     # return the user to the original repo root after deleting the branch.
-    local superpath
-    superpath=$(git rev-parse --show-superproject-working-tree 2>/dev/null)
 
     if [[ -n "$superpath" ]]; then
         # remember where we started so we can remove it and cd back
