@@ -652,6 +652,7 @@ createpr() {
 
     # 5. Create PR via GitHub CLI
     gh pr create \
+        --base "$parent_branch" \
         --title "$PR_TITLE" \
         --body "$PR_BODY" \
         --assignee "@me" \
