@@ -1,5 +1,2 @@
 #!/bin/bash
-cd "/Users/admin/watrhub-django/main" || exit
-
-# Fetch the latest from remote
-git fetch origin main:main
+git -C "/Users/admin/watrhub-django/main" -c "fetch.prune=true" fetch origin main:main
