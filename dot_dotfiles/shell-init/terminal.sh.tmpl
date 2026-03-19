@@ -1,3 +1,10 @@
+#!/bin/zsh
+
+### Common universal environment variables
+export PAGER=bat  # nicer than the default less
+export VISUAL=hx
+export EDITOR="$VISUAL"
+
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
@@ -82,8 +89,6 @@ set-terminal-tab-title() {
   # Print using %b for escapes and %s for strings
   printf "%b%s%b" "$osc_header" "$content" "$osc_terminator"
 }
-
-export VISUAL=hx
 
 ## zsh
 alias sz="source ~/.zshrc"
