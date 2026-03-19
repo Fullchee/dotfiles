@@ -440,20 +440,53 @@ recent-branch() {
 
     # If the branch is checked out in a different worktree, `git checkout` will fail.
     # We can locate the correct worktree path from `git worktree list --porcelain`.
+    #
+    # Note: some workflows (e.g. using fixed worktree folders like "main"/"secondary")
+    # may leave stale `.git/worktrees/*` entries for branches that no longer exist.
+    # Ignore worktrees whose directories are missing.
     local worktree_path=""
     local target_worktree=""
     while IFS= read -r line; do
         if [[ "$line" == worktree\ * ]]; then
             worktree_path="${line#worktree }"
+            # strip trailing whitespace/carriage returns
+            worktree_path=$(printf '%s' "$worktree_path" | sed -E 's/[[:space:]]+\r?$//')
+
+            # ignore stale worktrees (git can leave records behind)
+            if [[ ! -d "$worktree_path" ]]; then
+                worktree_path=""
+            fi
         elif [[ "$line" == branch\ * ]]; then
             local br="${line#branch }"
             br="${br#refs/heads/}"
-            if [[ "$br" == "$branch" ]]; then
+            if [[ "$br" == "$branch" && -n "$worktree_path" ]]; then
                 target_worktree="$worktree_path"
                 break
             fi
         fi
     done < <(git worktree list --porcelain)
+
+    # Some workflows keep only a couple of worktrees (e.g. "main"/"secondary").
+    # If the worktree list is stale (or missing), fall back to checking those.
+    if [[ -z "$target_worktree" ]]; then
+        local repo_root
+        repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+        if [[ -n "$repo_root" ]]; then
+            local base_dir
+            base_dir=$(dirname "$repo_root")
+            for candidate in main secondary; do
+                local candidate_path="$base_dir/$candidate"
+                if [[ -d "$candidate_path" ]]; then
+                    local current_branch
+                    current_branch=$(git -C "$candidate_path" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+                    if [[ "$current_branch" == "$branch" ]]; then
+                        target_worktree="$candidate_path"
+                        break
+                    fi
+                fi
+            done
+        fi
+    fi
 
     if [[ -n "$target_worktree" ]]; then
         echo "🔀 Switching to worktree: $target_worktree"
