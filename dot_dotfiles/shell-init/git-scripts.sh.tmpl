@@ -163,10 +163,13 @@ git-clone-personal() {
 
 alias pull='git stash && git pull && git stash pop'
 
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
-# On Fullchee-Citylitics we avoid defining a `push` function to prevent collisions.
-{{- else }}
 push() {
+    # On Fullchee-Citylitics, avoid defining push in ~/watrhub-django to prevent collisions.
+    if [[ "$(hostname)" == "Fullchee-Citylitics" && "$PWD" == "$HOME/watrhub-django"* ]]; then
+        echo "❌ 'push' is disabled in $HOME/watrhub-django on this host to reduce Claude Code review costs"
+        return 1
+    fi
+
     git add -u
 
     # Attempt the commit
@@ -190,7 +193,6 @@ push() {
         fi
     fi
 }
-{{- end }}
 
 ############### BRANCHES #####################
 

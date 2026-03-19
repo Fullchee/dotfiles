@@ -90,6 +90,9 @@ set-terminal-tab-title() {
   printf "%b%s%b" "$osc_header" "$content" "$osc_terminator"
 }
 
+# worktrunk (wt) terminal integration
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
 ## zsh
 alias sz="source ~/.zshrc"
 eval "$(zoxide init zsh)"
