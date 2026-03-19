@@ -65,6 +65,9 @@ alias fetchmerge="git fetch && git merge origin/main --no-edit"
 fm() {
     git fetch
 
+    local original_branch
+    original_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+
     # 1) Ascend to the top of the stack.
     while gt up --no-interactive >/dev/null 2>&1; do
         :
@@ -75,7 +78,12 @@ fm() {
     parent_branch=$(git rev-parse --abbrev-ref HEAD)
 
     echo "🔄 Updating parent branch '$parent_branch' from origin"
-    git merge --ff-only "origin/$parent_branch" --no-edit 2>/dev/null || git merge "origin/$parent_branch" --no-edit || return 1
+    if ! git merge --ff-only "origin/$parent_branch" --no-edit 2>/dev/null; then
+        git merge "origin/$parent_branch" --no-edit || {
+            git checkout "$original_branch" >/dev/null 2>&1 || true
+            return 1
+        }
+    fi
     [[ "$parent_branch" != "main" ]] && git push
 
     # 2) Descend through the stack, updating each branch from origin and merging in the local parent.
@@ -84,14 +92,26 @@ fm() {
         child_branch=$(git rev-parse --abbrev-ref HEAD)
 
         echo "🔄 Updating branch '$child_branch' from origin"
-        git merge --ff-only "origin/$child_branch" --no-edit 2>/dev/null || git merge "origin/$child_branch" --no-edit || return 1
+        if ! git merge --ff-only "origin/$child_branch" --no-edit 2>/dev/null; then
+            git merge "origin/$child_branch" --no-edit || {
+                git checkout "$original_branch" >/dev/null 2>&1 || true
+                return 1
+            }
+        fi
 
         echo "🔄 Merging parent branch '$parent_branch' into '$child_branch'"
-        git merge "$parent_branch" --no-edit || return 1
+        if ! git merge "$parent_branch" --no-edit; then
+            git checkout "$original_branch" >/dev/null 2>&1 || true
+            return 1
+        fi
         [[ "$child_branch" != "main" ]] && git push
 
         parent_branch="$child_branch"
     done
+
+    if [[ -n "$original_branch" ]]; then
+        git checkout "$original_branch" >/dev/null 2>&1 || true
+    fi
 
     echo "✅ fm complete."
 }
@@ -101,20 +121,25 @@ fm() {
 fm-all() {
     git fetch
 
+    local original_branch
+    original_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+
     # 1) Descend to the bottom of the stack.
     while gt down --no-interactive >/dev/null 2>&1; do
         :
     done
-
-    local original_branch
-    original_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
     while true; do
         local current_branch
         current_branch=$(git rev-parse --abbrev-ref HEAD)
 
         echo "🔄 Updating branch '$current_branch' from origin"
-        git merge --ff-only "origin/$current_branch" --no-edit 2>/dev/null || git merge "origin/$current_branch" --no-edit || return 1
+        if ! git merge --ff-only "origin/$current_branch" --no-edit 2>/dev/null; then
+            git merge "origin/$current_branch" --no-edit || {
+                git checkout "$original_branch" >/dev/null 2>&1 || true
+                return 1
+            }
+        fi
         [[ "$current_branch" != "main" ]] && git push
 
         # Move up to the parent branch (if any)
@@ -127,7 +152,10 @@ fm-all() {
         parent_branch=$(git rev-parse --abbrev-ref HEAD)
 
         echo "🔀 Merging '$current_branch' into parent '$parent_branch'"
-        git merge "$current_branch" --no-edit || return 1
+        if ! git merge "$current_branch" --no-edit; then
+            git checkout "$original_branch" >/dev/null 2>&1 || true
+            return 1
+        fi
     done
 
     # Return to whatever branch we started on.
