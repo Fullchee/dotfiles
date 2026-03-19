@@ -274,26 +274,56 @@ delete_current_branch() {
     # superproject; we can use that to clean up the worktree directory and
     # return the user to the original repo root after deleting the branch.
 
+    # Some environments (e.g. Fullchee-Citylitics in ~/watrhub-django) should
+    # never delete worktrees (to avoid clobbering the persistent main/secondary
+    # worktrees). Instead, keep the worktree around and just delete the branch.
+    local disable_worktree_removal=0
+    if [[ "$(hostname)" == "Fullchee-Citylitics" && "$PWD" == "$HOME/watrhub-django"* ]]; then
+        disable_worktree_removal=1
+    fi
+
     if [[ -n "$superpath" ]]; then
-        # remember where we started so we can remove it and cd back
+        # remember where we started so we can return here if we remove the worktree
         local cwd="$PWD"
 
-        cd "$superpath" || echo "⚠️  could not cd to superproject at $superpath"
+        if [[ "$disable_worktree_removal" -eq 1 ]]; then
+            echo "⚠️  Worktree deletion is disabled in $PWD on this host; preserving the worktree."
 
-        # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main.
-        if [[ -n "$gt_up_branch" ]]; then
-            git checkout "$gt_up_branch"
+            # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main/master.
+            if [[ -n "$gt_up_branch" ]]; then
+                git checkout "$gt_up_branch"
+            else
+                if git show-ref --verify --quiet refs/heads/main; then
+                    git checkout main
+                else
+                    git checkout master
+                fi
+            fi
+
+            git branch -D "$branch_name"
+            echo "✅ Branch '$branch_name' deleted (worktree preserved)."
         else
-            git checkout main
+            # Perform the normal worktree cleanup behavior.
+            cd "$superpath" || echo "⚠️  could not cd to superproject at $superpath"
+
+            # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main.
+            if [[ -n "$gt_up_branch" ]]; then
+                git checkout "$gt_up_branch"
+            else
+                git checkout main
+            fi
+
+            git branch -D "$branch_name"
+
+            # Remove/prune only when worktree removal is enabled.
+            if [[ "$disable_worktree_removal" -ne 1 ]]; then
+                # remove the worktree folder and leap back to the superproject
+                git worktree remove "$cwd" && echo "✅ worktree removed: $cwd"
+
+                # prune any stale worktree references
+                git worktree prune
+            fi
         fi
-
-        git branch -D "$branch_name"
-
-        # remove the worktree folder and leap back to the superproject
-        git worktree remove "$cwd" && echo "✅ worktree removed: $cwd"
-
-        # prune any stale worktree references
-        git worktree prune
     else
         # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main.
         if [[ -n "$gt_up_branch" ]]; then
