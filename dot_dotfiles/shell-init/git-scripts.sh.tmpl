@@ -340,19 +340,31 @@ split-branch() {
     # zsh doesn't have bash's mapfile; use zsh array capture instead.
     selected_files=("${(@f)$(printf '%s\n' "$selected")}")
 
-    # Build a new branch name based on the DEV-#### prefix, or fallback.
-    local ticket
-    ticket=$(echo "$original_branch" | grep -oE 'DEV-[0-9]+' || true)
-    local new_branch
-    if [[ -n "$ticket" ]]; then
-        new_branch="${ticket}-split"
-    else
-        new_branch="${original_branch}-split"
+    # Generate a suggested branch name from the selected diff via llm.
+    # We assume the llm will return a good, unique branch name.
+    local llm_suggestion
+    local selected_diff
+    selected_diff=$(git diff --no-color "$parent_branch"..."$original_branch" -- "${selected_files[@]}" 2>/dev/null || true)
+    if [[ -n "$selected_diff" ]]; then
+        llm_suggestion=$(printf '%s' "$selected_diff" | llm -s "Suggest a short, slugified git branch name based on these changes and file paths. Return ONLY the branch name with no extra text." 2>/dev/null || true)
+        llm_suggestion=$(printf '%s' "$llm_suggestion" | head -n 1 | tr -d '\r' | xargs)
     fi
 
-    # If this name already exists, keep appending "-split" until it's unique.
+    local new_branch="$llm_suggestion"
+
+    # Fallback to the original branch name if the LLM did not return anything.
+    if [[ -z "$new_branch" ]]; then
+        new_branch="$original_branch"
+    fi
+
+    # If the suggested branch already exists, prompt the user for an alternate name.
     while git show-ref --verify --quiet "refs/heads/$new_branch"; do
-        new_branch="${new_branch}-split"
+        read -e -p "Branch '$new_branch' already exists. Enter a new name: " user_branch
+        if [[ -z "$user_branch" ]]; then
+            echo "Please provide a different branch name."
+            continue
+        fi
+        new_branch="$user_branch"
     done
 
     read -e -p "New branch name [${new_branch}]: " user_branch
@@ -536,9 +548,33 @@ createpr() {
     # The first remaining argument is the branch name (optional)
     branch_name=$1
 
-    # If no branch was passed, fall back to the current checked‑out branch.
+    # Determine the current branch (used for diffs and fallback behavior)
+    local current_branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || current_branch=""
+
+    # Determine the parent branch via Graphite (gt). If Graphite isn't available,
+    # fall back to a sensible default (main/master or current branch).
+    local parent_branch=""
+    if command -v gt >/dev/null 2>&1; then
+        if gt down --no-interactive >/dev/null 2>&1; then
+            parent_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+            git checkout "$current_branch" >/dev/null 2>&1 || true
+        fi
+    fi
+
+    if [[ -z "$parent_branch" ]]; then
+        if git show-ref --verify --quiet refs/heads/main; then
+            parent_branch="main"
+        elif git show-ref --verify --quiet refs/heads/master; then
+            parent_branch="master"
+        else
+            parent_branch="$current_branch"
+        fi
+    fi
+
+    # If no branch name was provided, default to the current branch.
     if [[ -z "$branch_name" ]]; then
-        branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+        branch_name="$current_branch"
         echo "⚙️  No branch argument provided, using current branch: $branch_name"
     fi
 
@@ -551,7 +587,12 @@ createpr() {
 
     # 2. Git Operations
     git stash
-    git switch -c "$branch_name"
+
+    if git rev-parse --verify --quiet "refs/heads/$branch_name" >/dev/null; then
+        git switch "$branch_name"
+    else
+        git switch -c "$branch_name"
+    fi
 
     if [[ -n "$commit_msg" ]]; then
         # Create a real commit. --allow-empty is used so it doesn't fail
@@ -579,20 +620,18 @@ createpr() {
 
     # 4. Construct PR Metadata
     PR_TITLE="[${TICKET_ID}] ${DESCRIPTION_TITLE}"
-    PR_BODY="# ${PR_TITLE}
 
-## Changes
+    # Generate PR body sections using llm based on the diff between the current branch
+    # and its parent.
+    local pr_body_extra
+    pr_body_extra=$(git diff --no-color "$parent_branch"..."$CURRENT_BRANCH" | llm -s "Generate markdown containing the following two sections based on the git diff below:\n\n## Changes\n- <one concise bullet summarizing the change>\n\n## Review instructions\n1. <a set of review instructions>\n\nReturn ONLY the markdown for these two sections (no extra text or explanation)." 2>/dev/null || true)
+    pr_body_extra=$(printf '%s' "$pr_body_extra" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
-- ${DESCRIPTION_TITLE}
+    if [[ -z "$pr_body_extra" ]]; then
+        pr_body_extra="## Changes\n\n- ${DESCRIPTION_TITLE}\n\n## Review instructions\n\n1."
+    fi
 
-## Review instructions
-
-1.
-
-## ``/verify-changes``
-
-
-"
+    PR_BODY="# ${PR_TITLE}\n\n${pr_body_extra}"
 
     # 5. Create PR via GitHub CLI
     gh pr create \
