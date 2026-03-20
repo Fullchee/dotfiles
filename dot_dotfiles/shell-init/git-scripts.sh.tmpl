@@ -292,12 +292,10 @@ delete_current_branch() {
             # Prefer switching to the gt upstack branch (if it exists), otherwise fall back to main/master.
             if [[ -n "$gt_up_branch" ]]; then
                 git checkout "$gt_up_branch"
+            elif git show-ref --verify --quiet refs/heads/main; then
+                git fetch origin main:main 2>/dev/null || true; git switch --detach main
             else
-                if git show-ref --verify --quiet refs/heads/main; then
-                    git checkout main
-                else
-                    git checkout master
-                fi
+                git fetch origin master:master 2>/dev/null || true; git switch --detach master
             fi
 
             git branch -D "$branch_name"
@@ -310,7 +308,7 @@ delete_current_branch() {
             if [[ -n "$gt_up_branch" ]]; then
                 git checkout "$gt_up_branch"
             else
-                git checkout main
+                git fetch origin main:main 2>/dev/null || true; git switch --detach main
             fi
 
             git branch -D "$branch_name"
@@ -329,7 +327,7 @@ delete_current_branch() {
         if [[ -n "$gt_up_branch" ]]; then
             git checkout "$gt_up_branch"
         else
-            git checkout main
+            git fetch origin main:main 2>/dev/null || true; git switch --detach main
         fi
 
         git branch -D "$branch_name"
