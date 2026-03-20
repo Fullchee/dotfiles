@@ -728,10 +728,18 @@ createpr() {
     pr_body_extra=$(printf '%b' "$pr_body_extra")
 
     if [[ -z "$pr_body_extra" ]]; then
-        pr_body_extra="## Changes\n\n- ${DESCRIPTION_TITLE}\n\n## Review instructions\n\n1."
+        pr_body_extra="## Changes
+
+- ${DESCRIPTION_TITLE}
+
+## Review instructions
+
+1."
     fi
 
-    PR_BODY="# ${PR_TITLE}\n\n${pr_body_extra}"
+    PR_BODY="# ${PR_TITLE}
+
+${pr_body_extra}"
 
     # 5. Create PR via GitHub CLI
     gh pr create \
