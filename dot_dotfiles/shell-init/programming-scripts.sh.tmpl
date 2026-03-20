@@ -3,6 +3,7 @@
 # Android
 # Databases
 # Networking
+# Python
 
 ## -------- Android --------
 export ANDROID_SDK=$HOME/Library/Android/sdk
@@ -95,6 +96,47 @@ case ":$PATH:" in
 esac
 
 #################### Node end ####################
+
+####################### Power ####################
+
+check_power_input() {
+    local raw_data=$(ioreg -rw0 -c AppleSmartBattery | grep "AppleRawAdapterDetails" | sed 's/.*(\(.*\)).*/\1/')
+
+    if [[ -z "$raw_data" || "$raw_data" == "()" ]]; then
+        echo "❌ No AC Power detected or Charger Handshake failed."
+        echo "Check if your cable is plugged in firmly."
+        return
+    fi
+
+    local watts=$(echo "$raw_data" | grep -o '"Watts"=[0-9]*' | cut -d= -f2)
+    local amps_ma=$(echo "$raw_data" | grep -o '"Current"=[0-9]*' | cut -d= -f2)
+    local volts_mv=$(echo "$raw_data" | grep -o '"AdapterVoltage"=[0-9]*' | cut -d= -f2)
+
+    if [[ -z "$watts" || -z "$amps_ma" ]]; then
+        echo "❌ Error: Could not parse Power Data."
+        return
+    fi
+
+    local amps=$(echo "scale=2; $amps_ma / 1000" | bc)
+    local volts=$(echo "scale=1; $volts_mv / 1000" | bc)
+
+    echo "--- Power Diagnostics ---"
+    echo "Negotiated Cap: ${watts}W"
+    echo "Live Flow:      ${amps}A @ ${volts}V"
+
+    # Bottleneck Logic
+    if [ "$amps_ma" -le 3000 ] && [ "$watts" -le 60 ]; then
+        echo -e "\n⚠️  BOTTLENECK DETECTED"
+        echo "Your 96W wall power AC adapter is being choked to 60W."
+        echo "REASON: You are likely using a standard 3A USB-C cable."
+        echo "FIX: Use a '100W' or '5A' rated E-Marked cable."
+    elif [ "$watts" -ge 85 ]; then
+        echo -e "\n✅ High-Speed Power Detected ($watts W)."
+    else
+        echo -e "\nℹ️  wall power AC adapter is connected but providing mid-range power ($watts W)."
+    fi
+}
+####################### Power end ####################
 
 #################### Python ####################
 alias py=python
