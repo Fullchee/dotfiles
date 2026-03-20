@@ -125,12 +125,12 @@ check_power_input() {
     echo "Live Flow:      ${amps}A @ ${volts}V"
 
     # Bottleneck Logic
-    if [ "$amps_ma" -le 3000 ] && [ "$watts" -le 60 ]; then
-        echo -e "\n⚠️  BOTTLENECK DETECTED"
-        echo "Your 96W wall power AC adapter is being choked to 60W."
+    if [ "$amps_ma" -eq 3000 ] && [ "$watts" -eq 60 ]; then
+        echo -e "\n⚠️ POSSIBLE BOTTLENECK"
+        echo "If you're using the 96W wall power AC adapter, it's being choked to 60W."
         echo "REASON: You are likely using a standard 3A USB-C cable."
         echo "FIX: Use a '100W' or '5A' rated E-Marked cable."
-    elif [ "$watts" -ge 85 ]; then
+    elif [ "$watts" -ge 60 ]; then
         echo -e "\n✅ High-Speed Power Detected ($watts W)."
     else
         echo -e "\nℹ️  wall power AC adapter is connected but providing mid-range power ($watts W)."
