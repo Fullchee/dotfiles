@@ -150,13 +150,7 @@ install_pkg ansible   # Automate deployment, configuration, and upgrading
 ensure_uv_tool bandit bandit  # security linter
 install_pkg bash      # apple ships bash 3, linux has newer version
 
-install_pkg bat       # better cat
-if $IS_LINUX; then
-  # on linux, bat is called "batcat" to avoid conflict with another package
-  if [ ! -e /usr/local/bin/bat ]; then
-      sudo ln -s "$(command -v batcat)" /usr/local/bin/bat
-  fi
-fi
+ensure_cargo_install bat  # better cat
 
 if command -v npm &> /dev/null; then
   ensure_npm_global @bitwarden/cli  # to work with varlock
@@ -175,7 +169,7 @@ if ! ensure_command difft && ! ensure_command difftastic; then
   ensure_cargo_install difftastic  # better git diff
 fi
 ensure_cargo_install dust du-dust  # better du
-install_pkg eza       # better ls & tree with icons
+ensure_cargo_install eza  # better ls & tree with icons
 ensure_cargo_install fd fd-find  # faster find
 install_pkg ffmpeg
 install_pkg fzf       # interactive filter
@@ -188,7 +182,7 @@ fi
 install_pkg git       # up-to-date git
 install_pkg gh        # GitHub CLI
 install_pkg git-filter-repo  # remove a file from git history
-install_pkg git-delta  # git pager, works better for larger files as a pager than difftastic
+ensure_cargo_install delta git-delta  # git pager, works better for larger files as a pager than difftastic
 pnpm add -g @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
 
 
@@ -196,17 +190,13 @@ if $IS_MAC; then
   install_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
 fi
 
-if $IS_LINUX; then
-  sudo add-apt-repository -y ppa:maveonair/helix-editor
-  sudo apt-get update
-fi
-install_pkg helix  # vim with batteries included, no need to manage plugins
+ensure_cargo_install hx helix-term  # vim with batteries included, no need to manage plugins
 ensure_uv_tool httpie httpie  # test APIs from terminal, like Postman but CLI
-install_pkg hyperfine # command benchmarking
+ensure_cargo_install hyperfine  # command benchmarking
 install_pkg imagemagick  # like ffmpeg for images
 install_pkg jc        # convert plain text data into JSON (to plug into jq)
 install_pkg jq        # JSON processor
-install_pkg just      # a better `Make` and `Makefile` replacement for tasks
+ensure_cargo_install just  # a better `Make` and `Makefile` replacement for tasks
 
 ensure_uv_tool llm  # pipe LLM input & output from the terminal
 llm install llm-anthropic
@@ -218,7 +208,9 @@ eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
 
 install_pkg moor
 install_pkg mosh      # ssh for bad (mobile) connections
+ensure_cargo_install pngquant  # png compression
 
+# postgres
 install_pkg pgcli
 if $IS_MAC; then
   POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
@@ -238,9 +230,9 @@ prek install || true
 ensure_uv_tool ptpython ptpython
 ensure_uv_tool pyright pyright  # type checker that's faster than mypy
 ensure_uv_tool rich-cli rich-cli # highlight and format text
-install_pkg ripgrep   # faster grep
+ensure_cargo_install rg ripgrep  # faster grep
 ensure_uv_tool ruff ruff@latest
-install_pkg sd        # faster sed
+ensure_cargo_install sd  # faster sed
 install_pkg shellcheck
 install_pkg shfmt
 ensure_uv_tool sqlfluff sqlfluff
@@ -281,7 +273,7 @@ else
   chmod +x "$HOME/.local/bin/yt-dlp"
 fi
 
-install_pkg zoxide
+ensure_cargo_install zoxide
 install_pkg zsh
 
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
