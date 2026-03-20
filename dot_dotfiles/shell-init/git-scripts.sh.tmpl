@@ -724,6 +724,9 @@ createpr() {
     pr_body_extra=$(git diff --no-color "$parent_branch"..."$CURRENT_BRANCH" | llm -s "$pr_body_prompt" 2>/dev/null || true)
     pr_body_extra=$(printf '%s' "$pr_body_extra" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
+    # Convert any escaped newline sequences into real newlines so the PR body is formatted correctly.
+    pr_body_extra=$(printf '%b' "$pr_body_extra")
+
     if [[ -z "$pr_body_extra" ]]; then
         pr_body_extra="## Changes\n\n- ${DESCRIPTION_TITLE}\n\n## Review instructions\n\n1."
     fi
