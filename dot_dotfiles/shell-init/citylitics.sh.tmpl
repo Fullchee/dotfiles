@@ -54,7 +54,41 @@ citylitics_repo_root() {
 ####################### CI/CD #######################
 
 deploy-sha-to-prod() {
-    gcloud builds triggers run citylitics-app-ci-cd-production --project=crawler-147820 --sha="$1"
+    if [[ -z "$1" ]]; then
+        echo "Usage: deploy-sha-to-prod <commit-sha>"
+        return 1
+    fi
+
+    local commit_sha="$1"
+    local output
+
+    output=$(gcloud builds triggers run citylitics-app-ci-cd-production --project=crawler-147820 --sha="$commit_sha" --format=json 2>&1)
+    local status=$?
+
+    if [[ $status -ne 0 ]]; then
+        echo "Error: gcloud command failed"
+        echo "$output"
+        return $status
+    fi
+
+    local log_url
+    log_url=$(printf '%s' "$output" | jq -r '.metadata.build.logUrl // empty')
+
+    if [[ -n "$log_url" ]]; then
+        echo "Opening Cloud Build URL: $log_url"
+        open "$log_url"
+    else
+        local build_id
+        build_id=$(printf '%s' "$output" | jq -r '.metadata.build.id // empty')
+        if [[ -n "$build_id" ]]; then
+            log_url="https://console.cloud.google.com/cloud-build/builds;region=global/$build_id?project=crawler-147820"
+            echo "Opening Cloud Build URL: $log_url"
+            open "$log_url"
+        else
+            echo "Warning: no build URL available in gcloud output"
+        fi
+    fi
+
     watch-cloud-build main
 }
 
