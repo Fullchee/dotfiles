@@ -9,6 +9,10 @@ export VISUAL=hx
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
+chezmoi-apply() {
+  chezmoi apply --init --include=files,dirs
+}
+
 # use fd so that it respects .gitignore
 # https://github.com/junegunn/fzf#respecting-gitignore
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
