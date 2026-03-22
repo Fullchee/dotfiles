@@ -63,12 +63,12 @@ deploy-sha-to-prod() {
     local output
 
     output=$(gcloud builds triggers run citylitics-app-ci-cd-production --project=crawler-147820 --sha="$commit_sha" --format=json 2>&1)
-    local status=$?
+    local exit_status=$?
 
-    if [[ $status -ne 0 ]]; then
+    if [[ $exit_status -ne 0 ]]; then
         echo "Error: gcloud command failed"
         echo "$output"
-        return $status
+        return $exit_status
     fi
 
     local log_url
