@@ -12,9 +12,6 @@ export STAGING_PROJECT=dev-review-env
 export PROD_PROJECT=crawler-147820
 export PROJECT_ID=$STAGING_PROJECT # used when copy pasting from the docs
 
-alias standup="o 'https://citylitics.slack.com/archives/C05S32S0L3F'"
-alias standup-thread="o 'https://citylitics.slack.com/archives/C05S32S0L3F/p1770991207827789?thread_ts=1769702556.260099&cid=C05S32S0L3F'"
-
 # Helper to consistently resolve the Citylitics repo root
 # Usage:
 #   citylitics_repo_root           # errors if not in a git repo
@@ -49,6 +46,22 @@ citylitics_repo_root() {
     esac
 
     printf '%s' "$repo_root"
+}
+
+
+jira() {
+    local branch="${1:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null)}"
+    if [[ -z "$branch" ]]; then
+        echo "Usage: jira [branch-name]"
+        return 1
+    fi
+    local ticket
+    ticket=$(echo "$branch" | grep -oE '[A-Z]+-[0-9]+' | head -1)
+    if [[ -z "$ticket" ]]; then
+        echo "No Jira ticket ID found in: $branch"
+        return 1
+    fi
+    open "https://citylitics.atlassian.net/browse/$ticket"
 }
 
 ####################### CI/CD #######################
