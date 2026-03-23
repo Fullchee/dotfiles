@@ -199,7 +199,7 @@ push() {
     # On Fullchee-Citylitics, commit only (no push) in ~/watrhub-django to reduce Claude Code review costs.
     if [[ "$(hostname)" == "Fullchee-Citylitics" && "$PWD" == "$HOME/watrhub-django"* ]]; then
         gc "$@"
-        echo "⚠️  Committed but did not push (Fullchee-Citylitics)"
+        echo "❌ Committed but did not push (Fullchee-Citylitics)"
         return
     fi
 
