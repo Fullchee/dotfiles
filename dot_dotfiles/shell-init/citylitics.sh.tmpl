@@ -75,7 +75,7 @@ watch-cloud-build() {
     local commit_sha="$1"
     local build_id
     local build_status
-    local poll_interval=15
+    local poll_interval=30
 
     echo "Waiting for Cloud Build to appear for commit ${commit_sha}..."
 
