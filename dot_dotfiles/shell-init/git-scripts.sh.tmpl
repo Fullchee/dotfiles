@@ -516,6 +516,33 @@ alias rb=recent-branch
 
 #################### Pull requests ####################
 
+# Copy the git diff between the current branch and its parent (gt down) to the clipboard.
+copy-diff() {
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "❌ Not a git repository." >&2
+        return 1
+    }
+
+    local current_branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    local parent_branch=""
+    if command -v gt >/dev/null 2>&1; then
+        if gt down --no-interactive >/dev/null 2>&1; then
+            parent_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+            git checkout "$current_branch" >/dev/null 2>&1 || true
+        fi
+    fi
+
+    if [[ -z "$parent_branch" ]]; then
+        echo "❌ Unable to determine parent branch via 'gt down'." >&2
+        return 1
+    fi
+
+    git diff "$parent_branch"..."$current_branch" | pbcopy
+    echo "✅ Diff between '$parent_branch' and '$current_branch' copied to clipboard."
+}
+
 createpr() {
     local branch_name=""
     local commit_msg=""
