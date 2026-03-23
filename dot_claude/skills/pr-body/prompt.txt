@@ -1,0 +1,9 @@
+Generate markdown containing the following two sections based on the git diff below:
+
+## Changes
+- <one concise bullet summarizing the change>
+
+## Review instructions
+1. <a set of review instructions>
+
+Return ONLY the markdown for these two sections (no extra text or explanation.)
