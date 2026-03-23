@@ -74,7 +74,7 @@ watch-cloud-build() {
 
     local commit_sha="$1"
     local build_id
-    local status
+    local build_status
     local poll_interval=15
 
     echo "Waiting for Cloud Build to appear for commit ${commit_sha}..."
@@ -97,12 +97,12 @@ watch-cloud-build() {
 
     # Poll until a terminal status is reached
     while true; do
-        status=$(gcloud builds describe "$build_id" \
+        build_status=$(gcloud builds describe "$build_id" \
             --format="value(status)" 2>/dev/null)
 
-        echo "  Status: ${status}"
+        echo "  Status: ${build_status}"
 
-        case "$status" in
+        case "$build_status" in
             SUCCESS)
                 say "Cloud Build succeeded"
                 echo "✅ Build succeeded: ${build_id}"
@@ -110,7 +110,7 @@ watch-cloud-build() {
                 ;;
             FAILURE|CANCELLED|TIMEOUT|INTERNAL_ERROR|EXPIRED)
                 say "Cloud Build failed"
-                echo "❌ Build ${status}: ${build_id}"
+                echo "❌ Build ${build_status}: ${build_id}"
                 return 1
                 ;;
         esac
