@@ -111,12 +111,44 @@ watch-cloud-build() {
             FAILURE|CANCELLED|TIMEOUT|INTERNAL_ERROR|EXPIRED)
                 say "Cloud Build failed"
                 echo "❌ Build ${build_status}: ${build_id}"
+                open-deploy-url "$build_id"
                 return 1
                 ;;
         esac
 
         sleep "$poll_interval"
     done
+}
+
+open-deploy-url() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: open-deploy-url <build-id>"
+        return 1
+    fi
+
+    local build_id="$1"
+
+    local build_json
+    build_json=$(gcloud builds describe "$build_id" --format=json 2>/dev/null)
+
+    local project_id
+    project_id=$(printf '%s' "$build_json" | jq -r '.projectId')
+
+    local build_url="https://console.cloud.google.com/cloud-build/builds;region=global/${build_id}?project=${project_id}"
+
+    # Find the index of the first failed step
+    local failed_step
+    failed_step=$(printf '%s' "$build_json" \
+        | jq -r '[(.steps // []) | to_entries[] | select(.value.status == "FAILURE") | .key] | first // empty')
+
+    if [[ -n "$failed_step" ]]; then
+        local step_url="https://console.cloud.google.com/cloud-build/builds;region=global/${build_id};step=${failed_step}?project=${project_id}"
+        echo "Opening failed step ${failed_step}: ${step_url}"
+        open "$step_url"
+    else
+        echo "Opening build: ${build_url}"
+        open "$build_url"
+    fi
 }
 
 deploy-sha-to-prod() {
@@ -126,35 +158,8 @@ deploy-sha-to-prod() {
     fi
 
     local commit_sha="$1"
-    local output
 
-    output=$(gcloud builds triggers run citylitics-app-ci-cd-production --project=crawler-147820 --sha="$commit_sha" --format=json 2>&1)
-    local exit_status=$?
-
-    if [[ $exit_status -ne 0 ]]; then
-        echo "Error: gcloud command failed"
-        echo "$output"
-        return $exit_status
-    fi
-
-    local log_url
-    log_url=$(printf '%s' "$output" | jq -r '.metadata.build.logUrl // empty')
-
-    if [[ -n "$log_url" ]]; then
-        echo "Opening Cloud Build URL: $log_url"
-        open "$log_url"
-    else
-        local build_id
-        build_id=$(printf '%s' "$output" | jq -r '.metadata.build.id // empty')
-        if [[ -n "$build_id" ]]; then
-            log_url="https://console.cloud.google.com/cloud-build/builds;region=global/$build_id?project=crawler-147820"
-            echo "Opening Cloud Build URL: $log_url"
-            open "$log_url"
-        else
-            echo "Warning: no build URL available in gcloud output"
-        fi
-    fi
-
+    gcloud builds triggers run citylitics-app-ci-cd-production --project=crawler-147820 --sha="$commit_sha"
     watch-cloud-build "$commit_sha"
 }
 
