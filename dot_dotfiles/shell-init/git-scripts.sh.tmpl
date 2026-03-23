@@ -196,34 +196,13 @@ git-clone-personal() {
 alias pull='git stash && git pull && git stash pop'
 
 push() {
-    # On Fullchee-Citylitics, avoid defining push in ~/watrhub-django to prevent collisions.
+    # On Fullchee-Citylitics, commit only (no push) in ~/watrhub-django to reduce Claude Code review costs.
     if [[ "$(hostname)" == "Fullchee-Citylitics" && "$PWD" == "$HOME/watrhub-django"* ]]; then
-        echo "❌ 'push' is disabled in $HOME/watrhub-django on this host to reduce Claude Code review costs"
-        return 1
+        gc "$@"
+        return
     fi
 
-    git add -u
-
-    # Attempt the commit
-    if git commit -m "$*"; then
-        git push
-    else
-        echo "⚠️  Commit failed (pre-commit hook). Retrying once..."
-
-        # Some hook runners (e.g. `pre-commit`, `husky`) may spawn background
-        # processes that keep writing files after git exits. Poll for any unstaged
-        # changes and stage them before retrying.
-        _stage_pending_hook_changes
-
-        # Second attempt
-        if git commit -m "$*"; then
-            echo "✅ Success on second try."
-            git push
-        else
-            echo "❌ Commit failed a second time. Please check your code."
-            return 1
-        fi
-    fi
+    gc "$@" && git push
 }
 
 ############### BRANCHES #####################
