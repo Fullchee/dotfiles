@@ -18,7 +18,7 @@ repo = "local"
 
 [[repos.hooks]]
 id = "chezmoi-validate"
-name = "Validate chezmoi templates"
+name = "Dry-run chezmoi apply to catch template errors early"
 entry = "chezmoi apply --dry-run"
 language = "system"
 pass_filenames = false
