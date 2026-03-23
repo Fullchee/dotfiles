@@ -151,13 +151,32 @@ open-deploy-url() {
     fi
 }
 
+_resolve_and_check_origin_sha() {
+    local repo_root="$1" input="$2"
+    local sha
+    if ! sha=$(git -C "$repo_root" rev-parse --verify "$input^{commit}" 2>/dev/null); then
+        echo "Error: commit '$input' not found in local repo." >&2
+        return 1
+    fi
+    git -C "$repo_root" fetch origin --quiet 2>/dev/null
+    if ! git -C "$repo_root" branch -r --contains "$sha" 2>/dev/null | grep -q "origin/"; then
+        echo "Error: $sha is not on origin. Did you forget to git push?" >&2
+        return 1
+    fi
+    printf '%s' "$sha"
+}
+
 deploy-sha-to-prod() {
     if [[ -z "$1" ]]; then
         echo "Usage: deploy-sha-to-prod <commit-sha>"
         return 1
     fi
 
-    local commit_sha="$1"
+    local REPO_ROOT
+    REPO_ROOT=$(citylitics_repo_root) || return 1
+
+    local commit_sha
+    commit_sha=$(_resolve_and_check_origin_sha "$REPO_ROOT" "$1") || return 1
 
     gcloud builds triggers run citylitics-app-ci-cd-production --project=crawler-147820 --sha="$commit_sha"
     watch-cloud-build "$commit_sha"
@@ -167,8 +186,9 @@ deploy-sha-to-staging() {
     local REPO_ROOT
     REPO_ROOT=$(citylitics_repo_root) || return 1
 
+    local input="${1:-HEAD}"
     local COMMIT_SHA
-    COMMIT_SHA=$(git -C "$REPO_ROOT" rev-parse HEAD)
+    COMMIT_SHA=$(_resolve_and_check_origin_sha "$REPO_ROOT" "$input") || return 1
 
     gcloud builds triggers run citylitics-app-ci-cd --sha="$COMMIT_SHA"
     watch-cloud-build "$COMMIT_SHA"
