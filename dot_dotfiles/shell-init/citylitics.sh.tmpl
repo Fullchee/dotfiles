@@ -66,6 +66,59 @@ jira() {
 
 ####################### CI/CD #######################
 
+watch-cloud-build() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: watch-cloud-build <commit-sha>"
+        return 1
+    fi
+
+    local commit_sha="$1"
+    local build_id
+    local status
+    local poll_interval=15
+
+    echo "Waiting for Cloud Build to appear for commit ${commit_sha}..."
+
+    # Wait for a build matching the SHA to be registered
+    while true; do
+        build_id=$(gcloud builds list \
+            --filter="substitutions.COMMIT_SHA=${commit_sha}" \
+            --limit=1 \
+            --format="value(id)" 2>/dev/null)
+
+        if [[ -n "$build_id" ]]; then
+            break
+        fi
+        echo "No build found yet, retrying in ${poll_interval}s..."
+        sleep "$poll_interval"
+    done
+
+    echo "Watching build ${build_id}..."
+
+    # Poll until a terminal status is reached
+    while true; do
+        status=$(gcloud builds describe "$build_id" \
+            --format="value(status)" 2>/dev/null)
+
+        echo "  Status: ${status}"
+
+        case "$status" in
+            SUCCESS)
+                say "Cloud Build succeeded"
+                echo "✅ Build succeeded: ${build_id}"
+                return 0
+                ;;
+            FAILURE|CANCELLED|TIMEOUT|INTERNAL_ERROR|EXPIRED)
+                say "Cloud Build failed"
+                echo "❌ Build ${status}: ${build_id}"
+                return 1
+                ;;
+        esac
+
+        sleep "$poll_interval"
+    done
+}
+
 deploy-sha-to-prod() {
     if [[ -z "$1" ]]; then
         echo "Usage: deploy-sha-to-prod <commit-sha>"
@@ -102,10 +155,10 @@ deploy-sha-to-prod() {
         fi
     fi
 
-    watch-cloud-build main
+    watch-cloud-build "$commit_sha"
 }
 
-deploy-current-branch-to-staging() {
+deploy-sha-to-staging() {
     local REPO_ROOT
     REPO_ROOT=$(citylitics_repo_root) || return 1
 
@@ -161,58 +214,8 @@ view-cloud-build-run() {
         echo "No run selected."
     fi
 }
-watch-cloud-build() {
-    local INPUT=${1:-$(git branch --show-current 2>/dev/null)}
-    INPUT=${INPUT:-main}
 
-    local FILTER=""
-    if [[ $INPUT =~ ^[0-9a-f]{40}$ ]]; then
-        FILTER="source.repoSource.commitSha='$INPUT'"
-    else
-        FILTER="substitutions.BRANCH_NAME='$INPUT'"
-    fi
 
-    echo "Waiting for latest build on $INPUT..."
-
-    # 1. Define the logic as a raw shell command string
-    # We use 'pkill -P' to kill the process group or use the specific PID
-    local AFTER_CMD="status=\$(gcloud builds list --filter=\"$FILTER\" --limit=1 --format=\"value(status)\");
-    case \"\$status\" in
-        SUCCESS|FAILURE|TIMEOUT|FAILED|CANCELLED) pkill -INT hwatch ;;
-    esac"
-
-    # 2. Run hwatch
-    # We use -n 10 for the interval and --aftercommand to trigger the logic
-    hwatch -n 10 --color --no-title \
-        --aftercommand "$AFTER_CMD" \
-        "gcloud builds list --filter=\"$FILTER\" --limit=1 --format=\"table(id,status,startTime,duration)\""
-
-    # 3. Handle results once hwatch exits
-    echo -e "\nBuild reached terminal state. Finalizing..."
-    local FINAL_DATA=$(gcloud builds list --filter="$FILTER" --limit=1 --format="value(status)")
-
-    case "$FINAL_DATA" in
-    SUCCESS)
-        echo -e "✅ Build Succeeded! \a"
-        return 0
-        ;;
-    FAILURE | TIMEOUT | FAILED)
-        echo -e "❌ Build failed: $FINAL_DATA \a"
-        why-cloud-build-failed "$INPUT"
-        return 1
-        ;;
-    CANCELLED)
-        echo -e "🛑 Build was cancelled."
-        return 1
-        ;;
-    esac
-}
-why-cloud-build-failed() {
-    local BRANCH=${1:-$(git branch --show-current 2>/dev/null)}
-    BRANCH=${BRANCH:-main}
-    local ID=$(gcloud builds list --filter="substitutions.BRANCH_NAME='$BRANCH' AND status=FAILURE" --limit=1 --format="value(id)")
-    [[ -n "$ID" ]] && gcloud builds log "$ID" | grep -A 50 "Step #$(gcloud builds describe $ID --format='value(steps.filter(status="FAILURE").index())')"
-}
 
 ####################### Cloud SQL #######################
 

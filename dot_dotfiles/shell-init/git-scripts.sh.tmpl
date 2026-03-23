@@ -574,23 +574,11 @@ recent-branch() {
         fi
     fi
 
-    local stashed=false
-    if ! git diff --quiet || ! git diff --cached --quiet; then
-        echo "📦 Stashing local changes..."
-        git stash push --include-untracked -m "recent-branch auto-stash"
-        stashed=true
-    fi
-
     if [[ -n "$target_worktree" ]]; then
         echo "🔀 Switching to worktree: $target_worktree"
         cd "$target_worktree"
     else
         git checkout "$branch"
-    fi
-
-    if [[ "$stashed" == true ]]; then
-        echo "📦 Restoring stashed changes..."
-        git stash pop
     fi
 }
 alias rb=recent-branch
