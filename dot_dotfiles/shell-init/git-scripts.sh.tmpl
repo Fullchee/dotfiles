@@ -110,11 +110,7 @@ fm() {
             # No tracked parent — ask the user to pick one via fzf.
             echo "⚠️  No tracked parent for '$current'."
             local picked
-            picked=$(command git branch --format='%(refname:short)' \
-                | command grep -v "^${current}$" \
-                | command fzf --prompt="Select parent branch for '$current': " \
-                      --preview="command git log --oneline -n 20 {}" \
-                      --preview-window=right:50%)
+            picked=$(_pick_parent_branch "$current")
 
             if [[ -z "$picked" ]]; then
                 echo "❌ No parent selected. Aborting."
@@ -123,7 +119,6 @@ fm() {
                 return 1
             fi
 
-            gt track --parent "$picked" 2>/dev/null || true
             git checkout "$picked" >/dev/null 2>&1
             current="$picked"
         fi
@@ -599,11 +594,16 @@ copy-diff() {
 
 _pick_parent_branch() {
     local current="$1"
-    git branch --format='%(refname:short)' \
+    local picked
+    picked=$(git branch --format='%(refname:short)' \
         | grep -v "^${current}$" \
         | fzf --prompt="Select parent branch: " \
               --preview='git log --oneline --graph --color=always -20 {}' \
-              --preview-window=right:60%
+              --preview-window=right:60%)
+    if [[ -n "$picked" ]]; then
+        gt track --parent "$picked" 2>/dev/null || true
+    fi
+    echo "$picked"
 }
 
 createpr() {
