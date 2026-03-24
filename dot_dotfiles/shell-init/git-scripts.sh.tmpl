@@ -597,6 +597,15 @@ copy-diff() {
     echo "✅ Diff between '$parent_branch' and '$current_branch' copied to clipboard."
 }
 
+_pick_parent_branch() {
+    local current="$1"
+    git branch --format='%(refname:short)' \
+        | grep -v "^${current}$" \
+        | fzf --prompt="Select parent branch: " \
+              --preview='git log --oneline --graph --color=always -20 {}' \
+              --preview-window=right:60%
+}
+
 createpr() {
     local branch_name=""
     local commit_msg=""
@@ -648,12 +657,10 @@ createpr() {
     fi
 
     if [[ -z "$parent_branch" ]]; then
-        if git show-ref --verify --quiet refs/heads/main; then
-            parent_branch="main"
-        elif git show-ref --verify --quiet refs/heads/master; then
-            parent_branch="master"
-        else
-            parent_branch="$current_branch"
+        parent_branch=$(_pick_parent_branch "$current_branch")
+        if [[ -z "$parent_branch" ]]; then
+            echo "Error: No parent branch selected." >&2
+            return 1
         fi
     fi
 
@@ -679,13 +686,16 @@ createpr() {
         git switch -c "$branch_name"
     fi
 
-    if [[ -n "$commit_msg" ]]; then
-        # Create a real commit. --allow-empty is used so it doesn't fail
-        # if you haven't staged any files yet.
-        git commit -m "$commit_msg" --allow-empty
-    else
-        # Fallback to your custom .gitconfig alias
-        git empty-commit
+    # Only create a commit if there are no commits between this branch and the parent
+    local commit_count
+    commit_count=$(git rev-list --count "$parent_branch".."$branch_name" 2>/dev/null || echo "0")
+
+    if [[ "$commit_count" -eq 0 ]]; then
+        if [[ -n "$commit_msg" ]]; then
+            git commit -m "$commit_msg" --allow-empty
+        else
+            git empty-commit
+        fi
     fi
 
     git push origin "$branch_name"
