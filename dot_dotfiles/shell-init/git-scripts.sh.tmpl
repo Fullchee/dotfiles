@@ -103,9 +103,12 @@ fm() {
     local current="$original_branch"
 
     while [[ "$current" != "main" ]]; do
-        # Try to go to the parent branch.
-        if gt down --no-interactive >/dev/null 2>&1; then
-            current=$(git rev-parse --abbrev-ref HEAD)
+        # Try to get the parent branch without switching.
+        local parent
+        parent=$(gt-parent 2>/dev/null)
+
+        if [[ -n "$parent" ]]; then
+            current="$parent"
         else
             # No tracked parent — ask the user to pick one via fzf.
             echo "⚠️  No tracked parent for '$current'."
@@ -119,9 +122,9 @@ fm() {
                 return 1
             fi
 
-            git checkout "$picked" >/dev/null 2>&1
             current="$picked"
         fi
+        git checkout "$current" >/dev/null 2>&1
         branch_chain=("$current" "${branch_chain[@]}")
     done
 
@@ -237,10 +240,7 @@ delete_current_branch() {
         local original_branch="$branch_name"
 
         # If there is a downstack branch (parent), capture it.
-        if gt down --no-interactive >/dev/null 2>&1; then
-            gt_down_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-            git checkout "$original_branch" >/dev/null 2>&1 || true
-        fi
+        gt_down_branch="$(gt-parent 2>/dev/null)"
 
         # If there is an upstack branch (child), capture it.
         if gt up --no-interactive >/dev/null 2>&1; then
@@ -344,16 +344,16 @@ split-branch() {
     local original_branch
     original_branch=$(git rev-parse --abbrev-ref HEAD)
 
-    # Determine parent branch using Graphite's down command.
+    # Determine parent branch.
     local parent_branch=""
-    if gt down --no-interactive >/dev/null 2>&1; then
-        parent_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-        git checkout "$original_branch" >/dev/null 2>&1 || true
-    fi
+    parent_branch=$(gt-parent 2>/dev/null)
 
     if [[ -z "$parent_branch" ]]; then
-        echo "❌ Unable to determine parent branch (not stacked?)." >&2
-        return 1
+        parent_branch=$(pick-parent-branch "$original_branch")
+        if [[ -z "$parent_branch" ]]; then
+            echo "❌ Unable to determine parent branch." >&2
+            return 1
+        fi
     fi
 
     # Get modified files between current branch and parent branch.
@@ -577,15 +577,15 @@ copy-diff() {
 
     local parent_branch=""
     if command -v gt >/dev/null 2>&1; then
-        if gt down --no-interactive >/dev/null 2>&1; then
-            parent_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-            git checkout "$current_branch" >/dev/null 2>&1 || true
-        fi
+        parent_branch=$(gt-parent)
     fi
 
     if [[ -z "$parent_branch" ]]; then
-        echo "❌ Unable to determine parent branch via 'gt down'." >&2
-        return 1
+        parent_branch=$(pick-parent-branch "$current_branch")
+        if [[ -z "$parent_branch" ]]; then
+            echo "❌ Unable to determine parent branch." >&2
+            return 1
+        fi
     fi
 
     git diff "$parent_branch"..."$current_branch" | pbcopy
@@ -604,6 +604,10 @@ pick-parent-branch() {
         gt track --parent "$picked" >/dev/null 2>&1 || true
     fi
     echo "$picked"
+}
+
+gt-parent() {
+  gt info | grep "Parent:" | sed 's/.*Parent: //'
 }
 
 createpr() {
@@ -650,10 +654,7 @@ createpr() {
     # fall back to a sensible default (main/master or current branch).
     local parent_branch=""
     if command -v gt >/dev/null 2>&1; then
-        if gt down --no-interactive >/dev/null 2>&1; then
-            parent_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-            git checkout "$current_branch" >/dev/null 2>&1 || true
-        fi
+        parent_branch=$(gt-parent)
     fi
 
     if [[ -z "$parent_branch" ]]; then
