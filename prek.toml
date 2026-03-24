@@ -26,7 +26,7 @@ pass_filenames = false
 [[repos.hooks]]
 id = "chezmoi-apply"
 name = "Run chezmoi apply for non-script files"
-entry = "chezmoi apply --include=files --force --no-tty"
+entry = "chezmoi apply --include=files,dirs --force --no-tty"
 language = "system"
 files = '^(?!.*\.sh$).*$'
 pass_filenames = false

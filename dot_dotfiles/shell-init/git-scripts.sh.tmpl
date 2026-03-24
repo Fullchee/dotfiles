@@ -109,11 +109,12 @@ fm() {
         else
             # No tracked parent — ask the user to pick one via fzf.
             echo "⚠️  No tracked parent for '$current'."
+            echo "DEBUG PATH=$PATH" >&2
             local picked
-            picked=$(git branch --format='%(refname:short)' \
-                | grep -v "^${current}$" \
-                | fzf --prompt="Select parent branch for '$current': " \
-                      --preview="git log --oneline -n 20 {}" \
+            picked=$(command git branch --format='%(refname:short)' \
+                | command grep -v "^${current}$" \
+                | command fzf --prompt="Select parent branch for '$current': " \
+                      --preview="command git log --oneline -n 20 {}" \
                       --preview-window=right:50%)
 
             if [[ -z "$picked" ]]; then
