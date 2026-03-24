@@ -601,7 +601,7 @@ _pick_parent_branch() {
               --preview='git log --oneline --graph --color=always -20 {}' \
               --preview-window=right:60%)
     if [[ -n "$picked" ]]; then
-        gt track --parent "$picked" 2>/dev/null || true
+        gt track --parent "$picked" >/dev/null 2>&1 || true
     fi
     echo "$picked"
 }
