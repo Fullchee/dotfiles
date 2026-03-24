@@ -4,6 +4,6 @@ Generate markdown containing the following two sections based on the git diff be
 - <one concise bullet summarizing the change>
 
 ## Review instructions
-1. <a set of review instructions>
+1. <itemized list of steps for a reviewer to follow to view and test the changes manually>
 
 Return ONLY the markdown for these two sections (no extra text or explanation.)
