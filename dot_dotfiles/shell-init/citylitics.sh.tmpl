@@ -104,6 +104,7 @@ watch-cloud-build() {
         SUCCESS)
             say "Cloud Build succeeded"
             echo "✅ Build succeeded: ${build_id}"
+            open-deploy-url "$build_id"
             return 0
             ;;
         FAILURE | CANCELLED | TIMEOUT | INTERNAL_ERROR | EXPIRED)
