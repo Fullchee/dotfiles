@@ -32,6 +32,28 @@ _stage_pending_hook_changes() {
     git add -u
 }
 
+_require_git_repo() {
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "❌ Not a git repository." >&2
+        return 1
+    }
+}
+
+# Print the parent branch name. Tries Graphite first, falls back to fzf picker.
+gt-parent() {
+    local current="${1:-$(git rev-parse --abbrev-ref HEAD)}"
+    local parent=""
+    parent=$(gt info 2>/dev/null | grep 'Parent:' | sed 's/.*Parent: //')
+    if [[ -z "$parent" ]]; then
+        parent=$(pick-parent-branch "$current")
+    fi
+    if [[ -z "$parent" ]]; then
+        echo "❌ Unable to determine parent branch." >&2
+        return 1
+    fi
+    echo "$parent"
+}
+
 gc() {
     git add -u
 
@@ -103,27 +125,13 @@ fm() {
     local current="$original_branch"
 
     while [[ "$current" != "main" ]]; do
-        # Try to get the parent branch without switching.
         local parent
-        parent=$(gt-parent 2>/dev/null)
-
-        if [[ -n "$parent" ]]; then
-            current="$parent"
-        else
-            # No tracked parent — ask the user to pick one via fzf.
-            echo "⚠️  No tracked parent for '$current'."
-            local picked
-            picked=$(pick-parent-branch "$current")
-
-            if [[ -z "$picked" ]]; then
-                echo "❌ No parent selected. Aborting."
-                git checkout "$original_branch" >/dev/null 2>&1 || true
-                unfunction _fm_merge_origin 2>/dev/null
-                return 1
-            fi
-
-            current="$picked"
-        fi
+        parent=$(gt-parent "$current") || {
+            git checkout "$original_branch" >/dev/null 2>&1 || true
+            unfunction _fm_merge_origin 2>/dev/null
+            return 1
+        }
+        current="$parent"
         git checkout "$current" >/dev/null 2>&1
         branch_chain=("$current" "${branch_chain[@]}")
     done
@@ -240,7 +248,7 @@ delete_current_branch() {
         local original_branch="$branch_name"
 
         # If there is a downstack branch (parent), capture it.
-        gt_down_branch="$(gt-parent 2>/dev/null)"
+        gt_down_branch="$(gt info 2>/dev/null | grep 'Parent:' | sed 's/.*Parent: //')"
 
         # If there is an upstack branch (child), capture it.
         if gt up --no-interactive >/dev/null 2>&1; then
@@ -321,10 +329,7 @@ delete_current_branch() {
 alias delete-current-branch=delete_current_branch
 
 split-branch() {
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
-        echo "❌ Not a git repository." >&2
-        return 1
-    }
+    _require_git_repo || return 1
 
     if ! command -v gt >/dev/null 2>&1; then
         echo "❌ Graphite (gt) not found on PATH." >&2
@@ -344,17 +349,8 @@ split-branch() {
     local original_branch
     original_branch=$(git rev-parse --abbrev-ref HEAD)
 
-    # Determine parent branch.
     local parent_branch=""
-    parent_branch=$(gt-parent 2>/dev/null)
-
-    if [[ -z "$parent_branch" ]]; then
-        parent_branch=$(pick-parent-branch "$original_branch")
-        if [[ -z "$parent_branch" ]]; then
-            echo "❌ Unable to determine parent branch." >&2
-            return 1
-        fi
-    fi
+    parent_branch=$(gt-parent "$original_branch") || return 1
 
     # Get modified files between current branch and parent branch.
     modified_files=("${(@f)$(git diff --name-only --diff-filter=ACMRTUXB "$parent_branch"..."$original_branch" | sort -u)}")
@@ -485,11 +481,7 @@ delete_remote_and_local_branch() {
 
 # https://www.youtube.com/watch?v=lZehYwOfJAs
 recent-branch() {
-    # verify we're inside a git repository
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
-        echo "❌ Not a git repository." >&2
-        return 1
-    }
+    _require_git_repo || return 1
 
     local branch
     # ask git for branches without color so fzf doesn't pull in ANSI codes
@@ -567,26 +559,13 @@ alias rb=recent-branch
 
 # Copy the git diff between the current branch and its parent (gt down) to the clipboard.
 copy-diff() {
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
-        echo "❌ Not a git repository." >&2
-        return 1
-    }
+    _require_git_repo || return 1
 
     local current_branch
     current_branch=$(git rev-parse --abbrev-ref HEAD)
 
     local parent_branch=""
-    if command -v gt >/dev/null 2>&1; then
-        parent_branch=$(gt-parent)
-    fi
-
-    if [[ -z "$parent_branch" ]]; then
-        parent_branch=$(pick-parent-branch "$current_branch")
-        if [[ -z "$parent_branch" ]]; then
-            echo "❌ Unable to determine parent branch." >&2
-            return 1
-        fi
-    fi
+    parent_branch=$(gt-parent "$current_branch") || return 1
 
     git diff "$parent_branch"..."$current_branch" | pbcopy
     echo "✅ Diff between '$parent_branch' and '$current_branch' copied to clipboard."
@@ -604,10 +583,6 @@ pick-parent-branch() {
         gt track --parent "$picked" >/dev/null 2>&1 || true
     fi
     echo "$picked"
-}
-
-gt-parent() {
-  gt info | grep "Parent:" | sed 's/.*Parent: //'
 }
 
 createpr() {
@@ -650,20 +625,8 @@ createpr() {
     local current_branch
     current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || current_branch=""
 
-    # Determine the parent branch via Graphite (gt). If Graphite isn't available,
-    # fall back to a sensible default (main/master or current branch).
     local parent_branch=""
-    if command -v gt >/dev/null 2>&1; then
-        parent_branch=$(gt-parent)
-    fi
-
-    if [[ -z "$parent_branch" ]]; then
-        parent_branch=$(pick-parent-branch "$current_branch")
-        if [[ -z "$parent_branch" ]]; then
-            echo "Error: No parent branch selected." >&2
-            return 1
-        fi
-    fi
+    parent_branch=$(gt-parent "$current_branch") || return 1
 
     # If no branch name was provided, default to the current branch.
     if [[ -z "$branch_name" ]]; then
@@ -870,11 +833,7 @@ cwt() {
 }
 
 worktree() {
-    # 1. Check if we're in a git repo
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
-        echo "Not a git repository"
-        return 1
-    }
+    _require_git_repo || return 1
 
     # 2. Format the list: [Folder Name] [Branch] [Full Path (Hidden)]
     # We use awk to print the last part of the path, the branch, and the full path
