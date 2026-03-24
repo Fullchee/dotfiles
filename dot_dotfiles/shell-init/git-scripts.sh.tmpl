@@ -110,7 +110,7 @@ fm() {
             # No tracked parent — ask the user to pick one via fzf.
             echo "⚠️  No tracked parent for '$current'."
             local picked
-            picked=$(_pick_parent_branch "$current")
+            picked=$(pick-parent-branch "$current")
 
             if [[ -z "$picked" ]]; then
                 echo "❌ No parent selected. Aborting."
@@ -592,7 +592,7 @@ copy-diff() {
     echo "✅ Diff between '$parent_branch' and '$current_branch' copied to clipboard."
 }
 
-_pick_parent_branch() {
+pick-parent-branch() {
     local current="$1"
     local picked
     picked=$(git branch --format='%(refname:short)' \
@@ -657,7 +657,7 @@ createpr() {
     fi
 
     if [[ -z "$parent_branch" ]]; then
-        parent_branch=$(_pick_parent_branch "$current_branch")
+        parent_branch=$(pick-parent-branch "$current_branch")
         if [[ -z "$parent_branch" ]]; then
             echo "Error: No parent branch selected." >&2
             return 1
