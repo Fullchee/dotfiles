@@ -1,5 +1,4 @@
 {
-  "model": "opus[1m]",
   "hooks": {
     "Stop": [
       {
@@ -22,6 +21,6 @@
     "typescript-lsp@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true
   },
-  "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true
 }
