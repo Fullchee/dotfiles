@@ -98,8 +98,8 @@ fm() {
         return 0
     fi
 
-    # Build the path from the current branch up to main.
-    local -a path=("$original_branch")
+    # Build the branch chain from the current branch up to main.
+    local -a branch_chain=("$original_branch")
     local current="$original_branch"
 
     while [[ "$current" != "main" ]]; do
@@ -109,7 +109,6 @@ fm() {
         else
             # No tracked parent — ask the user to pick one via fzf.
             echo "⚠️  No tracked parent for '$current'."
-            echo "DEBUG PATH=$PATH" >&2
             local picked
             picked=$(command git branch --format='%(refname:short)' \
                 | command grep -v "^${current}$" \
@@ -128,10 +127,10 @@ fm() {
             git checkout "$picked" >/dev/null 2>&1
             current="$picked"
         fi
-        path=("$current" "${path[@]}")
+        branch_chain=("$current" "${branch_chain[@]}")
     done
 
-    # path is now: (main, ..., original_branch)
+    # branch_chain is now: (main, ..., original_branch)
 
     # Update main from origin.
     _fm_merge_origin main || {
@@ -139,11 +138,11 @@ fm() {
         return 1
     }
 
-    # Walk back down the recorded path, merging origin and parent into each branch.
+    # Walk back down the recorded branch_chain, merging origin and parent into each branch.
     local parent_branch="main"
     local i
-    for (( i=2; i<=${#path[@]}; i++ )); do
-        local branch="${path[$i]}"
+    for (( i=2; i<=${#branch_chain[@]}; i++ )); do
+        local branch="${branch_chain[$i]}"
         git checkout "$branch" >/dev/null 2>&1
 
         # Pull remote updates for this branch.
