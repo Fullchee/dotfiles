@@ -14,9 +14,9 @@ export PROJECT_ID=$STAGING_PROJECT # used when copy pasting from the docs
 
 # Helper to consistently resolve the Citylitics repo root
 # Usage:
-#   citylitics_repo_root           # errors if not in a git repo
-#   citylitics_repo_root --allow-default  # falls back to the default repo path
-citylitics_repo_root() {
+#   citylitics-repo-root           # errors if not in a git repo
+#   citylitics-repo-root --allow-default  # falls back to the default repo path
+citylitics-repo-root() {
     local allow_default=0
     if [[ $1 == "--allow-default" ]]; then
         allow_default=1
@@ -37,17 +37,15 @@ citylitics_repo_root() {
     fi
 
     case "$repo_root" in
-        "$ROOT_PREFIX" | "$ROOT_PREFIX"/*)
-            ;; # ok
-        *)
-            echo "Error: repository root '$repo_root' is not under '$ROOT_PREFIX'." >&2
-            return 1
-            ;;
+    "$ROOT_PREFIX" | "$ROOT_PREFIX"/*) ;; # ok
+    *)
+        echo "Error: repository root '$repo_root' is not under '$ROOT_PREFIX'." >&2
+        return 1
+        ;;
     esac
 
     printf '%s' "$repo_root"
 }
-
 
 jira() {
     local branch="${1:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null)}"
@@ -103,17 +101,17 @@ watch-cloud-build() {
         echo "  Status: ${build_status}"
 
         case "$build_status" in
-            SUCCESS)
-                say "Cloud Build succeeded"
-                echo "✅ Build succeeded: ${build_id}"
-                return 0
-                ;;
-            FAILURE|CANCELLED|TIMEOUT|INTERNAL_ERROR|EXPIRED)
-                say "Cloud Build failed"
-                echo "❌ Build ${build_status}: ${build_id}"
-                open-deploy-url "$build_id"
-                return 1
-                ;;
+        SUCCESS)
+            say "Cloud Build succeeded"
+            echo "✅ Build succeeded: ${build_id}"
+            return 0
+            ;;
+        FAILURE | CANCELLED | TIMEOUT | INTERNAL_ERROR | EXPIRED)
+            say "Cloud Build failed"
+            echo "❌ Build ${build_status}: ${build_id}"
+            open-deploy-url "$build_id"
+            return 1
+            ;;
         esac
 
         sleep "$poll_interval"
@@ -138,8 +136,8 @@ open-deploy-url() {
 
     # Find the index of the first failed step
     local failed_step
-    failed_step=$(printf '%s' "$build_json" \
-        | jq -r '[(.steps // []) | to_entries[] | select(.value.status == "FAILURE") | .key] | first // empty')
+    failed_step=$(printf '%s' "$build_json" |
+        jq -r '[(.steps // []) | to_entries[] | select(.value.status == "FAILURE") | .key] | first // empty')
 
     if [[ -n "$failed_step" ]]; then
         local step_url="https://console.cloud.google.com/cloud-build/builds;region=global/${build_id};step=${failed_step}?project=${project_id}"
@@ -173,7 +171,7 @@ deploy-sha-to-prod() {
     fi
 
     local REPO_ROOT
-    REPO_ROOT=$(citylitics_repo_root) || return 1
+    REPO_ROOT=$(citylitics-repo-root) || return 1
 
     local commit_sha
     commit_sha=$(_resolve_and_check_origin_sha "$REPO_ROOT" "$1") || return 1
@@ -184,7 +182,7 @@ deploy-sha-to-prod() {
 
 deploy-sha-to-staging() {
     local REPO_ROOT
-    REPO_ROOT=$(citylitics_repo_root) || return 1
+    REPO_ROOT=$(citylitics-repo-root) || return 1
 
     local input="${1:-HEAD}"
     local COMMIT_SHA
@@ -239,8 +237,6 @@ view-cloud-build-run() {
         echo "No run selected."
     fi
 }
-
-
 
 ####################### Cloud SQL #######################
 
@@ -341,7 +337,7 @@ copilot-instructions-dotfiles-to-repo() {
 
 open-ticket() {
     local REPO_ROOT
-    REPO_ROOT=$(citylitics_repo_root --allow-default) || return 1
+    REPO_ROOT=$(citylitics-repo-root --allow-default) || return 1
 
     # 1. Get the current branch name
     local branch
@@ -371,7 +367,7 @@ sf() {
     set-terminal-tab-title start-frontend
 
     local REPO_ROOT
-    REPO_ROOT=$(citylitics_repo_root --allow-default) || return 1
+    REPO_ROOT=$(citylitics-repo-root --allow-default) || return 1
 
     cd "$REPO_ROOT" || exit
     make start-frontend
@@ -380,9 +376,10 @@ sf() {
 pt() {
     # Prefer running in the citylitics repo root (fallback to default if not inside a git repo).
     local workdir
-    workdir=$(citylitics_repo_root --allow-default) || return 1
+    workdir=$(citylitics-repo-root --allow-default) || return 1
 
-    (cd "$workdir" || return 1
+    (
+        cd "$workdir" || return 1
         if [ $# -eq 0 ]; then
             docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s
         else
@@ -394,20 +391,20 @@ pt() {
 
 cdf() {
     local repo_root
-    repo_root=$(citylitics_repo_root --allow-default) || return 1
+    repo_root=$(citylitics-repo-root --allow-default) || return 1
     cd "$repo_root/app/frontend/app" || return 1
 }
 
-frontend() {
-    cd "$(citylitics_frontend_app_dir)" || return 1
+repo-root() {
+    cd "$(citylitics-repo-root)" || return 1
 }
 
 y() {
-    command yarn --cwd "$(citylitics_frontend_app_dir)" "$@"
+    command yarn --cwd "$(citylitics-repo-root)" "$@"
 }
 
 yarntest() {
-    command yarn --cwd "$(citylitics_frontend_app_dir)" test --no-watchAll --collectCoverage=false "$@"
+    command yarn --cwd "$(citylitics-repo-root)" test --no-watchAll --collectCoverage=false "$@"
 }
 
 ####################### END OF LOCAL DEV
