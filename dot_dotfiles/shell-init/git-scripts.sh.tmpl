@@ -581,6 +581,11 @@ pick-parent-branch() {
               --preview-window=right:60%)
     if [[ -n "$picked" ]]; then
         gt track --parent "$picked" >/dev/null 2>&1 || true
+        if gh pr view "$current" --json number --jq '.number' >/dev/null 2>&1; then
+            gh pr edit "$current" --base "$picked" >&2
+        else
+            echo "ℹ️  No PR found for '$current', skipping base branch update." >&2
+        fi
     fi
     echo "$picked"
 }
