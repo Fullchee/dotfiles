@@ -21,6 +21,6 @@
     "typescript-lsp@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true
   },
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true
 }
