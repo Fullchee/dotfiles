@@ -590,6 +590,17 @@ pick-parent-branch() {
     echo "$picked"
 }
 
+# createpr: create a draft GitHub PR from the current or given branch
+# 1. parse options (-m commit message, -h help)
+# 2. determine branch name (argument or current branch)
+# 3. determine parent branch via gt-parent
+# 4. stash uncommitted changes, switch to target branch (or create it)
+# 5. create an empty commit (or real commit if -m provided) if branch has no commits relative to parent
+# 6. push branch, set upstream
+# 7. validate branch name (reject main/master/develop), build PR title from branch name
+# 8. generate PR body (LLM prompt file override; fallback defaults) using diff against parent
+# 9. create PR with gh pr create (draft, assign self)
+# 10. pop stash and open PR in web browser
 createpr() {
     local branch_name=""
     local commit_msg=""
