@@ -11,17 +11,16 @@
     "mcp-server-github": {
       "enabled": true,
       "remote": false,
-      "settings": {},
-    },
+      "settings": {}
+    }
   },
   "agent_servers": {
     "claude-acp": {
       "default_config_options": {
-        "model": "opus[1m]",
-        "mode": "bypassPermissions",
+        "mode": "bypassPermissions"
       },
-      "type": "registry",
-    },
+      "type": "registry"
+    }
   },
   "terminal": {
     "font_family": "Hack Nerd Font",
@@ -29,39 +28,39 @@
       "Source Code Pro for Powerline",
       "Fira Code",
       "Menlo",
-      "monospace",
+      "monospace"
     ],
-    "max_scroll_history_lines": 10000,
+    "max_scroll_history_lines": 10000
   },
   "telemetry": {
     "diagnostics": false,
-    "metrics": false,
+    "metrics": false
   },
   "base_keymap": "VSCode",
   "status_bar": {
-    "experimental.show": true,
+    "experimental.show": true
   },
   "sticky_scroll": {
-    "enabled": true,
+    "enabled": true
   },
   "minimap": {
     "show": "never",
-    "thumb": "always",
+    "thumb": "always"
   },
   "scrollbar": {
     "axes": {
-      "vertical": true,
-    },
+      "vertical": true
+    }
   },
   "autosave": {
     "after_delay": {
-      "milliseconds": 1000,
-    },
+      "milliseconds": 1000
+    }
   },
   "buffer_font_fallbacks": ["Menlo", "Monaco", "Courier New", "monospace"],
   "buffer_font_family": "JetBrains Mono",
   "file_types": {
-    "Shell Script": ["tmpl", ".aliases", ".functions", ".zshrc"],
+    "Shell Script": ["tmpl", ".aliases", ".functions", ".zshrc"]
   },
   "auto_indent_on_paste": true,
   "linked_edits": true,
@@ -74,6 +73,6 @@
   "theme": {
     "mode": "system",
     "light": "Solarized Light",
-    "dark": "Tokyo Night Storm",
-  },
+    "dark": "Tokyo Night Storm"
+  }
 }
