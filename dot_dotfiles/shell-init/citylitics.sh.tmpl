@@ -412,7 +412,8 @@ yarntest() {
     local root
     root=$(citylitics-repo-root --allow-default) || return 1
     # Vitest: run once (no watch), no coverage
-    command yarn --cwd "$root/app/frontend/app" test --no-coverage --run  "$@"
+    # The test script already passes --run, so we avoid passing it again to prevent duplicates.
+    command yarn --cwd "$root/app/frontend/app" test --no-coverage "$@"
 }
 
 ####################### END OF LOCAL DEV
