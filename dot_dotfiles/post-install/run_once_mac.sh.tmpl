@@ -5,9 +5,9 @@ set -euo pipefail
 
 # make /etc/hosts immutable only if not already done
 if ! ls -lO /etc/hosts | grep -q schg; then
-  sudo chflags schg /etc/hosts  # makes the file immutable, can't sudo
+    sudo chflags schg /etc/hosts # makes the file immutable, can't sudo
 else
-  echo "/etc/hosts already immutable, skipping"
+    echo "/etc/hosts already immutable, skipping"
 fi
 
 brew install duti                        # set default applications
@@ -57,9 +57,9 @@ killall ControlCenter >/dev/null 2>&1 || true
 
 ### Night Shift
 defaults write com.apple.CoreBrightness CBBlueReductionSchedule -dict \
-  enabled -bool true \
-  start -float 20.0 \
-  end -float 6.0
+    enabled -bool true \
+    start -float 20.0 \
+    end -float 6.0
 killall CoreBrightness >/dev/null 2>&1 || true
 
 ### SAFARI

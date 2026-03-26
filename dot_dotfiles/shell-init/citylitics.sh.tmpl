@@ -403,11 +403,11 @@ repo-root() {
 }
 
 y() {
-    command yarn --cwd "$(citylitics-repo-root)" "$@"
+    command yarn --cwd "$(citylitics-repo-root)"/app/frontend/app "$@"
 }
 
 yarntest() {
-    command yarn --cwd "$(citylitics-repo-root)" test --no-watchAll --collectCoverage=false "$@"
+    command yarn --cwd "$(citylitics-repo-root)"/app/frontend/app test --no-watchAll --collectCoverage=false "$@"
 }
 
 ####################### END OF LOCAL DEV
