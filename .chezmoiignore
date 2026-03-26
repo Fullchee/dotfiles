@@ -4,6 +4,7 @@
 .dotfiles/shell-init/citylitics.sh
 {{- end }}
 
+*.plist
 
 {{- if ne .chezmoi.os "darwin" }}
 Library/**

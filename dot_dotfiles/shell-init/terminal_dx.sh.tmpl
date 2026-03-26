@@ -9,10 +9,6 @@ export VISUAL=hx
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
-chezmoi-apply() {
-    bash -c 'chezmoi managed --include=files,dirs -0 | rg -vz -- "\.plist$" | sed -z "s|^|$HOME/|" | xargs -0 chezmoi apply --include=files,dirs'
-}
-
 alias cm='zed $(chezmoi source-path)'
 
 # use fd so that it respects .gitignore
