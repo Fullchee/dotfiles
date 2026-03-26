@@ -411,9 +411,23 @@ y() {
 yarntest() {
     local root
     root=$(citylitics-repo-root --allow-default) || return 1
-    # Vitest: run once (no watch), no coverage
-    # The test script already passes --run, so we avoid passing it again to prevent duplicates.
-    command yarn --cwd "$root/app/frontend/app" test --no-coverage "$@"
+
+    local app_root="$root/app/frontend/app"
+    local normalized_args=()
+
+    for arg in "$@"; do
+        if [[ "$arg" == "$app_root"* ]]; then
+            # e.g. /Users/admin/watrhub-django/main/app/frontend/app/src/... -> src/...
+            normalized_args+=("${arg#$app_root/}")
+        elif [[ "$arg" == app/frontend/app/* ]]; then
+            # e.g. app/frontend/app/src/... -> src/...
+            normalized_args+=("${arg#app/frontend/app/}")
+        else
+            normalized_args+=("$arg")
+        fi
+    done
+
+    command yarn --cwd "$app_root" test --no-coverage "${normalized_args[@]}"
 }
 
 ####################### END OF LOCAL DEV
