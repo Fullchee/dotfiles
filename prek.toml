@@ -1,21 +1,17 @@
-[config]
-parallel = true
-concurrency = 4
-
 [[repos]]
 repo = "https://github.com/pre-commit/pre-commit-hooks"
 rev = "v6.0.0"
 hooks = [
-    { id = "detect-private-key" },
-    { id = "check-added-large-files" },
-    { id = "trailing-whitespace" },
-    { id = "end-of-file-fixer" },
+    { id = "detect-private-key", priority = 0 },
+    { id = "check-added-large-files", priority = 0 },
+    { id = "trailing-whitespace", priority = 0 },
+    { id = "end-of-file-fixer", priority = 0 },
 ]
 
 [[repos]]
 repo = "https://github.com/Yelp/detect-secrets"
 rev = "v1.5.0"
-hooks = [{ id = "detect-secrets" }]
+hooks = [{ id = "detect-secrets", priority = 0 }]
 
 [[repos]]
 repo = "local"
@@ -25,6 +21,7 @@ id = "chezmoi-validate"
 name = "Dry-run chezmoi apply to catch template errors early"
 entry = "chezmoi apply --dry-run --force --no-tty"
 language = "system"
+priority = 0
 pass_filenames = false
 
 # [[repos.hooks]]
