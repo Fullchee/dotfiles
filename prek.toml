@@ -23,10 +23,10 @@ entry = "chezmoi apply --dry-run --force --no-tty"
 language = "system"
 pass_filenames = false
 
-[[repos.hooks]]
-id = "chezmoi-apply"
-name = "Run chezmoi apply for non-script files"
-entry = '''bash -c 'chezmoi managed --include=files,dirs -0 | rg -vz -- "\.plist$" | sed -z "s|^|$HOME/|" | xargs -0 chezmoi apply --include=files,dirs --no-tty' '''
-language = "system"
-files = '^(?!.*\.sh$).*$'
-pass_filenames = false
+# [[repos.hooks]]
+# id = "chezmoi-apply"
+# name = "Run chezmoi apply for non-script files"
+# entry = '''bash -c 'chezmoi managed --include=files,dirs -0 | rg -vz -- "\.plist$" | sed -z "s|^|$HOME/|" | xargs -0 chezmoi apply --include=files,dirs --no-tty' '''
+# language = "system"
+# files = '^(?!.*\.sh$).*$'
+# pass_filenames = false
