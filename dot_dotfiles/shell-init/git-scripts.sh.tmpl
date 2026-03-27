@@ -167,7 +167,7 @@ fm() {
         fi
 
         # Push non-main branches.
-        [[ "$branch" != "main" ]] && git push
+        [[ "$branch" != "main" ]] && git push --no-verify
 
         parent_branch="$branch"
     done
@@ -213,7 +213,7 @@ push() {
         return
     fi
 
-    gc "$@" && git push
+    gc "$@" && git push --no-verify
 }
 
 ############### BRANCHES #####################
@@ -461,7 +461,7 @@ split-branch() {
 delete_remote_branch() {
     if read -q "choice?Delete remote branch? (Y/y)"; then
         branch_name="$(git rev-parse --abbrev-ref HEAD)"
-        git push origin --delete "$branch_name"
+        git push origin --delete "$branch_name" --no-verify
     else
         echo "Not deleting remote branch"
         exit 1
@@ -471,7 +471,7 @@ delete_remote_branch() {
 delete_remote_and_local_branch() {
     if read -q "choice?Delete remote branch? (Y/y)"; then
         branch_name="$(git rev-parse --abbrev-ref HEAD)"
-        git push origin --delete "$branch_name"
+        git push origin --delete "$branch_name" --no-verify
         delete_current_branch
     else
         echo "Not deleting remote branch"
