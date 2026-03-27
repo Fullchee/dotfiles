@@ -12,8 +12,6 @@ export STAGING_PROJECT=dev-review-env
 export PROD_PROJECT=crawler-147820
 export PROJECT_ID=$STAGING_PROJECT # used when copy pasting from the docs
 
-alias repo='open https://github.com/WatrHub/watrhub-django'
-
 # Helper to consistently resolve the Citylitics repo root
 # Usage:
 #   citylitics-repo-root           # errors if not in a git repo
@@ -62,6 +60,12 @@ jira() {
         return 1
     fi
     open "https://citylitics.atlassian.net/browse/$ticket"
+}
+
+alias repo='open https://github.com/WatrHub/watrhub-django'
+
+verify-changes() {
+    claude --model haiku --effort low -p "/verify-changes"
 }
 
 ####################### CI/CD #######################
