@@ -702,33 +702,20 @@ createpr() {
     local repo_root
     repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
 
-    # 1) Prefer repository-local skill prompt (if present)
-    if [[ -n "$repo_root" && -f "$repo_root/.claude/skills/pr-body/prompt.txt" ]]; then
-        pr_body_prompt_file="$repo_root/.claude/skills/pr-body/prompt.txt"
-    fi
-
-    # 2) Fallback to a stable global prompt location for non-repo use cases
-    if [[ -z "$pr_body_prompt_file" || ! -f "$pr_body_prompt_file" ]]; then
-        pr_body_prompt_file="$HOME/.claude/skills/pr-body/prompt.txt"
-    fi
 
     local pr_body_prompt
-    if [[ -f "$pr_body_prompt_file" ]]; then
-        pr_body_prompt=$(cat "$pr_body_prompt_file")
-    else
         pr_body_prompt=$(cat <<'EOF'
 Generate markdown containing the following two sections based on the git diff below:
 
 ## Changes
-- <one concise bullet summarizing the change>
+- {concise bullet points (each ≤ 15 words) capturing the most important changes. Focus on *what* changed and *why*, not file names.}
 
 ## Review instructions
-1. <itemized list of steps for a reviewer to follow to view and test the changes manually>
+1. {itemized list of steps for a reviewer to follow to view and test the changes manually}
 
 Return ONLY the markdown for these two sections (no extra text or explanation.)
 EOF
 )
-    fi
 
     local pr_body_extra
     pr_body_extra=$(git diff --no-color "$parent_branch"..."$CURRENT_BRANCH" | claude -p "$pr_body_prompt" 2>/dev/null || true)
