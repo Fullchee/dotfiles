@@ -786,7 +786,6 @@ cwt() {
 
     # Find the absolute path to the root of the current repo
     local REPO_ROOT=$(git rev-parse --show-toplevel)
-    local REPO_NAME=$(basename "$REPO_ROOT")
 
     local BRANCH=${1:-$CURRENT_BRANCH}
     local NAME=${2:-$BRANCH}
