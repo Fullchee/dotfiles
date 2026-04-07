@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute"
+    ],
+    "additionalDirectories": [
+      "/Users/admin/.claude/plans"
+    ]
+  },
   "hooks": {
     "Stop": [
       {
@@ -28,10 +36,10 @@
       }
     }
   },
+  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
-  "permissions": {
-    "allow": [
-      "mcp__plugin_context-mode_context-mode__ctx_batch_execute"
-    ]
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }
