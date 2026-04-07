@@ -20,13 +20,14 @@
     ]
   },
   "enabledPlugins": {
-    "code-simplifier@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "context-mode@context-mode": true,
+    "feature-dev@claude-plugins-official": true,
     "github@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "context-mode@context-mode": true
+    "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {
@@ -38,8 +39,7 @@
   },
   "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  }
+  "disableTelemetry": true,
+  "disableErrorReporting": true,
+  "disableFeedbackDisplay": true
 }
