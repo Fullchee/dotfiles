@@ -869,6 +869,52 @@ rm-worktree() {
     fi
 }
 
+swap-workspaces() {
+    local main_dir="$HOME/watrhub/main"
+    local secondary_dir="$HOME/watrhub/secondary"
+
+    local branch_main branch_secondary
+    branch_main=$(git -C "$main_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
+    branch_secondary=$(git -C "$secondary_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+    if [[ -z "$branch_main" || "$branch_main" == "HEAD" ]]; then
+        echo "❌ $main_dir is already in detached HEAD state." >&2
+        return 1
+    fi
+    if [[ -z "$branch_secondary" || "$branch_secondary" == "HEAD" ]]; then
+        echo "❌ $secondary_dir is already in detached HEAD state." >&2
+        return 1
+    fi
+
+    echo "🔀 Swapping: $main_dir ($branch_main) ↔ $secondary_dir ($branch_secondary)"
+
+    # Stash uncommitted changes in each worktree
+    local stashed_main=0 stashed_secondary=0
+    if ! git -C "$main_dir" diff --quiet || ! git -C "$main_dir" diff --cached --quiet; then
+        git -C "$main_dir" stash
+        stashed_main=1
+    fi
+    if ! git -C "$secondary_dir" diff --quiet || ! git -C "$secondary_dir" diff --cached --quiet; then
+        git -C "$secondary_dir" stash
+        stashed_secondary=1
+    fi
+
+    # Detach both worktrees first so neither branch is locked
+    git -C "$main_dir" switch --detach || { echo "❌ Failed to detach $main_dir" >&2; return 1; }
+    git -C "$secondary_dir" switch --detach || { echo "❌ Failed to detach $secondary_dir" >&2; return 1; }
+
+    # Checkout swapped branches
+    git -C "$main_dir" checkout "$branch_secondary" || { echo "❌ Failed to checkout $branch_secondary in $main_dir" >&2; return 1; }
+    git -C "$secondary_dir" checkout "$branch_main" || { echo "❌ Failed to checkout $branch_main in $secondary_dir" >&2; return 1; }
+
+    # Restore stashed changes
+    [[ "$stashed_secondary" -eq 1 ]] && git -C "$secondary_dir" stash pop
+    [[ "$stashed_main" -eq 1 ]] && git -C "$main_dir" stash pop
+
+    echo "✅ $main_dir → $branch_secondary"
+    echo "✅ $secondary_dir → $branch_main"
+}
+
 wt-collapse() {
     # 1. Identify the branch name of the current worktree
     local branch_name=$(git rev-parse --abbrev-ref HEAD)
