@@ -83,6 +83,13 @@ killport() {
 
 ##################### Node
 
+# bun completions
+[ -s "/Users/admin/.bun/_bun" ] && source "/Users/admin/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 {{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 eval "$(/usr/local/bin/mise activate zsh)"
 {{- else }}
@@ -94,6 +101,7 @@ case ":$PATH:" in
    *":$PNPM_HOME:"*) ;;
    *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
+
 
 #################### Node end ####################
 
