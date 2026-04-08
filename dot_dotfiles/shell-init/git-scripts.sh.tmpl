@@ -207,11 +207,11 @@ alias pull='git stash && git pull && git stash pop'
 
 push() {
     # On Fullchee-Citylitics, commit only (no push) in ~/watrhub-django to reduce Claude Code review costs.
-    if [[ "$(hostname)" == "Fullchee-Citylitics" && "$PWD" == "$HOME/watrhub-django"* ]]; then
-        gc "$@"
-        echo "❌ Committed but did not push (Fullchee-Citylitics)"
-        return
-    fi
+    # if [[ "$(hostname)" == "Fullchee-Citylitics" && "$PWD" == "$HOME/watrhub-django"* ]]; then
+    #     gc "$@"
+    #     echo "❌ Committed but did not push (Fullchee-Citylitics)"
+    #     return
+    # fi
 
     gc "$@" && git push --no-verify
 }
