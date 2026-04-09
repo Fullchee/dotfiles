@@ -877,16 +877,19 @@ swap-worktrees() {
     branch_main=$(git -C "$main_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
     branch_secondary=$(git -C "$secondary_dir" rev-parse --abbrev-ref HEAD 2>/dev/null)
 
-    if [[ -z "$branch_main" || "$branch_main" == "HEAD" ]]; then
-        echo "❌ $main_dir is already in detached HEAD state." >&2
-        return 1
-    fi
-    if [[ -z "$branch_secondary" || "$branch_secondary" == "HEAD" ]]; then
-        echo "❌ $secondary_dir is already in detached HEAD state." >&2
+    local main_detached=0 secondary_detached=0
+    [[ -z "$branch_main" || "$branch_main" == "HEAD" ]] && main_detached=1
+    [[ -z "$branch_secondary" || "$branch_secondary" == "HEAD" ]] && secondary_detached=1
+
+    if [[ "$main_detached" -eq 1 && "$secondary_detached" -eq 1 ]]; then
+        echo "❌ Both worktrees are in detached HEAD state, nothing to swap." >&2
         return 1
     fi
 
-    echo "🔀 Swapping: $main_dir ($branch_main) ↔ $secondary_dir ($branch_secondary)"
+    local label_main label_secondary
+    [[ "$main_detached" -eq 1 ]] && label_main="detached" || label_main="$branch_main"
+    [[ "$secondary_detached" -eq 1 ]] && label_secondary="detached" || label_secondary="$branch_secondary"
+    echo "🔀 Swapping: $main_dir ($label_main) ↔ $secondary_dir ($label_secondary)"
 
     # Stash uncommitted changes in each worktree
     local stashed_main=0 stashed_secondary=0
@@ -903,16 +906,23 @@ swap-worktrees() {
     git -C "$main_dir" switch --detach || { echo "❌ Failed to detach $main_dir" >&2; return 1; }
     git -C "$secondary_dir" switch --detach || { echo "❌ Failed to detach $secondary_dir" >&2; return 1; }
 
-    # Checkout swapped branches
-    git -C "$main_dir" checkout "$branch_secondary" || { echo "❌ Failed to checkout $branch_secondary in $main_dir" >&2; return 1; }
-    git -C "$secondary_dir" checkout "$branch_main" || { echo "❌ Failed to checkout $branch_main in $secondary_dir" >&2; return 1; }
+    # Checkout swapped branches (skip if the source was already detached)
+    if [[ "$secondary_detached" -eq 0 ]]; then
+        git -C "$main_dir" checkout "$branch_secondary" || { echo "❌ Failed to checkout $branch_secondary in $main_dir" >&2; return 1; }
+    fi
+    if [[ "$main_detached" -eq 0 ]]; then
+        git -C "$secondary_dir" checkout "$branch_main" || { echo "❌ Failed to checkout $branch_main in $secondary_dir" >&2; return 1; }
+    fi
 
     # Restore stashed changes
     [[ "$stashed_secondary" -eq 1 ]] && git -C "$secondary_dir" stash pop
     [[ "$stashed_main" -eq 1 ]] && git -C "$main_dir" stash pop
 
-    echo "✅ $main_dir → $branch_secondary"
-    echo "✅ $secondary_dir → $branch_main"
+    local result_main result_secondary
+    [[ "$secondary_detached" -eq 1 ]] && result_main="detached" || result_main="$branch_secondary"
+    [[ "$main_detached" -eq 1 ]] && result_secondary="detached" || result_secondary="$branch_main"
+    echo "✅ $main_dir → $result_main"
+    echo "✅ $secondary_dir → $result_secondary"
 }
 
 wt-collapse() {
