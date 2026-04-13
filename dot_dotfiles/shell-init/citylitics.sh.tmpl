@@ -340,7 +340,7 @@ PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 
 copilot-instructions-repo-to-dotfiles() {
     local SRC="$HOME/watrhub-django/main/.github/instructions"
-    local DEST="$HOME/.dotfiles/citylitics/copilot-instructions"
+    local DEST="$HOME/.dotfiles/work/citylitics/copilot-instructions"
     rm -rf "$DEST"
     cp -r "$SRC" "$DEST"
     config add "$DEST"
@@ -348,7 +348,7 @@ copilot-instructions-repo-to-dotfiles() {
 
 copilot-instructions-dotfiles-to-repo() {
     local DEST="$HOME/watrhub-django/main/.github/instructions"
-    local SRC="$HOME/.dotfiles/citylitics/copilot-instructions"
+    local SRC="$HOME/.dotfiles/work/citylitics/copilot-instructions"
     rm -rf "$DEST"
     cp -r "$SRC" "$DEST"
 }

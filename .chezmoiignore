@@ -1,6 +1,5 @@
 {{- if ne .chezmoi.hostname "Fullchee-Citylitics" }}
-.dotfiles/citylitics.gitconfig
-.dotfiles/citylitics/**
+.dotfiles/work/citylitics/**
 .dotfiles/shell-init/citylitics.sh
 {{- end }}
 

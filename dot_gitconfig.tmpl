@@ -165,7 +165,7 @@
 {{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 # must be at bottom to override above
 [includeIf "gitdir:~/personal-projects/**"]
-	path = ~/.dotfiles/personal-projects.gitconfig
+	path = ~/.dotfiles/work/personal-projects.gitconfig
 [includeIf "gitdir:/Users/admin/.local/share/chezmoi/**"]
-	path = ~/.dotfiles/personal-projects.gitconfig
+	path = ~/.dotfiles/work/personal-projects.gitconfig
 {{- end }}
