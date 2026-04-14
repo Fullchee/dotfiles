@@ -72,7 +72,7 @@ if (( $+commands[pyenv] )); then
 
   if [[ -z "${_DOTFILES_PYENV_INIT_DONE:-}" ]]; then
     export _DOTFILES_PYENV_INIT_DONE=1
-    eval "$(pyenv init - zsh)"
+    eval "$(pyenv init - --no-rehash zsh)"
   fi
 fi
 {{ else }}

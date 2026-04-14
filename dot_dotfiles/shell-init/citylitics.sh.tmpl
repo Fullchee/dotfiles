@@ -5,8 +5,8 @@
 export GCLOUD_SDK_ROOT="$HOME/google-cloud-sdk"
 if [ -f "$GCLOUD_SDK_ROOT/path.zsh.inc" ]; then . "$GCLOUD_SDK_ROOT/path.zsh.inc"; fi
 
-# The next line enables shell command completion for gcloud.
-if [ -f "$GCLOUD_SDK_ROOT/completion.zsh.inc" ]; then . "$GCLOUD_SDK_ROOT/completion.zsh.inc"; fi
+# Load gcloud completion later from ~/.zshrc after Prezto has initialized
+# the completion system. Sourcing it here triggers an extra early compinit.
 
 export STAGING_PROJECT=dev-review-env
 export PROD_PROJECT=crawler-147820

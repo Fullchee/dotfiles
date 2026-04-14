@@ -157,7 +157,16 @@ if [ -f "$HOME/.local/bin/env" ]; then
   . "$HOME/.local/bin/env"
 fi
 
-eval "$(uv generate-shell-completion zsh)"
+if (( $+commands[uv] )); then
+  export UV_COMPLETION_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/uv-completion.zsh"
+
+  if [[ ! -s "$UV_COMPLETION_CACHE" || "$(command -v uv)" -nt "$UV_COMPLETION_CACHE" ]]; then
+    mkdir -p "${UV_COMPLETION_CACHE:h}" 2>/dev/null
+    uv generate-shell-completion zsh >| "$UV_COMPLETION_CACHE" 2>/dev/null
+  fi
+
+  [[ -s "$UV_COMPLETION_CACHE" ]] && source "$UV_COMPLETION_CACHE"
+fi
 
 venv() {
   # no arg given -> try venv and .venv
