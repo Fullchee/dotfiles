@@ -83,12 +83,21 @@ killport() {
 
 ##################### Node
 
-# bun completions
-[ -s "/Users/admin/.bun/_bun" ] && source "/Users/admin/.bun/_bun"
-
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Defer bun completion load until first bun invocation.
+if [ -s "$HOME/.bun/_bun" ]; then
+  _DOTFILES_BUN_COMPLETION_LOADED=0
+  bun() {
+    if [[ "${_DOTFILES_BUN_COMPLETION_LOADED}" -eq 0 ]]; then
+      source "$HOME/.bun/_bun"
+      _DOTFILES_BUN_COMPLETION_LOADED=1
+    fi
+    command bun "$@"
+  }
+fi
 
 {{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 eval "$(/usr/local/bin/mise activate zsh)"

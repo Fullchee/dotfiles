@@ -9,12 +9,41 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 if [[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]]; then
-  source "$HOME/google-cloud-sdk/completion.zsh.inc"
+  # Defer gcloud completion setup until first gcloud call to reduce shell boot cost.
+  _dotfiles_load_gcloud_completion() {
+    unfunction _dotfiles_load_gcloud_completion 2>/dev/null
+    source "$HOME/google-cloud-sdk/completion.zsh.inc"
+  }
+
+  gcloud() {
+    _dotfiles_load_gcloud_completion
+    command gcloud "$@"
+  }
 fi
 
 # Unset manpath so we can inherit from /etc/manpath via the `manpath` command
-unset MANPATH # delete if you already modified MANPATH elsewhere in your config
-export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
+MANPATH_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/manpath"
+if [[ -r "$MANPATH_CACHE" ]]; then
+  BASE_MANPATH="$(<"$MANPATH_CACHE")"
+elif (( $+commands[manpath] )); then
+  BASE_MANPATH="$(manpath 2>/dev/null)"
+  if [[ -n "$BASE_MANPATH" ]]; then
+    mkdir -p "${MANPATH_CACHE:h}" 2>/dev/null
+    print -r -- "$BASE_MANPATH" >| "$MANPATH_CACHE"
+  fi
+fi
+
+if [[ -n "$NPM_PACKAGES" ]]; then
+  if [[ -n "$BASE_MANPATH" ]]; then
+    export MANPATH="$NPM_PACKAGES/share/man:$BASE_MANPATH"
+  else
+    export MANPATH="$NPM_PACKAGES/share/man"
+  fi
+elif [[ -n "$BASE_MANPATH" ]]; then
+  export MANPATH="$BASE_MANPATH"
+fi
+
+unset MANPATH_CACHE BASE_MANPATH
 
 # This tells zsh to print a mark and move to a new line if the output lacks one
 setopt PROMPT_SP
