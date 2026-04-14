@@ -1,0 +1,100 @@
+#
+# Executes commands at login pre-zshrc.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+
+#
+# Browser
+#
+
+if [[ -z "$BROWSER" && "$OSTYPE" == darwin* ]]; then
+  export BROWSER='open'
+fi
+
+#
+# Editors
+#
+
+if [[ -z "$EDITOR" ]]; then
+  export EDITOR='hx'
+fi
+if [[ -z "$VISUAL" ]]; then
+  export VISUAL='hx'
+fi
+if [[ -z "$PAGER" ]]; then
+  export PAGER='moor'
+fi
+
+#
+# Language
+#
+
+if [[ -z "$LANG" ]]; then
+  export LANG='en_US.UTF-8'
+fi
+
+#
+# Paths
+#
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath path
+
+# Set the list of directories that cd searches.
+# cdpath=(
+#   $cdpath
+# )
+
+# Set the list of directories that Zsh searches for programs.
+path=(
+  $HOME/{,s}bin(N)
+  /opt/{homebrew,local}/{,s}bin(N)
+  /usr/local/{,s}bin(N)
+  $path
+)
+
+# Keep core PATH entries available in login-shell environments.
+export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+if [[ "$(hostname)" != "Fullchee-Citylitics" && "$OSTYPE" == darwin* ]]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
+
+#
+# Less
+#
+
+# Set the default Less options.
+# Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
+# Remove -X to enable it.
+if [[ -z "$LESS" ]]; then
+  export LESS='-g -i -M -R -S -w -X -z-4'
+fi
+
+# Set the Less input preprocessor.
+# Try both `lesspipe` and `lesspipe.sh` as either might exist on a system.
+if [[ -z "$LESSOPEN" ]] && (( $#commands[(i)lesspipe(|.sh)] )); then
+  export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
+fi
+
+# Environment/bootstrap scripts that should run at login.
+source "$HOME/.dotfiles/shell-init/programming-scripts.sh"
+
+if [[ "$OSTYPE" == darwin* ]]; then
+  source "$HOME/.dotfiles/shell-init/mac.sh"
+fi
+
+if [[ "$(hostname)" == "Fullchee-Citylitics" ]]; then
+  source "$HOME/.dotfiles/shell-init/citylitics.sh"
+
+  # initialized in run_once_citylitics.sh.tmpl but not in chezmoi since it has secrets that aren't mine to encrypt
+  if [ -f "$HOME/.dotfiles/shell-init/citylitics-secrets.sh" ]; then
+    source "$HOME/.dotfiles/shell-init/citylitics-secrets.sh"
+  fi
+fi
+
+# Added by Obsidian
+export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"

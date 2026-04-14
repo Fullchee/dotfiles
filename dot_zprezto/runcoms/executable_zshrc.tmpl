@@ -17,27 +17,6 @@ setopt PROMPT_SP
 
 # RPROMPT='[%D{%L:%M:%S}] '$RPROMPTE
 
-export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-
-{{ if and (ne .chezmoi.hostname "Fullchee-Citylitics") (eq .chezmoi.os "darwin") -}}
-export PATH="/opt/homebrew/bin:$PATH"
-{{- end }}
-
 source "$HOME/.dotfiles/shell-init/file-scripts.sh"
 source "$HOME/.dotfiles/shell-init/git-scripts.sh"
-source "$HOME/.dotfiles/shell-init/programming-scripts.sh"
 source "$HOME/.dotfiles/shell-init/terminal_dx.sh"
-
-{{ if eq .chezmoi.os "darwin" -}}
-source "$HOME/.dotfiles/shell-init/mac.sh"
-{{- end }}
-
-{{ if eq .chezmoi.hostname "Fullchee-Citylitics" -}}
-source "$HOME/.dotfiles/shell-init/citylitics.sh"
-
-# initialized in run_once_citylitics.sh.tmpl but not in chezmoi since it has secrets that aren't mine to encrypt
-if [ -f "$HOME/.dotfiles/shell-init/citylitics-secrets.sh" ]; then
-  source "$HOME/.dotfiles/shell-init/citylitics-secrets.sh"
-fi
-{{- end }}
