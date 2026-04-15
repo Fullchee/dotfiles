@@ -107,7 +107,7 @@ fi
 if [[ "$(hostname)" == "Fullchee-Citylitics" ]]; then
   source "$HOME/.dotfiles/shell-init/citylitics.sh"
 
-  # initialized in run_once_citylitics.sh.tmpl but not in chezmoi since it has secrets that aren't mine to encrypt
+  # initialized in post-dot_dotfiles/install/mac/run_once_citylitics.sh.tmpl but not in chezmoi since it has secrets that aren't mine to encrypt
   if [ -f "$HOME/.dotfiles/shell-init/citylitics-secrets.sh" ]; then
     source "$HOME/.dotfiles/shell-init/citylitics-secrets.sh"
   fi

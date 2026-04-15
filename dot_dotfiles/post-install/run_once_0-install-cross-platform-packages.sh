@@ -5,8 +5,17 @@ set -euo pipefail
 # extend sudo timeout for this script only (120 minutes)
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
-IS_MAC={{ if eq .chezmoi.os "darwin" }}true{{ else }}false{{ end }}
-IS_LINUX={{ if eq .chezmoi.os "linux" }}true{{ else }}false{{ end }}
+IS_MAC=false
+IS_LINUX=false
+
+case "$(uname -s)" in
+  Darwin)
+    IS_MAC=true
+    ;;
+  Linux)
+    IS_LINUX=true
+    ;;
+esac
 
 install_pkg() {
   if $IS_MAC; then
@@ -65,7 +74,7 @@ ensure_npm_global() {
   fi
 }
 
-ensure_brew_cask() {
+ensure_brew() {
   local pkg="$1"
   if ! brew list --cask | grep -q "^$pkg$"; then
     brew install --cask "$pkg"
@@ -142,10 +151,6 @@ elif $IS_MAC; then
 fi
 
 install_pkg age       # file encryption for chezmoi
-
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
-install_pkg ansible   # Automate deployment, configuration, and upgrading
-{{- end }}
 
 ensure_uv_tool bandit bandit  # security linter
 install_pkg bash      # apple ships bash 3, linux has newer version
@@ -265,11 +270,11 @@ if command -v yt-dlp >/dev/null 2>&1; then
   yt-dlp -U || true
 else
   mkdir -p "$HOME/.local/bin"
-  {{ if eq .chezmoi.os "darwin" }}
-  curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o "$HOME/.local/bin/yt-dlp"
-  {{ else }}
-  curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "$HOME/.local/bin/yt-dlp"
-  {{ end }}
+  if $IS_MAC; then
+    curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o "$HOME/.local/bin/yt-dlp"
+  else
+    curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "$HOME/.local/bin/yt-dlp"
+  fi
   chmod +x "$HOME/.local/bin/yt-dlp"
 fi
 
@@ -291,6 +296,80 @@ if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
   done
 fi
 
+# Desktop applications (macOS) ------------------------------------------------
+if $IS_MAC; then
+  ensure_brew adobe-acrobat-reader
+  ensure_brew anki
+  ensure_brew balenaetcher
+  ensure_brew chatgpt
+  ensure_brew claude
+  ensure_brew db-browser-for-sqlite
+  ensure_brew discord
+  ensure_brew docker
+  ensure_brew figma
+  ensure_brew finicky
+  ensure_brew firefox
+
+  # firefox policies
+  mkdir -p ~/Library/Application\ Support/Firefox/distribution
+  cp ~/.dotfiles/post-install/firefox-policies.json ~/Library/Application\ Support/Firefox/distribution/policies.json || true
+
+  ensure_brew font-hack-nerd-font
+  ensure_brew font-jetbrains-mono
+  ensure_brew freedom
+  ensure_brew google-chrome
+  ensure_brew handbrake
+  ensure_brew imageoptim
+  ensure_brew iina
+  ensure_brew iterm2
+
+  if [ ! -f "$HOME/.iterm2_shell_integration.zsh" ]; then
+    curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh
+  fi
+
+  ensure_brew itermai
+  ensure_brew karabiner-elements
+  ensure_brew keycastr
+  ensure_brew modern-csv
+  ensure_brew notion
+  ensure_brew obsidian
+  ensure_brew raspberry-pi-imager
+  ensure_brew raycast
+  ensure_brew rectangle
+  ensure_brew sejda-pdf
+  ensure_brew tableplus
+  ensure_brew thaw
+  ensure_brew todoist
+  ensure_brew visual-studio-code
+  ensure_brew wechat
+  ensure_brew whatsapp
+  ensure_brew wispr-flow
+  ensure_brew zoom
+
+  if ! command -v zed >/dev/null 2>&1; then
+    curl -f https://zed.dev/install.sh | sh
+  fi
+
+  # App Store apps
+  ensure_mas_app 1440147259  # AdGuard for Safari
+  ensure_mas_app 937984704   # Amphetamine: keep mac working
+
+  # Amphetamine Enhancer
+  if ! [ -d /Applications/Amphetamine\ Enhancer.app ]; then
+    cd /tmp
+    curl -fL -o Amphetamine\ Enhancer.dmg https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
+    hdiutil attach Amphetamine\ Enhancer.dmg
+    cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
+    hdiutil detach /Volumes/Amphetamine\ Enhancer
+    rm Amphetamine\ Enhancer.dmg
+    cd - > /dev/null
+  fi
+
+  ensure_mas_app 1352778147  # BitWarden: app store version has more features, like TouchID
+  ensure_mas_app 540348655   # Monosnap
+  ensure_mas_app 1406676254  # Splice Crop: crop the middle of an image (M1 macs only)
+  ensure_mas_app 1122008420  # TableTool, view CSVs
+fi
 
 # create the folder if it doesn't exist
 mkdir -p ~/projects
