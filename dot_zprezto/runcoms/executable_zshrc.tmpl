@@ -76,3 +76,10 @@ setopt PROMPT_SP
 source "$HOME/.dotfiles/shell-init/file-scripts.sh"
 source "$HOME/.dotfiles/shell-init/git-scripts.sh"
 source "$HOME/.dotfiles/shell-init/terminal_dx.sh"
+
+{{ if eq .chezmoi.hostname "Fullchee-Citylitics" }}
+# Enable pyenv shell integration (defines the pyenv() function needed for `pyenv shell`).
+if (( $+commands[pyenv] )); then
+  eval "$(pyenv init - --no-rehash zsh)"
+fi
+{{ end }}
