@@ -555,6 +555,10 @@ alias rb=recent-branch
 
 #################### Pull requests ####################
 
+copilot-review() {
+    gh pr edit --add-reviewer @copilot
+}
+
 # Copy the git diff between the current branch and its parent (gt down) to the clipboard.
 copy-diff() {
     _require_git_repo || return 1
