@@ -8,6 +8,18 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# Bun completions: defer loading ~/.bun/_bun until bun completion is first used
+# can't be put in programming-scripts.sh which get called by both zprofile and zshrc
+if [[ -s "$HOME/.bun/_bun" ]] && (( $+functions[compdef] )); then
+  _dotfiles_load_bun_completion() {
+    unfunction _dotfiles_load_bun_completion 2>/dev/null
+    source "$HOME/.bun/_bun"
+    _bun "$@"
+  }
+
+  compdef _dotfiles_load_bun_completion bun
+fi
+
 if [[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]]; then
   # Defer gcloud completion setup until first gcloud call to reduce shell boot cost.
   _dotfiles_load_gcloud_completion() {
