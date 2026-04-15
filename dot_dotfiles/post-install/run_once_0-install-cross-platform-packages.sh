@@ -17,23 +17,20 @@ case "$(uname -s)" in
     ;;
 esac
 
-ensure_pkg() {
-  if $IS_MAC; then
-    brew install "$@"       # shortcuts, no "-y"
-  elif $IS_LINUX; then
-    sudo apt-get install -y "$@"  # apt always -y
-  else
-    echo "[ensure_pkg] only works for Linux and Mac" >&2
-    exit 1
-  fi
-}
-
 ensure_command() {
   local cmd="$1"
   if ! command -v "$cmd" &> /dev/null; then
     return 1
   fi
   return 0
+}
+
+ensure_executable() {
+  local name="$1"
+  local install_cmd="$2"
+  if ! command -v "$name" &>/dev/null; then
+    eval "$install_cmd"
+  fi
 }
 
 ensure_cargo_install() {
@@ -60,14 +57,22 @@ ensure_cargo_install() {
   fi
 }
 
+ensure_pkg() {
+  if $IS_MAC; then
+    brew install "$@"       # shortcuts, no "-y"
+  elif $IS_LINUX; then
+    sudo apt-get install -y "$@"  # apt always -y
+  else
+    echo "[ensure_pkg] only works for Linux and Mac" >&2
+    exit 1
+  fi
+}
+
+
 ensure_uv_tool() {
   local bin="$1"; shift
   if ! ensure_command "$bin"; then
-    if [ "$#" -eq 0 ]; then
       uv tool install "$bin"
-    else
-      uv tool install "$@"
-    fi
   fi
 }
 
@@ -92,10 +97,6 @@ ensure_mas_app() {
   fi
 }
 
-if $IS_LINUX; then
-  sudo apt-get install -y build-essential  # for cargo install, bitwarden CLI to work on linux, provides cc for compiling dependencies
-fi
-
 # Rust toolchain
 if ! ensure_command rustup; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -115,7 +116,6 @@ fi
 
 # bootstrap helpers ----------------------------------------------------------
 if $IS_MAC; then
-  # Extend sudo timeout to 120 minutes
   if ! command -v brew &> /dev/null; then
     echo "Installing homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -136,50 +136,40 @@ fi
 if $IS_LINUX; then
   sudo apt-get update -y
   sudo apt-get upgrade -y
+  sudo apt-get install -y build-essential  # for cargo install, bitwarden CLI to work on linux, provides cc for compiling dependencies
 fi
 
 # node environment ----------------------------------------------------
+ensure_executable mise 'curl https://mise.run | sh'
+eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
 mise use -g node@lts
-npm i -g corepack@latest
 npm i -g npm
+npm i -g corepack@latest
 corepack enable pnpm
 corepack use pnpm@latest
+ensure_executable bun 'curl -fsSL https://bun.com/install | bash'
 
 # platform-independent package installs -------------------------------------
 
 # adb
 if $IS_LINUX; then
-  sudo apt update && sudo apt install android-tools-adb android-tools-fastboot
+  sudo apt install android-tools-adb android-tools-fastboot
 elif $IS_MAC; then
   brew install --cask android-platform-tools
 fi
 
 ensure_pkg age       # file encryption for chezmoi
-
 ensure_uv_tool bandit  # security linter
 ensure_pkg bash      # apple ships bash 3, linux has newer version
-
 ensure_cargo_install bat  # better cat
-
-if command -v pnpm &> /dev/null; then
-  ensure_pnpm_global @bitwarden/cli  # to work with varlock
-fi
-if ! ensure_command bun; then
-  curl -fsSL https://bun.com/install | bash
-fi
+ensure_pnpm_global @bitwarden/cli  # to work with varlock
 ensure_cargo_install cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
-if ! ensure_command chezmoi; then
-  sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
-fi
+ensure_executable chezmoi 'sh -c "$(curl -fsLS get.chezmoi.io)"'  # dotfiles manager
 
-if ! ensure_command claude; then
-  curl -fsSL https://claude.ai/install.sh | bash
-fi
+ensure_executable claude 'curl -fsSL https://claude.ai/install.sh | bash'
 ensure_pkg coreutils
 ensure_cargo_install choose  # eg: easily get the 3rd item in each line
-if ! ensure_command difft && ! ensure_command difftastic; then
-  ensure_cargo_install difftastic  # better git diff
-fi
+ensure_cargo_install difft difftastic  # better git diff
 ensure_cargo_install dust du-dust  # better du
 ensure_cargo_install eza  # better ls & tree with icons
 ensure_cargo_install fd fd-find  # faster find
@@ -213,11 +203,6 @@ ensure_cargo_install just  # a better `Make` and `Makefile` replacement for task
 ensure_uv_tool llm  # pipe LLM input & output from the terminal
 llm install llm-anthropic
 
-if ! ensure_command mise; then
-  curl https://mise.run | sh
-fi
-eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
-
 ensure_pkg moor
 ensure_pkg mosh      # ssh for bad (mobile) connections
 ensure_cargo_install pngquant  # png compression
@@ -243,22 +228,18 @@ ensure_uv_tool ptpython
 ensure_uv_tool pyright  # type checker that's faster than mypy
 ensure_uv_tool rich-cli # highlight and format text
 ensure_cargo_install rg ripgrep  # faster grep
-ensure_uv_tool ruff ruff@latest
+ensure_uv_tool ruff@latest
 ensure_cargo_install sd  # faster sed
 ensure_pkg shellcheck
 ensure_pkg shfmt
 ensure_uv_tool sqlfluff
 
-if ! ensure_command tldr && ! ensure_command tealdeer; then
-  ensure_cargo_install tealdeer  # prompt
-fi
+ensure_cargo_install tldr tealdeer  # prompt
 tldr --update
 
 ensure_pkg tmux
 ensure_pkg ugrep   # drop-in grep API when LLM still uses grep
-if ! ensure_command varlock; then
-  curl -sSfL https://varlock.dev/install.sh | sh -s  # varlock: AI-safe .env files: Schemas for agents, Secrets for humans.
-fi
+ensure_executable varlock 'curl -sSfL https://varlock.dev/install.sh | sh -s'  # varlock: AI-safe .env files: Schemas for agents, Secrets for humans.
 ensure_pkg vim
 
 # weave: language aware merger
@@ -353,9 +334,7 @@ if $IS_MAC; then
   ensure_brew wispr-flow
   ensure_brew zoom
 
-  if ! command -v zed >/dev/null 2>&1; then
-    curl -f https://zed.dev/install.sh | sh
-  fi
+  ensure_executable zed 'curl -f https://zed.dev/install.sh | sh'
 
   # App Store apps
   ensure_mas_app 1440147259  # AdGuard for Safari
