@@ -326,7 +326,6 @@ delete_current_branch() {
         gt track --parent "$gt_down_branch" 2>/dev/null || true
     fi
 }
-alias delete-current-branch=delete_current_branch
 
 split-branch() {
     _require_git_repo || return 1
@@ -457,9 +456,8 @@ split-branch() {
     echo "New branch: $new_branch (parent: $parent_branch)"
     echo "Original branch now based on: $new_branch"
 }
-
-delete_remote_branch() {
-    if read -q "choice?Delete remote branch? (Y/y)"; then
+delete-remote-branch() {
+    if read -q "choice?Delete remote branch? (y/N) "; then
         branch_name="$(git rev-parse --abbrev-ref HEAD)"
         git push origin --delete "$branch_name" --no-verify
     else
@@ -468,11 +466,11 @@ delete_remote_branch() {
     fi
 }
 
-delete_remote_and_local_branch() {
-    if read -q "choice?Delete remote branch? (Y/y)"; then
+delete-remote-and-local-branch() {
+    if read -q "choice?Delete remote branch? (y/N) "; then
         branch_name="$(git rev-parse --abbrev-ref HEAD)"
         git push origin --delete "$branch_name" --no-verify
-        delete_current_branch
+        delete-current-branch
     else
         echo "Not deleting remote branch"
         exit 1

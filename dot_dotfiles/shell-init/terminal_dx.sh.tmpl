@@ -91,12 +91,27 @@ set-terminal-tab-title() {
     printf "%b%s%b" "$osc_header" "$content" "$osc_terminator"
 }
 
-# worktrunk (wt) terminal integration
-if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+# worktrunk (wt) terminal integration — cache init script to avoid subprocess on every shell start
+if command -v wt >/dev/null 2>&1; then
+  _wt_cache="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/wt-init.zsh"
+  if [[ ! -f "$_wt_cache" || "$(command -v wt)" -nt "$_wt_cache" ]]; then
+    mkdir -p "${_wt_cache:h}"
+    command wt config shell init zsh >| "$_wt_cache"
+  fi
+  source "$_wt_cache"
+  unset _wt_cache
+fi
 
 ## zsh
 alias sz="source ~/.zshrc"
-eval "$(zoxide init zsh)"
+# zoxide init — cache output to avoid subprocess on every shell start
+_zoxide_cache="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/zoxide-init.zsh"
+if [[ ! -f "$_zoxide_cache" || "$(command -v zoxide)" -nt "$_zoxide_cache" ]]; then
+  mkdir -p "${_zoxide_cache:h}"
+  zoxide init zsh >| "$_zoxide_cache"
+fi
+source "$_zoxide_cache"
+unset _zoxide_cache
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # write current command location to `.zsh_history_ext` whenever a command is ran
