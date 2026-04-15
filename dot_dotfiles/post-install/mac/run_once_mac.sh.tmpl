@@ -7,6 +7,21 @@ set -euo pipefail
 
 sudo sh -c 'echo "Defaults timestamp_timeout=120" > /etc/sudoers.d/timeout'
 
+ensure_brew adobe-acrobat-reader
+ensure_brew iina
+ensure_brew imageoptim
+ensure_brew iterm2
+if [ ! -f "$HOME/.iterm2_shell_integration.zsh" ]; then
+  curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh
+fi
+ensure_brew itermai
+ensure_brew karabiner-elements
+ensure_brew keycastr
+ensure_brew raycast
+ensure_brew rectangle
+ensure_brew thaw
+ensure_brew wispr-flow
+
 install_mas() {
   local app_id="$1"
   if ! mas list | awk '{print $1}' | grep -q "^${app_id}$"; then
