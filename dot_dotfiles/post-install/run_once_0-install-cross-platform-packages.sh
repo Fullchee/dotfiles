@@ -149,7 +149,7 @@ corepack enable pnpm
 corepack use pnpm@latest
 ensure_executable bun 'curl -fsSL https://bun.com/install | bash'
 
-# platform-independent package installs -------------------------------------
+# cross-platform package installs -------------------------------------
 
 # adb
 if $IS_LINUX; then
@@ -165,16 +165,17 @@ ensure_cargo_install bat  # better cat
 ensure_pnpm_global @bitwarden/cli  # to work with varlock
 ensure_cargo_install cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 ensure_executable chezmoi 'sh -c "$(curl -fsLS get.chezmoi.io)"'  # dotfiles manager
-
+ensure_cargo_install choose  # eg: easily get the 3rd item in each line
 ensure_executable claude 'curl -fsSL https://claude.ai/install.sh | bash'
 ensure_pkg coreutils
-ensure_cargo_install choose  # eg: easily get the 3rd item in each line
+ensure_cargo_install delta git-delta  # git pager, works better for larger files as a pager than difftastic
 ensure_cargo_install difft difftastic  # better git diff
 ensure_cargo_install dust du-dust  # better du
 ensure_cargo_install eza  # better ls & tree with icons
 ensure_cargo_install fd fd-find  # faster find
 ensure_pkg ffmpeg
 ensure_pkg fzf       # interactive filter
+ensure_pkg gh        # GitHub CLI
 
 if $IS_LINUX; then
   # get newer git version
@@ -182,11 +183,8 @@ if $IS_LINUX; then
   sudo apt-get update
 fi
 ensure_pkg git       # up-to-date git
-ensure_pkg gh        # GitHub CLI
 ensure_pkg git-filter-repo  # remove a file from git history
-ensure_cargo_install delta git-delta  # git pager, works better for larger files as a pager than difftastic
 ensure_pnpm_global @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
-
 
 if $IS_MAC; then
   ensure_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
@@ -205,7 +203,6 @@ llm install llm-anthropic
 
 ensure_pkg moor
 ensure_pkg mosh      # ssh for bad (mobile) connections
-ensure_cargo_install pngquant  # png compression
 
 # postgres
 ensure_pkg pgcli
@@ -220,10 +217,10 @@ createuser -s postgres
 createuser -s "$USER"
 createdb "$USER"
 
+ensure_cargo_install pngquant  # png compression
 ensure_cargo_install prek
 prek install || true
 
-# python ------------------------------------------------------------------
 ensure_uv_tool ptpython
 ensure_uv_tool pyright  # type checker that's faster than mypy
 ensure_uv_tool rich-cli # highlight and format text
@@ -335,26 +332,6 @@ if $IS_MAC; then
   ensure_brew zoom
 
   ensure_executable zed 'curl -f https://zed.dev/install.sh | sh'
-
-  # App Store apps
-  ensure_mas_app 1440147259  # AdGuard for Safari
-  ensure_mas_app 937984704   # Amphetamine: keep mac working
-
-  # Amphetamine Enhancer
-  if ! [ -d /Applications/Amphetamine\ Enhancer.app ]; then
-    cd /tmp
-    curl -fL -o Amphetamine\ Enhancer.dmg https://github.com/x74353/Amphetamine-Enhancer/raw/master/Releases/Current/Amphetamine%20Enhancer.dmg
-    hdiutil attach Amphetamine\ Enhancer.dmg
-    cp -R /Volumes/Amphetamine\ Enhancer/Amphetamine\ Enhancer.app /Applications
-    hdiutil detach /Volumes/Amphetamine\ Enhancer
-    rm Amphetamine\ Enhancer.dmg
-    cd - > /dev/null
-  fi
-
-  ensure_mas_app 1352778147  # BitWarden: app store version has more features, like TouchID
-  ensure_mas_app 540348655   # Monosnap
-  ensure_mas_app 1406676254  # Splice Crop: crop the middle of an image (M1 macs only)
-  ensure_mas_app 1122008420  # TableTool, view CSVs
 fi
 
 # create the folder if it doesn't exist

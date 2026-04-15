@@ -766,21 +766,57 @@ switchpr() {
     GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr checkout
 }
 
-# haspr: check whether the current branch has an associated pull request.
-haspr() {
+has-pr() {
     _require_git_repo || return 1
 
     local current_branch
     current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || return 1
 
-    if gh pr view "$current_branch" --json number --jq '.number' >/dev/null 2>&1; then
-        echo "✅ PR exists for branch '$current_branch'."
-        return 0
-    else
+    local pr_json
+    pr_json=$(gh pr view "$current_branch" --json number,state,isDraft,statusCheckRollup 2>/dev/null) || {
         echo "❌ No PR found for branch '$current_branch'."
         return 1
+    }
+
+    local pr_number pr_state is_draft
+    pr_number=$(echo "$pr_json" | jq -r '.number')
+    pr_state=$(echo "$pr_json" | jq -r '.state')
+    is_draft=$(echo "$pr_json" | jq -r '.isDraft')
+
+    local state_label
+    if [[ "$is_draft" == "true" ]]; then
+        state_label="Draft"
+    else
+        state_label="$pr_state"
+    fi
+
+    echo "PR #$pr_number on '$current_branch': $state_label"
+
+    local ci_summary
+    ci_summary=$(echo "$pr_json" | jq -r '
+        .statusCheckRollup // [] |
+        if length == 0 then "No CI checks found"
+        else
+            group_by(.conclusion // .status) |
+            map("\(.[0].conclusion // .[0].status): \(length)") |
+            join(", ")
+        end
+    ')
+    echo "CI: $ci_summary"
+
+    local failed_checks
+    failed_checks=$(echo "$pr_json" | jq -r '
+        .statusCheckRollup // [] |
+        map(select(.conclusion == "FAILURE" or .conclusion == "TIMED_OUT" or .conclusion == "STARTUP_FAILURE")) |
+        map("  ❌ \(.name): \(.detailsUrl // .targetUrl // "no link")") |
+        .[]
+    ')
+    if [[ -n "$failed_checks" ]]; then
+        echo "Failed checks:"
+        echo "$failed_checks"
     fi
 }
+alias haspr=has-pr
 
 alias viewpr="gh pr view --web"
 
