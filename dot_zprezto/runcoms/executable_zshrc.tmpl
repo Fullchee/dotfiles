@@ -8,6 +8,17 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# uv completion - source cached script after compdef is available; generation happens in programming-scripts.sh
+if [[ -s "${UV_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/uv-completion.zsh}" ]] && (( $+functions[compdef] )); then
+  _dotfiles_load_uv_completion() {
+    unfunction _dotfiles_load_uv_completion 2>/dev/null
+    source "${UV_COMPLETION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/uv-completion.zsh}"
+    _uv "$@"
+  }
+
+  compdef _dotfiles_load_uv_completion uv
+fi
+
 # Bun completions: defer loading ~/.bun/_bun until bun completion is first used
 # can't be put in programming-scripts.sh which get called by both zprofile and zshrc
 if [[ -s "$HOME/.bun/_bun" ]] && (( $+functions[compdef] )); then

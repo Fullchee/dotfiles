@@ -163,8 +163,8 @@ if (( $+commands[uv] )); then
     uv generate-shell-completion zsh >| "$UV_COMPLETION_CACHE" 2>/dev/null
   fi
 
-  [[ -s "$UV_COMPLETION_CACHE" ]] && source "$UV_COMPLETION_CACHE"
 fi
+# UV_COMPLETION_CACHE is sourced in zshrc (after compdef is available)
 
 venv() {
   # no arg given -> try venv and .venv
