@@ -164,7 +164,9 @@ ensure_cargo_install bat  # better cat
 if command -v pnpm &> /dev/null; then
   ensure_pnpm_global @bitwarden/cli  # to work with varlock
 fi
-curl -fsSL https://bun.com/install | bash  # bun: a fast all-in-one JavaScript runtime, package manager, and bundler
+if ! ensure_command bun; then
+  curl -fsSL https://bun.com/install | bash
+fi
 ensure_cargo_install cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 if ! ensure_command chezmoi; then
   sh -c "$(curl -fsLS get.chezmoi.io)"  # dotfiles manager
