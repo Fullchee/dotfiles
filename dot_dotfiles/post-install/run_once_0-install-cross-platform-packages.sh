@@ -61,16 +61,20 @@ ensure_cargo_install() {
 }
 
 ensure_uv_tool() {
-  local bin="$1" ; shift
+  local bin="$1"; shift
   if ! ensure_command "$bin"; then
-    uv tool install "$@"
+    if [ "$#" -eq 0 ]; then
+      uv tool install "$bin"
+    else
+      uv tool install "$@"
+    fi
   fi
 }
 
-ensure_npm_global() {
+ensure_pnpm_global() {
   local pkg="$1" ; shift
-  if ! npm list -g --depth=0 "$pkg" 2>/dev/null | grep -q "$pkg@"; then
-    npm i -g "$pkg"
+  if ! pnpm list -g 2>/dev/null | grep -q "$pkg"; then
+    pnpm add -g "$pkg"
   fi
 }
 
@@ -152,13 +156,13 @@ fi
 
 ensure_pkg age       # file encryption for chezmoi
 
-ensure_uv_tool bandit bandit  # security linter
+ensure_uv_tool bandit  # security linter
 ensure_pkg bash      # apple ships bash 3, linux has newer version
 
 ensure_cargo_install bat  # better cat
 
-if command -v npm &> /dev/null; then
-  ensure_npm_global @bitwarden/cli  # to work with varlock
+if command -v pnpm &> /dev/null; then
+  ensure_pnpm_global @bitwarden/cli  # to work with varlock
 fi
 ensure_cargo_install cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 if ! ensure_command chezmoi; then
@@ -188,7 +192,7 @@ ensure_pkg git       # up-to-date git
 ensure_pkg gh        # GitHub CLI
 ensure_pkg git-filter-repo  # remove a file from git history
 ensure_cargo_install delta git-delta  # git pager, works better for larger files as a pager than difftastic
-pnpm add -g @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
+ensure_pnpm_global @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
 
 
 if $IS_MAC; then
@@ -196,7 +200,7 @@ if $IS_MAC; then
 fi
 
 ensure_cargo_install hx helix-term  # vim with batteries included, no need to manage plugins
-ensure_uv_tool httpie httpie  # test APIs from terminal, like Postman but CLI
+ensure_uv_tool httpie  # test APIs from terminal, like Postman but CLI
 ensure_cargo_install hyperfine  # command benchmarking
 ensure_pkg imagemagick  # like ffmpeg for images
 ensure_pkg jc        # convert plain text data into JSON (to plug into jq)
@@ -232,15 +236,15 @@ ensure_cargo_install prek
 prek install || true
 
 # python ------------------------------------------------------------------
-ensure_uv_tool ptpython ptpython
-ensure_uv_tool pyright pyright  # type checker that's faster than mypy
-ensure_uv_tool rich-cli rich-cli # highlight and format text
+ensure_uv_tool ptpython
+ensure_uv_tool pyright  # type checker that's faster than mypy
+ensure_uv_tool rich-cli # highlight and format text
 ensure_cargo_install rg ripgrep  # faster grep
 ensure_uv_tool ruff ruff@latest
 ensure_cargo_install sd  # faster sed
 ensure_pkg shellcheck
 ensure_pkg shfmt
-ensure_uv_tool sqlfluff sqlfluff
+ensure_uv_tool sqlfluff
 
 if ! ensure_command tldr && ! ensure_command tealdeer; then
   ensure_cargo_install tealdeer  # prompt
