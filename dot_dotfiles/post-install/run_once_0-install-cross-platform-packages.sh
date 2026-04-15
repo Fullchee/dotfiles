@@ -17,13 +17,13 @@ case "$(uname -s)" in
     ;;
 esac
 
-install_pkg() {
+ensure_pkg() {
   if $IS_MAC; then
     brew install "$@"       # shortcuts, no "-y"
   elif $IS_LINUX; then
     sudo apt-get install -y "$@"  # apt always -y
   else
-    echo "[install_pkg] only works for Linux and Mac" >&2
+    echo "[ensure_pkg] only works for Linux and Mac" >&2
     exit 1
   fi
 }
@@ -150,10 +150,10 @@ elif $IS_MAC; then
   brew install --cask android-platform-tools
 fi
 
-install_pkg age       # file encryption for chezmoi
+ensure_pkg age       # file encryption for chezmoi
 
 ensure_uv_tool bandit bandit  # security linter
-install_pkg bash      # apple ships bash 3, linux has newer version
+ensure_pkg bash      # apple ships bash 3, linux has newer version
 
 ensure_cargo_install bat  # better cat
 
@@ -168,7 +168,7 @@ fi
 if ! ensure_command claude; then
   curl -fsSL https://claude.ai/install.sh | bash
 fi
-install_pkg coreutils
+ensure_pkg coreutils
 ensure_cargo_install choose  # eg: easily get the 3rd item in each line
 if ! ensure_command difft && ! ensure_command difftastic; then
   ensure_cargo_install difftastic  # better git diff
@@ -176,31 +176,31 @@ fi
 ensure_cargo_install dust du-dust  # better du
 ensure_cargo_install eza  # better ls & tree with icons
 ensure_cargo_install fd fd-find  # faster find
-install_pkg ffmpeg
-install_pkg fzf       # interactive filter
+ensure_pkg ffmpeg
+ensure_pkg fzf       # interactive filter
 
 if $IS_LINUX; then
   # get newer git version
   sudo apt-add-repository -y ppa:git-core/ppa
   sudo apt-get update
 fi
-install_pkg git       # up-to-date git
-install_pkg gh        # GitHub CLI
-install_pkg git-filter-repo  # remove a file from git history
+ensure_pkg git       # up-to-date git
+ensure_pkg gh        # GitHub CLI
+ensure_pkg git-filter-repo  # remove a file from git history
 ensure_cargo_install delta git-delta  # git pager, works better for larger files as a pager than difftastic
 pnpm add -g @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
 
 
 if $IS_MAC; then
-  install_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
+  ensure_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
 fi
 
 ensure_cargo_install hx helix-term  # vim with batteries included, no need to manage plugins
 ensure_uv_tool httpie httpie  # test APIs from terminal, like Postman but CLI
 ensure_cargo_install hyperfine  # command benchmarking
-install_pkg imagemagick  # like ffmpeg for images
-install_pkg jc        # convert plain text data into JSON (to plug into jq)
-install_pkg jq        # JSON processor
+ensure_pkg imagemagick  # like ffmpeg for images
+ensure_pkg jc        # convert plain text data into JSON (to plug into jq)
+ensure_pkg jq        # JSON processor
 ensure_cargo_install just  # a better `Make` and `Makefile` replacement for tasks
 
 ensure_uv_tool llm  # pipe LLM input & output from the terminal
@@ -211,18 +211,18 @@ if ! ensure_command mise; then
 fi
 eval "$(~/.local/bin/mise activate zsh)"  # activate it for this session
 
-install_pkg moor
-install_pkg mosh      # ssh for bad (mobile) connections
+ensure_pkg moor
+ensure_pkg mosh      # ssh for bad (mobile) connections
 ensure_cargo_install pngquant  # png compression
 
 # postgres
-install_pkg pgcli
+ensure_pkg pgcli
 if $IS_MAC; then
   POSTGRES_NAME=$(brew formulae | grep postgresql@ | tail -1)
-  install_pkg "$POSTGRES_NAME"
+  ensure_pkg "$POSTGRES_NAME"
   brew services start postgresql
 else
-  install_pkg postgresql postgresql-contrib
+  ensure_pkg postgresql postgresql-contrib
 fi
 createuser -s postgres
 createuser -s "$USER"
@@ -238,8 +238,8 @@ ensure_uv_tool rich-cli rich-cli # highlight and format text
 ensure_cargo_install rg ripgrep  # faster grep
 ensure_uv_tool ruff ruff@latest
 ensure_cargo_install sd  # faster sed
-install_pkg shellcheck
-install_pkg shfmt
+ensure_pkg shellcheck
+ensure_pkg shfmt
 ensure_uv_tool sqlfluff sqlfluff
 
 if ! ensure_command tldr && ! ensure_command tealdeer; then
@@ -247,19 +247,19 @@ if ! ensure_command tldr && ! ensure_command tealdeer; then
 fi
 tldr --update
 
-install_pkg tmux
-install_pkg ugrep   # drop-in grep API when LLM still uses grep
+ensure_pkg tmux
+ensure_pkg ugrep   # drop-in grep API when LLM still uses grep
 if ! ensure_command varlock; then
   curl -sSfL https://varlock.dev/install.sh | sh -s  # varlock: AI-safe .env files: Schemas for agents, Secrets for humans.
 fi
-install_pkg vim
+ensure_pkg vim
 
 # weave: language aware merger
 ensure_cargo_install weave weave-cli --git https://github.com/Ataraxy-Labs/weave
 ensure_cargo_install weave-driver weave-driver --git https://github.com/Ataraxy-Labs/weave
 weave setup
 
-install_pkg wget
+ensure_pkg wget
 
 ensure_cargo_install wt worktrunk
 wt config shell install
@@ -279,7 +279,7 @@ else
 fi
 
 ensure_cargo_install zoxide
-install_pkg zsh
+ensure_pkg zsh
 
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
   git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
