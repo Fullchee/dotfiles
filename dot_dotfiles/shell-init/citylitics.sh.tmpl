@@ -184,6 +184,23 @@ _deploy-sha() {
 
     local commit_sha
     commit_sha=$(_resolve_and_check_origin_sha "$REPO_ROOT" "$input_commit_sha") || return 1
+    echo "Resolved commit SHA: $commit_sha"
+
+    local commit_author
+    commit_author=$(git -C "$REPO_ROOT" show -s --format='%an <%ae>' "$commit_sha")
+    local commit_date
+    commit_date=$(git -C "$REPO_ROOT" show -s --format='%ad' --date=iso-strict "$commit_sha")
+    local commit_subject
+    commit_subject=$(git -C "$REPO_ROOT" show -s --format='%s' "$commit_sha")
+    local commit_branches
+    commit_branches=$(git -C "$REPO_ROOT" branch --all --contains "$commit_sha" | sed 's#^..##' | sort | paste -sd ', ' -)
+    if [[ -z "$commit_branches" ]]; then
+        commit_branches="(none)"
+    fi
+    echo "  Author: $commit_author"
+    echo "  Date:   $commit_date"
+    echo "  Subject: $commit_subject"
+    echo "  Branches containing commit: $commit_branches"
 
     local output
     output=$(gcloud builds triggers run "$trigger" --project="$project" --sha="$commit_sha" --format=json)
