@@ -272,7 +272,7 @@ prod-57-cloud-sql-proxy() {
         --port "$CLOUD_SQL_PORT"
 }
 
-prod-84-cloud-sql-proxy() {
+prod-cloud-sql-proxy() {
     cloud-sql-proxy "${PROD_PROJECT}:${CLOUD_SQL_REGION}:crawler-db-v84" \
         --address 0.0.0.0 \
         --port "$CLOUD_SQL_PORT"
