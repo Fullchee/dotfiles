@@ -33,8 +33,8 @@ ensure_executable() {
   fi
 }
 
-ensure_cargo_install() {
-  # Usage: ensure_cargo_install <bin> [crate] [--git <git_url> [cargo args...]]
+ensure_cargo() {
+  # Usage: ensure_cargo <bin> [crate] [--git <git_url>] [cargo args...]
   # If only <bin> is provided, assume the crate name matches the binary name.
   local bin="$1"; shift
   local crate="$bin"
@@ -43,16 +43,25 @@ ensure_cargo_install() {
   fi
 
   local git_url=""
-  if [ "$#" -gt 0 ] && [ "$1" = "--git" ]; then
-    shift
-    git_url="$1"; shift
-  fi
+  local cargo_args=()
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --git)
+        shift
+        git_url="$1"; shift
+        ;;
+      *)
+        cargo_args+=("$1")
+        shift
+        ;;
+    esac
+  done
 
   if ! ensure_command "$bin"; then
     if [ -n "$git_url" ]; then
-      cargo install --git "$git_url" "$crate" "$@"
+      cargo install --git "$git_url" "$crate" "${cargo_args[@]}"
     else
-      cargo install --locked "$crate" "$@"
+      cargo install --locked "$crate" "${cargo_args[@]}"
     fi
   fi
 }
@@ -167,14 +176,14 @@ ensure_uv_tool bandit  # security linter
 ensure_brew balenaetcher
 
 ensure_pkg bash      # apple ships bash 3, linux has newer version
-ensure_cargo_install bat  # better cat
+ensure_cargo bat  # better cat
 ensure_pnpm_global @bitwarden/cli  # to work with varlock
-ensure_cargo_install cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
+ensure_cargo cargo-install-update cargo-update  # manage cargo-installed binaries, `cargo install-update -a` to update them all
 
 ensure_brew chatgpt
 
 ensure_executable chezmoi 'sh -c "$(curl -fsLS get.chezmoi.io)"'  # dotfiles manager
-ensure_cargo_install choose  # eg: easily get the 3rd item in each line
+ensure_cargo choose  # eg: easily get the 3rd item in each line
 ensure_executable claude 'curl -fsSL https://claude.ai/install.sh | bash'
 
 ensure_brew claude
@@ -183,15 +192,15 @@ ensure_pkg coreutils
 
 ensure_brew db-browser-for-sqlite
 
-ensure_cargo_install delta git-delta  # git pager, works better for larger files as a pager than difftastic
-ensure_cargo_install difft difftastic  # better git diff
+ensure_cargo delta git-delta  # git pager, works better for larger files as a pager than difftastic
+ensure_cargo difft difftastic  # better git diff
 
 ensure_brew discord
 ensure_brew docker
 
-ensure_cargo_install dust du-dust  # better du
-ensure_cargo_install eza  # better ls & tree with icons
-ensure_cargo_install fd fd-find  # faster find
+ensure_cargo dust du-dust  # better du
+ensure_cargo eza  # better ls & tree with icons
+ensure_cargo fd fd-find  # faster find
 ensure_pkg ffmpeg
 
 ensure_brew figma
@@ -231,15 +240,15 @@ fi
 
 ensure_brew handbrake
 
-ensure_cargo_install hx helix-term  # vim with batteries included, no need to manage plugins
+ensure_cargo hx helix-term  # vim with batteries included, no need to manage plugins
 ensure_uv_tool httpie  # test APIs from terminal, like Postman but CLI
-ensure_cargo_install hyperfine  # command benchmarking
+ensure_cargo hyperfine  # command benchmarking
 
 ensure_pkg imagemagick  # like ffmpeg for images
 
 ensure_pkg jc        # convert plain text data into JSON (to plug into jq)
 ensure_pkg jq        # JSON processor
-ensure_cargo_install just  # a better `Make` and `Makefile` replacement for tasks
+ensure_cargo just  # a better `Make` and `Makefile` replacement for tasks
 
 ensure_uv_tool llm  # pipe LLM input & output from the terminal
 llm install llm-anthropic
@@ -265,8 +274,8 @@ createuser -s postgres
 createuser -s "$USER"
 createdb "$USER"
 
-ensure_cargo_install pngquant  # png compression
-ensure_cargo_install prek
+ensure_cargo pngquant  # png compression
+ensure_cargo prek
 prek install || true
 
 ensure_uv_tool ptpython
@@ -275,9 +284,9 @@ ensure_uv_tool pyright  # type checker that's faster than mypy
 ensure_brew raspberry-pi-imager
 
 ensure_uv_tool rich-cli # highlight and format text
-ensure_cargo_install rg ripgrep  # faster grep
+ensure_cargo rg ripgrep  # faster grep
 ensure_uv_tool ruff@latest
-ensure_cargo_install sd  # faster sed
+ensure_cargo sd  # faster sed
 
 ensure_brew sejda-pdf
 
@@ -287,7 +296,7 @@ ensure_uv_tool sqlfluff
 
 ensure_brew tableplus
 
-ensure_cargo_install tldr tealdeer  # prompt
+ensure_cargo tldr tealdeer  # prompt
 tldr --update
 
 ensure_pkg tmux
@@ -301,8 +310,8 @@ ensure_pkg vim
 ensure_brew visual-studio-code
 
 # weave: language aware merger
-ensure_cargo_install weave weave-cli --git https://github.com/Ataraxy-Labs/weave
-ensure_cargo_install weave-driver weave-driver --git https://github.com/Ataraxy-Labs/weave
+ensure_cargo weave weave-cli --git https://github.com/Ataraxy-Labs/weave
+ensure_cargo weave-driver weave-driver --git https://github.com/Ataraxy-Labs/weave
 weave setup
 
 ensure_brew wechat
@@ -311,7 +320,7 @@ ensure_pkg wget
 
 ensure_brew whatsapp
 
-ensure_cargo_install wt worktrunk
+ensure_cargo wt worktrunk
 wt config shell install
 
 # yt-dlp
@@ -330,7 +339,7 @@ fi
 
 if $IS_MAC; then ensure_executable zed 'curl -f https://zed.dev/install.sh | sh'; fi
 
-ensure_cargo_install zoxide
+ensure_cargo zoxide
 
 ensure_brew zoom
 
