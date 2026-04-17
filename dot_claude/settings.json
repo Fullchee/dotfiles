@@ -41,5 +41,9 @@
   "skipDangerousModePermissionPrompt": true,
   "disableTelemetry": true,
   "disableErrorReporting": true,
-  "disableFeedbackDisplay": true
+  "disableFeedbackDisplay": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
 }
