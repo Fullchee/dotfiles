@@ -35,6 +35,12 @@ ensure_executable() {
 
 ensure_cargo() {
   # Usage: ensure_cargo <bin> [crate] [--git <git_url>] [cargo args...]
+  # Examples:
+  #   ensure_cargo bat
+  #   ensure_cargo cargo-install-update cargo-update
+  #   ensure_cargo ping --locked
+  #   ensure_cargo weave weave-cli --git https://github.com/Ataraxy-Labs/weave
+  #   ensure_cargo gws --git https://github.com/googleworkspace/cli --locked
   # If only <bin> is provided, assume the crate name matches the binary name.
   local bin="$1"; shift
   local crate="$bin"
@@ -238,6 +244,7 @@ if $IS_MAC; then
   ensure_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
 fi
 
+ensure_cargo gws --git https://github.com/googleworkspace/cli --locked
 ensure_brew handbrake
 
 ensure_cargo hx helix-term  # vim with batteries included, no need to manage plugins
