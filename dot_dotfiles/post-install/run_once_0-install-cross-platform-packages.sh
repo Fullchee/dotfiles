@@ -256,6 +256,7 @@ ensure_pkg imagemagick  # like ffmpeg for images
 ensure_pkg jc        # convert plain text data into JSON (to plug into jq)
 ensure_pkg jq        # JSON processor
 ensure_cargo just  # a better `Make` and `Makefile` replacement for tasks
+ensure_cargo just-lsp # LSP server for justfiles
 
 ensure_uv_tool llm  # pipe LLM input & output from the terminal
 llm install llm-anthropic
