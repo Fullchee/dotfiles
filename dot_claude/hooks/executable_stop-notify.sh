@@ -28,6 +28,3 @@ fi
 
 # Speak the summary
 say "$SUMMARY" 2>/dev/null || true
-
-# Create a persistent macOS notification
-osascript -e "display notification \"$SUMMARY\" with title \"Claude\"" 2>/dev/null || true
