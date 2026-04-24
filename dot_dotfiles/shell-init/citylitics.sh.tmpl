@@ -404,9 +404,31 @@ pt() {
         cd "$workdir" || return 1
         if [ $# -eq 0 ]; then
             docker-compose -f local-dev/docker-compose.yml run --rm django pytest tests -s
-        else
-            docker-compose -f local-dev/docker-compose.yml run --rm django pytest -s "$@"
+            return
         fi
+
+        local args=()
+        for arg in "$@"; do
+            # Absolute path: strip workdir prefix to get a repo-relative path
+            if [[ "$arg" == /* ]]; then
+                arg="${arg#"$workdir"/}"
+            fi
+            if [[ "$arg" != */* ]]; then
+                # Filename only: find all matching files under the repo
+                while IFS= read -r found; do
+                    args+=("${found#./}")
+                done < <(find . -name "$arg" -type f 2>/dev/null)
+            elif [[ ! -e "$arg" ]]; then
+                # Partial sub-path (e.g. lists/test_serializers.py): find by suffix
+                while IFS= read -r found; do
+                    args+=("${found#./}")
+                done < <(find . -path "*/$arg" -type f 2>/dev/null)
+            else
+                args+=("$arg")
+            fi
+        done
+
+        docker-compose -f local-dev/docker-compose.yml run --rm django pytest -s "${args[@]}"
     )
     cd -
 }
