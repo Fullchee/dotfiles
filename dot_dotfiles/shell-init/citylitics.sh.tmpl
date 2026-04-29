@@ -409,9 +409,10 @@ pt() {
 
         local args=()
         for arg in "$@"; do
-            # Absolute path: strip workdir prefix to get a repo-relative path
+            # Absolute path: strip workdir prefix and use directly
             if [[ "$arg" == /* ]]; then
-                arg="${arg#"$workdir"/}"
+                args+=("${arg#"$workdir"/}")
+                continue
             fi
             if [[ "$arg" != */* ]]; then
                 # Filename only: find all matching files under the repo
