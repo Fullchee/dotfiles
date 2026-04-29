@@ -1,7 +1,13 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
-      "mcp__plugin_context-mode_context-mode__ctx_batch_execute"
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute",
+      "Bash(mkdir -p /Users/admin/watrhub-django/main/.plans)",
+      "Bash(cp /Users/admin/.claude/plans/DEV-4543-migrate-sync-to-crm-to-list-entries.md /Users/admin/watrhub-django/main/.plans/)"
     ],
     "additionalDirectories": [
       "/Users/admin/.claude/plans"
@@ -27,7 +33,8 @@
     "github@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "caveman@caveman": true
   },
   "extraKnownMarketplaces": {
     "context-mode": {
@@ -41,9 +48,5 @@
   "skipDangerousModePermissionPrompt": true,
   "disableTelemetry": true,
   "disableErrorReporting": true,
-  "disableFeedbackDisplay": true,
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  }
+  "disableFeedbackDisplay": true
 }
