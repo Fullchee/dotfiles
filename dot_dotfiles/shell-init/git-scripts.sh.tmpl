@@ -560,20 +560,6 @@ request-copilot-review() {
 }
 alias copilot-review=request-copilot-review
 
-# Copy the git diff between the current branch and its parent (gt down) to the clipboard.
-copy-diff() {
-    _require_git_repo || return 1
-
-    local current_branch
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
-
-    local parent_branch=""
-    parent_branch=$(gt-parent "$current_branch") || return 1
-
-    git diff "$parent_branch"..."$current_branch" | pbcopy
-    echo "✅ Diff between '$parent_branch' and '$current_branch' copied to clipboard."
-}
-
 pick-parent-branch() {
     local current="$1"
     local picked
@@ -761,6 +747,13 @@ alias gh-pr-checks='gh pr checks | cat'
 prfiles() {
     PR_URL=$(gh pr view --json url --jq '.url')
     open "${PR_URL}/files"
+}
+
+prdiff() {
+    local repo pr
+    repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+    pr=$(gh pr view --json number --jq .number)
+    gh api -H "Accept: application/vnd.github.v3.diff" "repos/$repo/pulls/$pr" | pbcopy
 }
 
 pulls() {
