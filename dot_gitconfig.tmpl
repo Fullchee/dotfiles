@@ -26,10 +26,10 @@
 	ignored = !git ls-files -v | grep "^[hS]"
 
 	# Append path to info/exclude
-    # Uses $(git rev-parse --git-dir) to find the absolute path to the .git folder
-    exclude-untracked = "!f() { echo \"$1\" >> \"$(git rev-parse --git-dir)/info/exclude\"; }; f"
-	unexclude-untracked = "!f() { sed -i \"\" \"\\|^$1$|d\" \"$(git rev-parse --git-dir)/info/exclude\"; }; f"
-	view-excluded = !cat \"$(git rev-parse --git-dir)/info/exclude\"
+    # Uses $(git rev-parse --git-common-dir) to find the shared .git folder (works in worktrees too)
+    exclude-untracked = "!f() { echo \"$1\" >> \"$(git rev-parse --git-common-dir)/info/exclude\"; }; f"
+	unexclude-untracked = "!f() { sed -i \"\" \"\\|^$1$|d\" \"$(git rev-parse --git-common-dir)/info/exclude\"; }; f"
+	view-excluded = !cat \"$(git rev-parse --git-common-dir)/info/exclude\"
 
 	empty-commit = !git commit --allow-empty -m 'Empty commit: trigger GH actions'
 
