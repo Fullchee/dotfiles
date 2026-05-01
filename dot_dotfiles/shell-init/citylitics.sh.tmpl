@@ -64,13 +64,6 @@ jira() {
 
 alias repo='open https://github.com/WatrHub/watrhub-django'
 
-verify-changes-haiku() {
-    claude --model haiku --effort low -p "/verify-changes"
-}
-verify-changes-opus() {
-    claude --model opus --effort high -p "/verify-changes"
-}
-
 ####################### CI/CD #######################
 
 watch-cloud-build() {
