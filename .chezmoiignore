@@ -1,6 +1,7 @@
 {{- if ne .chezmoi.hostname "Fullchee-Citylitics" }}
 .dotfiles/work/citylitics/**
 .dotfiles/shell-init/citylitics.sh
+.config/finicky.js
 {{- end }}
 
 *.plist
