@@ -21,15 +21,18 @@
 	view-executables = ls-files --stage
 
 	ignore = update-index --skip-worktree  # only for files
-	# for folders: add to `.git/info/exclude`
 	unignore = update-index --no-skip-worktree
 	ignored = !git ls-files -v | grep "^[hS]"
+	view-ignored = ignored
 
 	# Append path to info/exclude
     # Uses $(git rev-parse --git-common-dir) to find the shared .git folder (works in worktrees too)
     exclude-untracked = "!f() { echo \"$1\" >> \"$(git rev-parse --git-common-dir)/info/exclude\"; }; f"
+	exclude = exclude-untracked
 	unexclude-untracked = "!f() { sed -i \"\" \"\\|^$1$|d\" \"$(git rev-parse --git-common-dir)/info/exclude\"; }; f"
-	view-excluded = !cat \"$(git rev-parse --git-common-dir)/info/exclude\"
+	unexclude = unexclude-untracked
+	excluded = !cat \"$(git rev-parse --git-common-dir)/info/exclude\"
+	view-excluded = excluded
 
 	empty-commit = !git commit --allow-empty -m 'Empty commit: trigger GH actions'
 
