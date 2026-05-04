@@ -764,6 +764,28 @@ pr-files() {
 }
 alias prfiles="pr-files"
 
+pr-url() {
+    local url
+    url=$(gh pr view --json url --jq '.url' 2>/dev/null) || {
+        echo "❌ Unable to determine current PR URL." >&2
+        return 1
+    }
+
+    if [[ -n "$url" ]]; then
+        if command -v pbcopy >/dev/null 2>&1; then
+            printf '%s' "$url" | pbcopy
+            echo "$url"
+            echo "✅ PR URL copied to clipboard."
+        else
+            echo "$url"
+        fi
+    else
+        echo "❌ Unable to determine current PR URL." >&2
+        return 1
+    fi
+}
+alias prurl="pr-url"
+
 pr-ready() {
     gh pr ready
 }
