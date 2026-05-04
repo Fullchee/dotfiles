@@ -427,10 +427,18 @@ pt() {
     cd -
 }
 
+# cd to frontend folder
 cdf() {
     local repo_root
     repo_root=$(citylitics-repo-root --allow-default) || return 1
     cd "$repo_root/app/frontend/app" || return 1
+}
+
+# cd repo root
+cdr() {
+    local repo_root
+    repo_root=$(citylitics-repo-root --allow-default) || return 1
+    cd "$repo_root" || return 1
 }
 
 repo-root() {
