@@ -741,8 +741,8 @@ ${pr_body_extra}
     gh pr view --web
 }
 
-# gh cuts off the URL
-alias gh-pr-checks='gh pr checks | cat'
+# gh cuts off the URL; GH_PAGER=cat disables the pager
+alias gh-pr-checks='GH_PAGER=cat gh pr checks'
 
 
 pr-diff() {
@@ -768,6 +768,52 @@ pr-ready() {
     gh pr ready
 }
 alias prready="pr-ready"
+
+# 1. Executes `gh pr checks` to fetch the status of all pipeline jobs.
+# 2. If any jobs have failed, it automatically opens their URLs in the default browser.
+# 3. If all jobs are either "pass" or "pending" (no fails), it prints that jobs are pending.
+# 4. If all jobs have successfully passed, it prints a clear success message.
+pr-status() {
+  local output
+  output=$(gh pr checks 2>/dev/null)
+
+  if [[ -z "$output" ]]; then
+    echo "No PR checks found for the current branch."
+    return 0
+  fi
+
+  local has_fail=false
+  local has_pending=false
+  local failed_urls=()
+
+  # Using 'job_status' instead of 'status' to avoid Zsh read-only variable conflicts
+  while IFS=$'\t' read -r name job_status elapsed url; do
+    if [[ "$job_status" == *fail* ]]; then
+      has_fail=true
+      failed_urls+=("$url")
+    elif [[ "$job_status" == *pending* ]]; then
+      has_pending=true
+    fi
+  done <<< "$output"
+
+  if [[ "$has_fail" == true ]]; then
+    echo "Failed jobs detected! Opening URLs..."
+    for url in "${failed_urls[@]}"; do
+      if command -v open >/dev/null 2>&1; then
+        open "$url"
+      elif command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$url"
+      else
+        echo "Could not auto-open: $url"
+      fi
+    done
+  elif [[ "$has_pending" == true ]]; then
+    echo "There are still pending jobs."
+  else
+    echo "All jobs passed!"
+  fi
+}
+alias prstatus="pr-status"
 
 pulls() {
     GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
