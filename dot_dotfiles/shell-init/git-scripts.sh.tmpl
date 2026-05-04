@@ -795,7 +795,7 @@ alias prready="pr-ready"
 # 2. If any jobs have failed, it automatically opens their URLs in the default browser.
 # 3. If all jobs are either "pass" or "pending" (no fails), it prints that jobs are pending.
 # 4. If all jobs have successfully passed, it prints a clear success message.
-pr-status() {
+pr-actions() {
   local output
   output=$(gh pr checks 2>/dev/null)
 
@@ -835,7 +835,7 @@ pr-status() {
     echo "All jobs passed!"
   fi
 }
-alias prstatus="pr-status"
+alias practions="pr-actions"
 
 pr-view() {
     gh pr view --web
