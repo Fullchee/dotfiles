@@ -744,17 +744,30 @@ ${pr_body_extra}
 # gh cuts off the URL
 alias gh-pr-checks='gh pr checks | cat'
 
-prfiles() {
-    PR_URL=$(gh pr view --json url --jq '.url')
-    open "${PR_URL}/files"
-}
 
-prdiff() {
+pr-diff() {
     local repo pr
     repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
     pr=$(gh pr view --json number --jq .number)
     gh api -H "Accept: application/vnd.github.v3.diff" "repos/$repo/pulls/$pr" | pbcopy
 }
+alias prdiff="pr-diff"
+
+pr-draft() {
+    gh pr ready --undo
+}
+alias prdraft="pr-draft"
+
+pr-files() {
+    PR_URL=$(gh pr view --json url --jq '.url')
+    open "${PR_URL}/files"
+}
+alias prfiles="pr-files"
+
+pr-ready() {
+    gh pr ready
+}
+alias prready="pr-ready"
 
 pulls() {
     GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
