@@ -766,7 +766,7 @@ alias prfiles="pr-files"
 
 pr-url() {
     local url
-    url=$(gh pr view --json url --jq '.url' 2>/dev/null) || {
+    url=$(PAGER=cat gh pr view --json url --jq '.url' 2>/dev/null) || {
         echo "❌ Unable to determine current PR URL." >&2
         return 1
     }
