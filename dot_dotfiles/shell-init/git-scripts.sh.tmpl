@@ -815,6 +815,12 @@ pr-status() {
 }
 alias prstatus="pr-status"
 
+pr-view() {
+    gh pr view --web
+}
+alias prview="pr-view"
+alias viewpr="pr-view"
+
 pulls() {
     GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
 }
@@ -884,8 +890,6 @@ has-pr() {
     fi
 }
 alias haspr=has-pr
-
-alias viewpr="gh pr view --web"
 
 ############### WORKTREES ###################
 
