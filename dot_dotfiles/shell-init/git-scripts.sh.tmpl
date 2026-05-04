@@ -79,7 +79,44 @@ gc() {
     fi
 }
 
-alias gs="git st"
+git-full-status() {
+    _require_git_repo || return 1
+
+    git status --short --branch "$@"
+
+    echo
+    echo "Ignored files"
+    local ignored_files
+    ignored_files=$(git status --short --ignored=traditional | sed -n 's/^!! //p')
+    if [[ -n "$ignored_files" ]]; then
+        print -r -- "$ignored_files"
+    else
+        echo "(none)"
+    fi
+
+    echo
+    echo "Excluded patterns"
+    local exclude_file excluded_patterns
+    exclude_file="$(git rev-parse --git-common-dir)/info/exclude"
+    if [[ -f "$exclude_file" ]]; then
+        excluded_patterns=$(awk 'NF && $1 !~ /^#/' "$exclude_file")
+    fi
+    if [[ -n "$excluded_patterns" ]]; then
+        print -r -- "$excluded_patterns"
+    else
+        echo "(none)"
+    fi
+
+    echo
+    echo "Skip-worktree files"
+    local skip_worktree_files
+    skip_worktree_files=$(git ls-files -v | awk '/^[hS]/ {print substr($0,3)}')
+    if [[ -n "$skip_worktree_files" ]]; then
+        print -r -- "$skip_worktree_files"
+    else
+        echo "(none)"
+    fi
+}
 
 # fm - Fetch and merge origin into the current branch's Graphite stack.
 #
