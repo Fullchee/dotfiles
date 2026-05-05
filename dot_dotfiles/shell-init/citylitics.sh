@@ -1,4 +1,3 @@
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
 ####################### gcloud setup #######################
 
 # The next line updates PATH for the Google Cloud SDK.
@@ -276,6 +275,7 @@ staging-cloud-sql-proxy() {
         --address 0.0.0.0 \
         --port "$CLOUD_SQL_PORT"
 }
+
 prod-57-cloud-sql-proxy() {
     cloud-sql-proxy "${PROD_PROJECT}:${CLOUD_SQL_REGION}:crawler-db-replica" \
         --address 0.0.0.0 \
@@ -529,4 +529,3 @@ upload-migration() {
 }
 
 ############ END OF STORAGE
-{{- end }}
