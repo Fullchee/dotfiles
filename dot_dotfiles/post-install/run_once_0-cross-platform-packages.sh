@@ -34,35 +34,21 @@ ensure_executable() {
 }
 
 ensure_cargo() {
-  # Usage: ensure_cargo <bin> [crate] [--git <git_url>] [cargo args...]
-  # Examples:
-  #   ensure_cargo bat
-  #   ensure_cargo cargo-install-update cargo-update
-  #   ensure_cargo ping --locked
-  #   ensure_cargo weave weave-cli --git https://github.com/Ataraxy-Labs/weave
-  #   ensure_cargo gws --git https://github.com/googleworkspace/cli --locked
+  # Usage: ensure_cargo <bin> [crate] [cargo args...]
   local bin="$1"; shift
   local crate="$bin"
-  # crate name never starts with '--'; if next arg does, it's a flag not a crate
-  if [[ "$#" -gt 0 && "$1" != --* ]]; then
-    crate="$1"; shift
-  fi
-
-  local git_url=""
-  local cargo_args=()
-  while [[ "$#" -gt 0 ]]; do
-    case "$1" in
-      --git) git_url="$2"; shift 2 ;;
-      *)     cargo_args+=("$1"); shift ;;
-    esac
-  done
-
+  [[ "$#" -gt 0 && "$1" != --* ]] && { crate="$1"; shift; }
   ensure_command "$bin" && return 0
-  if [[ -n "$git_url" ]]; then
-    cargo install --git "$git_url" "$crate" "${cargo_args[@]}"
-  else
-    cargo install --locked "$crate" "${cargo_args[@]}"
-  fi
+  cargo install --locked "$crate" "$@"
+}
+
+ensure_git_cargo() {
+  # Usage: ensure_git_cargo <bin> <git_url> [crate] [cargo args...]
+  local bin="$1" git_url="$2"; shift 2
+  local crate="$bin"
+  [[ "$#" -gt 0 && "$1" != --* ]] && { crate="$1"; shift; }
+  ensure_command "$bin" && return 0
+  cargo install --git "$git_url" "$crate" "$@"
 }
 
 ensure_pkg() {
@@ -229,7 +215,7 @@ ensure_pnpm_global @withgraphite/graphite-cli@stable  # gt for declaring branch 
 ensure_brew google-chrome
 ensure_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
 
-ensure_cargo gws --git https://github.com/googleworkspace/cli --locked
+ensure_git_cargo gws https://github.com/googleworkspace/cli --locked
 ensure_brew handbrake
 
 ensure_cargo hx helix-term  # vim with batteries included, no need to manage plugins
@@ -304,8 +290,8 @@ ensure_pkg vim
 ensure_brew visual-studio-code
 
 # weave: language aware merger
-ensure_cargo weave weave-cli --git https://github.com/Ataraxy-Labs/weave
-ensure_cargo weave-driver weave-driver --git https://github.com/Ataraxy-Labs/weave
+ensure_git_cargo weave https://github.com/Ataraxy-Labs/weave weave-cli
+ensure_git_cargo weave-driver https://github.com/Ataraxy-Labs/weave weave-driver
 weave setup
 
 ensure_brew wechat
