@@ -41,7 +41,7 @@ youtube-worst-audio() {
    	fi
 	for url in "$@"
 	do
-		~/yt-dlp --extract-audio --audio-format mp3 --audio-quality worst -o "%(title)s.%(ext)s" --parse-metadata "title:%(title)s.replace(r' \[[a-zA-Z0-9_-]{11}\]$', '')" "$url"
+		yt-dlp --extract-audio --audio-format mp3 --audio-quality worst -o "%(title)s.%(ext)s" --parse-metadata "title:%(title)s.replace(r' \[[a-zA-Z0-9_-]{11}\]$', '')" "$url"
 	done
 }
 
@@ -52,7 +52,7 @@ youtube-best-audio() {
    	fi
 	for url in "$@"
 	do
-		~/yt-dlp --extract-audio -f bestaudio -o "%(title)s.%(ext)s" "$url"
+		yt-dlp -f "ba[ext=webm]" -x --audio-format opus -o "%(title)s.%(ext)s" "$url"
 	done
 }
 alias y3-best=youtube-best-audio

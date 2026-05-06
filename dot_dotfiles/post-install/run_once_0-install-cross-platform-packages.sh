@@ -334,15 +334,9 @@ wt config shell install
 # yt-dlp
 if command -v yt-dlp >/dev/null 2>&1; then
   # Update in-place when already installed
-  yt-dlp -U || true
+  uv tool upgrade yt-dlp
 else
-  mkdir -p "$HOME/.local/bin"
-  if $IS_MAC; then
-    curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o "$HOME/.local/bin/yt-dlp"
-  else
-    curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "$HOME/.local/bin/yt-dlp"
-  fi
-  chmod +x "$HOME/.local/bin/yt-dlp"
+  uv tool install yt-dlp
 fi
 
 if $IS_MAC; then ensure_executable zed 'curl -f https://zed.dev/install.sh | sh'; fi
