@@ -1,20 +1,20 @@
 {{- if ne .chezmoi.hostname "Fullchee-Citylitics" }}
+.dotfiles/shell-init/citylitics.sh
 .dotfiles/work/citylitics/**
 .config/finicky.js
-.dotfiles/shell-init/citylitics.sh
 {{- end }}
 
 *.plist
 
 {{- if ne .chezmoi.os "darwin" }}
-Library/**
-.iterm2/**
 .dotfiles/post-install/mac/**
 .dotfiles/shell-init/mac.sh
+.iterm2/**
+Library/**
 {{- end }}
 
-
 {{- if ne .chezmoi.hostname "fullchee-server" }}
+.dotfiles/post-install/run_once_home-server.sh
 immich/**
 jellyfin/**
 {{- end }}

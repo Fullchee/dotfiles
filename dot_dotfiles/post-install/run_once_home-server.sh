@@ -1,4 +1,3 @@
-{{- if eq .chezmoi.os "linux" }}
 #!/bin/zsh
 
 set -euo pipefail
@@ -6,12 +5,12 @@ set -euo pipefail
 # Caddy (reverse proxy with automatic HTTPS)
 docker network create caddy
 docker run -d --name caddy \
-  -p 80:80 -p 443:443 -p 443:443/udp \
-  -v caddy_data:/data \
-  -v caddy_config:/config \
-  -v "$HOME/Caddyfile:/etc/caddy/Caddyfile" \
-  --restart unless-stopped \
-  caddy:latest
+    -p 80:80 -p 443:443 -p 443:443/udp \
+    -v caddy_data:/data \
+    -v caddy_config:/config \
+    -v "$HOME/Caddyfile:/etc/caddy/Caddyfile" \
+    --restart unless-stopped \
+    caddy:latest
 
 # Cloudflare Tunnels
 curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o ~/.local/bin/cloudflared && chmod +x ~/.local/bin/cloudflared
@@ -19,7 +18,7 @@ curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloud
 # docker
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 rm -f get-docker.sh
-sudo usermod -aG docker "$USER"  # grant access to docker socket (don't need to run sudo for docker)
+sudo usermod -aG docker "$USER" # grant access to docker socket (don't need to run sudo for docker)
 
 # dockploy (local vercel)
 curl -sSL https://dokploy.com/install.sh | sudo sh
@@ -64,16 +63,16 @@ docker run -d --name vaultwarden --network caddy -v /vw-data:/data --restart unl
 # Watchtower (auto-update docker containers)
 docker run -d --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --schedule "0 0 4 * * *" --cleanup
 
-sudo apt-get install -y w3m  # terminal based browser
+sudo apt-get install -y w3m # terminal based browser
 
 # Whatsapp bot (Baileys)
-pnpm add -g pm2  # keep your bot running (auto-restart on crash)
+pnpm add -g pm2 # keep your bot running (auto-restart on crash)
 pnpm add -g qrcode-terminal
 pnpm add -g @whiskeysockets/baileys
 
 # Create Caddyfile for reverse proxy (update domain names)
 mkdir -p "$HOME/caddy"
-cat > "$HOME/caddy/Caddyfile" << 'EOF'
+cat >"$HOME/caddy/Caddyfile" <<'EOF'
 # TODO: Replace example.com with your actual domain
 
 # Homepage dashboard
@@ -121,5 +120,3 @@ link.example.com {
     reverse_proxy linkstack:80
 }
 EOF
-
-{{- end }}
