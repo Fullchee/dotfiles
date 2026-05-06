@@ -1,5 +1,6 @@
 # common typos for git
-alias it="git"
+
+# Aliases
 alias gti="git"
 alias gut="git"
 
@@ -13,6 +14,19 @@ alias gut="git"
 # working tree will have unstaged changes shortly after the hook exits.
 #
 # This helper polls for a few seconds and stages any discovered changes.
+alias it="git"
+alias pull='git stash && git pull && git stash pop'
+
+
+# Git helpers
+_require_git_repo() {
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+        echo "❌ Not a git repository." >&2
+        return 1
+    }
+}
+
+# Print the parent branch name. Tries Graphite first, falls back to fzf picker.
 _stage_pending_hook_changes() {
     local -i max_attempts=50  # ~5s at 0.1s per attempt
     local -i attempt=0
@@ -32,108 +46,6 @@ _stage_pending_hook_changes() {
     git add -u
 }
 
-_require_git_repo() {
-    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
-        echo "❌ Not a git repository." >&2
-        return 1
-    }
-}
-
-# Print the parent branch name. Tries Graphite first, falls back to fzf picker.
-gt-parent() {
-    local current="${1:-$(git rev-parse --abbrev-ref HEAD)}"
-    local parent=""
-    parent=$(gt info 2>/dev/null | grep 'Parent:' | sed 's/.*Parent: //')
-    if [[ -z "$parent" ]]; then
-        parent=$(pick-parent-branch "$current")
-    fi
-    if [[ -z "$parent" ]]; then
-        echo "❌ Unable to determine parent branch." >&2
-        return 1
-    fi
-    echo "$parent"
-}
-
-gc() {
-    git add -u
-
-    # Attempt the commit
-    if git commit -m "$*"; then
-        return 0
-    else
-        echo "⚠️  Commit failed (pre-commit hook). Retrying once..."
-
-        # Some hook runners (e.g. `pre-commit`, `husky`) may spawn background
-        # processes that keep writing files after git exits. Poll for any unstaged
-        # changes and stage them before retrying.
-        _stage_pending_hook_changes
-
-        # Second attempt
-        if git commit -m "$*"; then
-            echo "✅ Success on second try."
-            return 0
-        else
-            echo "❌ Commit failed a second time. Please check your code."
-            return 1
-        fi
-    fi
-}
-
-git-full-status() {
-    _require_git_repo || return 1
-
-    git status --short --branch "$@"
-
-    echo
-    echo "Ignored files"
-    local ignored_files
-    ignored_files=$(git status --short --ignored=traditional | sed -n 's/^!! //p')
-    if [[ -n "$ignored_files" ]]; then
-        print -r -- "$ignored_files"
-    else
-        echo "(none)"
-    fi
-
-    echo
-    echo "Excluded patterns"
-    local exclude_file excluded_patterns
-    exclude_file="$(git rev-parse --git-common-dir)/info/exclude"
-    if [[ -f "$exclude_file" ]]; then
-        excluded_patterns=$(awk 'NF && $1 !~ /^#/' "$exclude_file")
-    fi
-    if [[ -n "$excluded_patterns" ]]; then
-        print -r -- "$excluded_patterns"
-    else
-        echo "(none)"
-    fi
-
-    echo
-    echo "Skip-worktree files"
-    local skip_worktree_files
-    skip_worktree_files=$(git ls-files -v | awk '/^[hS]/ {print substr($0,3)}')
-    if [[ -n "$skip_worktree_files" ]]; then
-        print -r -- "$skip_worktree_files"
-    else
-        echo "(none)"
-    fi
-}
-
-# fm - Fetch and merge origin into the current branch's Graphite stack.
-#
-# Prompt that generated this function:
-#   1. Run git fetch.
-#   2. If on main, fast-forward merge origin/main (fall back to regular merge). Done.
-#   3. Otherwise, walk up to main via `gt down`. If gt down fails (no tracked
-#      parent), use fzf to let the user pick a parent branch, then
-#      `gt track --parent <selected>`. Record each branch in the path.
-#   4. Once on main, merge origin/main (ff-only with fallback).
-#   5. Walk back down the recorded path. For each branch:
-#      a. git merge origin/<branch> (pull remote updates for that branch)
-#      b. git merge <parent_branch> (propagate parent changes down)
-#      c. git push (if not main)
-#      If any merge conflicts, stop in place so the user can resolve.
-#      User reruns fm fresh after resolving.
-#   6. End on the original branch.
 fm() {
     git fetch
 
@@ -213,6 +125,31 @@ fm() {
     echo "✅ fm complete."
 }
 
+gc() {
+    git add -u
+
+    # Attempt the commit
+    if git commit -m "$*"; then
+        return 0
+    else
+        echo "⚠️  Commit failed (pre-commit hook). Retrying once..."
+
+        # Some hook runners (e.g. `pre-commit`, `husky`) may spawn background
+        # processes that keep writing files after git exits. Poll for any unstaged
+        # changes and stage them before retrying.
+        _stage_pending_hook_changes
+
+        # Second attempt
+        if git commit -m "$*"; then
+            echo "✅ Success on second try."
+            return 0
+        else
+            echo "❌ Commit failed a second time. Please check your code."
+            return 1
+        fi
+    fi
+}
+
 git-clone-personal() {
     local REPO_URL="$1"
     # 1. Define the command once
@@ -240,7 +177,74 @@ git-clone-personal() {
     fi
 }
 
-alias pull='git stash && git pull && git stash pop'
+git-full-status() {
+    _require_git_repo || return 1
+
+    git status --short --branch "$@"
+
+    echo
+    echo "Ignored files"
+    local ignored_files
+    ignored_files=$(git status --short --ignored=traditional | sed -n 's/^!! //p')
+    if [[ -n "$ignored_files" ]]; then
+        print -r -- "$ignored_files"
+    else
+        echo "(none)"
+    fi
+
+    echo
+    echo "Excluded patterns"
+    local exclude_file excluded_patterns
+    exclude_file="$(git rev-parse --git-common-dir)/info/exclude"
+    if [[ -f "$exclude_file" ]]; then
+        excluded_patterns=$(awk 'NF && $1 !~ /^#/' "$exclude_file")
+    fi
+    if [[ -n "$excluded_patterns" ]]; then
+        print -r -- "$excluded_patterns"
+    else
+        echo "(none)"
+    fi
+
+    echo
+    echo "Skip-worktree files"
+    local skip_worktree_files
+    skip_worktree_files=$(git ls-files -v | awk '/^[hS]/ {print substr($0,3)}')
+    if [[ -n "$skip_worktree_files" ]]; then
+        print -r -- "$skip_worktree_files"
+    else
+        echo "(none)"
+    fi
+}
+
+# fm - Fetch and merge origin into the current branch's Graphite stack.
+#
+# Prompt that generated this function:
+#   1. Run git fetch.
+#   2. If on main, fast-forward merge origin/main (fall back to regular merge). Done.
+#   3. Otherwise, walk up to main via `gt down`. If gt down fails (no tracked
+#      parent), use fzf to let the user pick a parent branch, then
+#      `gt track --parent <selected>`. Record each branch in the path.
+#   4. Once on main, merge origin/main (ff-only with fallback).
+#   5. Walk back down the recorded path. For each branch:
+#      a. git merge origin/<branch> (pull remote updates for that branch)
+#      b. git merge <parent_branch> (propagate parent changes down)
+#      c. git push (if not main)
+#      If any merge conflicts, stop in place so the user can resolve.
+#      User reruns fm fresh after resolving.
+#   6. End on the original branch.
+gt-parent() {
+    local current="${1:-$(git rev-parse --abbrev-ref HEAD)}"
+    local parent=""
+    parent=$(gt info 2>/dev/null | grep 'Parent:' | sed 's/.*Parent: //')
+    if [[ -z "$parent" ]]; then
+        parent=$(pick-parent-branch "$current")
+    fi
+    if [[ -z "$parent" ]]; then
+        echo "❌ Unable to determine parent branch." >&2
+        return 1
+    fi
+    echo "$parent"
+}
 
 push() {
     # On Fullchee-Citylitics, commit only (no push) in ~/watrhub-django to reduce Claude Code review costs.
@@ -255,6 +259,8 @@ push() {
 
 ############### BRANCHES #####################
 
+
+# Branch helpers
 delete-current-branch() {
     local force=0
     while getopts "f" opt; do
@@ -364,6 +370,103 @@ delete-current-branch() {
     fi
 }
 
+delete-remote-and-local-branch() {
+    if read -q "choice?Delete remote branch? (y/N) "; then
+        branch_name="$(git rev-parse --abbrev-ref HEAD)"
+        git push origin --delete "$branch_name" --no-verify
+        delete-current-branch
+    else
+        echo "Not deleting remote branch"
+        exit 1
+    fi
+}
+
+# https://www.youtube.com/watch?v=lZehYwOfJAs
+delete-remote-branch() {
+    if read -q "choice?Delete remote branch? (y/N) "; then
+        branch_name="$(git rev-parse --abbrev-ref HEAD)"
+        git push origin --delete "$branch_name" --no-verify
+    else
+        echo "Not deleting remote branch"
+        exit 1
+    fi
+}
+
+alias rb=recent-branch
+
+
+recent-branch() {
+    _require_git_repo || return 1
+
+    local branch
+    # ask git for branches without color so fzf doesn't pull in ANSI codes
+    branch=$(git branch --sort=-committerdate --no-color |
+        fzf --header "Checkout Recent Branch" \
+            --preview "git diff {1} --color=always")
+    [[ -z "$branch" ]] && return 0
+
+    # strip ANSI color codes (escape sequences) so fzf output is clean
+    branch=$(printf '%s' "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
+    # remove leading markers (*, +, or whitespace) and trailing whitespace/carriage return
+    branch=$(printf '%s' "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]]+\r?$//')
+
+    # If the branch is checked out in a different worktree, `git checkout` will fail.
+    # We can locate the correct worktree path from `git worktree list --porcelain`.
+    #
+    # Note: some workflows (e.g. using fixed worktree folders like "main"/"secondary")
+    # may leave stale `.git/worktrees/*` entries for branches that no longer exist.
+    # Ignore worktrees whose directories are missing.
+    local worktree_path=""
+    local target_worktree=""
+    while IFS= read -r line; do
+        if [[ "$line" == worktree\ * ]]; then
+            worktree_path="${line#worktree }"
+            # strip trailing whitespace/carriage returns
+            worktree_path=$(printf '%s' "$worktree_path" | sed -E 's/[[:space:]]+\r?$//')
+
+            # ignore stale worktrees (git can leave records behind)
+            if [[ ! -d "$worktree_path" ]]; then
+                worktree_path=""
+            fi
+        elif [[ "$line" == branch\ * ]]; then
+            local br="${line#branch }"
+            br="${br#refs/heads/}"
+            if [[ "$br" == "$branch" && -n "$worktree_path" ]]; then
+                target_worktree="$worktree_path"
+                break
+            fi
+        fi
+    done < <(git worktree list --porcelain)
+
+    # Some workflows keep only a couple of worktrees (e.g. "main"/"secondary").
+    # If the worktree list is stale (or missing), fall back to checking those.
+    if [[ -z "$target_worktree" ]]; then
+        local repo_root
+        repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+        if [[ -n "$repo_root" ]]; then
+            local base_dir
+            base_dir=$(dirname "$repo_root")
+            for candidate in main secondary; do
+                local candidate_path="$base_dir/$candidate"
+                if [[ -d "$candidate_path" ]]; then
+                    local current_branch
+                    current_branch=$(git -C "$candidate_path" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+                    if [[ "$current_branch" == "$branch" ]]; then
+                        target_worktree="$candidate_path"
+                        break
+                    fi
+                fi
+            done
+        fi
+    fi
+
+    if [[ -n "$target_worktree" ]]; then
+        echo "🔀 Switching to worktree: $target_worktree"
+        cd "$target_worktree"
+    else
+        git checkout "$branch"
+    fi
+}
 split-branch() {
     _require_git_repo || return 1
 
@@ -493,140 +596,12 @@ split-branch() {
     echo "New branch: $new_branch (parent: $parent_branch)"
     echo "Original branch now based on: $new_branch"
 }
-delete-remote-branch() {
-    if read -q "choice?Delete remote branch? (y/N) "; then
-        branch_name="$(git rev-parse --abbrev-ref HEAD)"
-        git push origin --delete "$branch_name" --no-verify
-    else
-        echo "Not deleting remote branch"
-        exit 1
-    fi
-}
-
-delete-remote-and-local-branch() {
-    if read -q "choice?Delete remote branch? (y/N) "; then
-        branch_name="$(git rev-parse --abbrev-ref HEAD)"
-        git push origin --delete "$branch_name" --no-verify
-        delete-current-branch
-    else
-        echo "Not deleting remote branch"
-        exit 1
-    fi
-}
-
-# https://www.youtube.com/watch?v=lZehYwOfJAs
-recent-branch() {
-    _require_git_repo || return 1
-
-    local branch
-    # ask git for branches without color so fzf doesn't pull in ANSI codes
-    branch=$(git branch --sort=-committerdate --no-color |
-        fzf --header "Checkout Recent Branch" \
-            --preview "git diff {1} --color=always")
-    [[ -z "$branch" ]] && return 0
-
-    # strip ANSI color codes (escape sequences) so fzf output is clean
-    branch=$(printf '%s' "$branch" | sed -E 's/\x1b\[[0-9;]*m//g')
-    # remove leading markers (*, +, or whitespace) and trailing whitespace/carriage return
-    branch=$(printf '%s' "$branch" | sed -E 's/^[*+[:space:]]+//;s/[[:space:]]+\r?$//')
-
-    # If the branch is checked out in a different worktree, `git checkout` will fail.
-    # We can locate the correct worktree path from `git worktree list --porcelain`.
-    #
-    # Note: some workflows (e.g. using fixed worktree folders like "main"/"secondary")
-    # may leave stale `.git/worktrees/*` entries for branches that no longer exist.
-    # Ignore worktrees whose directories are missing.
-    local worktree_path=""
-    local target_worktree=""
-    while IFS= read -r line; do
-        if [[ "$line" == worktree\ * ]]; then
-            worktree_path="${line#worktree }"
-            # strip trailing whitespace/carriage returns
-            worktree_path=$(printf '%s' "$worktree_path" | sed -E 's/[[:space:]]+\r?$//')
-
-            # ignore stale worktrees (git can leave records behind)
-            if [[ ! -d "$worktree_path" ]]; then
-                worktree_path=""
-            fi
-        elif [[ "$line" == branch\ * ]]; then
-            local br="${line#branch }"
-            br="${br#refs/heads/}"
-            if [[ "$br" == "$branch" && -n "$worktree_path" ]]; then
-                target_worktree="$worktree_path"
-                break
-            fi
-        fi
-    done < <(git worktree list --porcelain)
-
-    # Some workflows keep only a couple of worktrees (e.g. "main"/"secondary").
-    # If the worktree list is stale (or missing), fall back to checking those.
-    if [[ -z "$target_worktree" ]]; then
-        local repo_root
-        repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
-        if [[ -n "$repo_root" ]]; then
-            local base_dir
-            base_dir=$(dirname "$repo_root")
-            for candidate in main secondary; do
-                local candidate_path="$base_dir/$candidate"
-                if [[ -d "$candidate_path" ]]; then
-                    local current_branch
-                    current_branch=$(git -C "$candidate_path" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
-                    if [[ "$current_branch" == "$branch" ]]; then
-                        target_worktree="$candidate_path"
-                        break
-                    fi
-                fi
-            done
-        fi
-    fi
-
-    if [[ -n "$target_worktree" ]]; then
-        echo "🔀 Switching to worktree: $target_worktree"
-        cd "$target_worktree"
-    else
-        git checkout "$branch"
-    fi
-}
-alias rb=recent-branch
-
-
 #################### Pull requests ####################
 
-request-copilot-review() {
-    gh pr edit --add-reviewer @copilot
-}
+
+# PR helpers
 alias copilot-review=request-copilot-review
 
-pick-parent-branch() {
-    local current="$1"
-    local picked
-    picked=$(git branch --format='%(refname:short)' \
-        | grep -v "^${current}$" \
-        | fzf --prompt="Select parent branch: " \
-              --preview='git log --oneline --graph --color=always -20 {}' \
-              --preview-window=right:60%)
-    if [[ -n "$picked" ]]; then
-        gt track --parent "$picked" >/dev/null 2>&1 || true
-        if gh pr view "$current" --json number --jq '.number' >/dev/null 2>&1; then
-            gh pr edit "$current" --base "$picked" >&2
-        else
-            echo "ℹ️  No PR found for '$current', skipping base branch update." >&2
-        fi
-    fi
-    echo "$picked"
-}
-
-# createpr: create a draft GitHub PR from the current or given branch
-# 1. parse options (-m commit message, -h help)
-# 2. determine branch name (argument or current branch)
-# 3. determine parent branch via gt-parent
-# 4. stash uncommitted changes, switch to target branch (or create it)
-# 5. create an empty commit (or real commit if -m provided) if branch has no commits relative to parent
-# 6. push branch, set upstream
-# 7. validate branch name (reject main/master/develop), build PR title from branch name
-# 8. generate PR body (LLM prompt file override; fallback defaults) using diff against parent
-# 9. create PR with gh pr create (draft, assign self)
-# 10. pop stash and open PR in web browser
 createpr() {
     local branch_name=""
     local commit_msg=""
@@ -782,112 +757,6 @@ ${pr_body_extra}
 alias gh-pr-checks='GH_PAGER=cat gh pr checks'
 
 
-pr-diff() {
-    local repo pr
-    repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
-    pr=$(gh pr view --json number --jq .number)
-    gh api -H "Accept: application/vnd.github.v3.diff" "repos/$repo/pulls/$pr" | pbcopy
-}
-alias prdiff="pr-diff"
-
-pr-draft() {
-    gh pr ready --undo
-}
-alias prdraft="pr-draft"
-
-pr-files() {
-    PR_URL=$(gh pr view --json url --jq '.url')
-    open "${PR_URL}/files"
-}
-alias prfiles="pr-files"
-
-pr-url() {
-    local url
-    url=$(PAGER=cat gh pr view --json url --jq '.url' 2>/dev/null) || {
-        echo "❌ Unable to determine current PR URL." >&2
-        return 1
-    }
-
-    if [[ -n "$url" ]]; then
-        if command -v pbcopy >/dev/null 2>&1; then
-            printf '%s' "$url" | pbcopy
-            echo "$url"
-            echo "✅ PR URL copied to clipboard."
-        else
-            echo "$url"
-        fi
-    else
-        echo "❌ Unable to determine current PR URL." >&2
-        return 1
-    fi
-}
-alias prurl="pr-url"
-
-pr-ready() {
-    gh pr ready
-}
-alias prready="pr-ready"
-
-# 1. Executes `gh pr checks` to fetch the status of all pipeline jobs.
-# 2. If any jobs have failed, it automatically opens their URLs in the default browser.
-# 3. If all jobs are either "pass" or "pending" (no fails), it prints that jobs are pending.
-# 4. If all jobs have successfully passed, it prints a clear success message.
-pr-actions() {
-  local output
-  output=$(gh pr checks 2>/dev/null)
-
-  if [[ -z "$output" ]]; then
-    echo "No PR checks found for the current branch."
-    return 0
-  fi
-
-  local has_fail=false
-  local has_pending=false
-  local failed_urls=()
-
-  # Using 'job_status' instead of 'status' to avoid Zsh read-only variable conflicts
-  while IFS=$'\t' read -r name job_status elapsed url; do
-    if [[ "$job_status" == *fail* ]]; then
-      has_fail=true
-      failed_urls+=("$url")
-    elif [[ "$job_status" == *pending* ]]; then
-      has_pending=true
-    fi
-  done <<< "$output"
-
-  if [[ "$has_fail" == true ]]; then
-    echo "Failed jobs detected! Opening URLs..."
-    for url in "${failed_urls[@]}"; do
-      if command -v open >/dev/null 2>&1; then
-        open "$url"
-      elif command -v xdg-open >/dev/null 2>&1; then
-        xdg-open "$url"
-      else
-        echo "Could not auto-open: $url"
-      fi
-    done
-  elif [[ "$has_pending" == true ]]; then
-    echo "There are still pending jobs."
-  else
-    echo "All jobs passed!"
-  fi
-}
-alias practions="pr-actions"
-
-pr-view() {
-    gh pr view --web
-}
-alias prview="pr-view"
-alias viewpr="pr-view"
-
-pulls() {
-    GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
-}
-
-switchpr() {
-    GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr checkout
-}
-
 has-pr() {
     _require_git_repo || return 1
 
@@ -950,9 +819,150 @@ has-pr() {
 }
 alias haspr=has-pr
 
+pick-parent-branch() {
+    local current="$1"
+    local picked
+    picked=$(git branch --format='%(refname:short)' \
+        | grep -v "^${current}$" \
+        | fzf --prompt="Select parent branch: " \
+              --preview='git log --oneline --graph --color=always -20 {}' \
+              --preview-window=right:60%)
+    if [[ -n "$picked" ]]; then
+        gt track --parent "$picked" >/dev/null 2>&1 || true
+        if gh pr view "$current" --json number --jq '.number' >/dev/null 2>&1; then
+            gh pr edit "$current" --base "$picked" >&2
+        else
+            echo "ℹ️  No PR found for '$current', skipping base branch update." >&2
+        fi
+    fi
+    echo "$picked"
+}
+
+# createpr: create a draft GitHub PR from the current or given branch
+# 1. parse options (-m commit message, -h help)
+# 2. determine branch name (argument or current branch)
+# 3. determine parent branch via gt-parent
+# 4. stash uncommitted changes, switch to target branch (or create it)
+# 5. create an empty commit (or real commit if -m provided) if branch has no commits relative to parent
+# 6. push branch, set upstream
+# 7. validate branch name (reject main/master/develop), build PR title from branch name
+# 8. generate PR body (LLM prompt file override; fallback defaults) using diff against parent
+# 9. create PR with gh pr create (draft, assign self)
+# 10. pop stash and open PR in web browser
+pr-actions() {
+  local output
+  output=$(gh pr checks 2>/dev/null)
+
+  if [[ -z "$output" ]]; then
+    echo "No PR checks found for the current branch."
+    return 0
+  fi
+
+  local has_fail=false
+  local has_pending=false
+  local failed_urls=()
+
+  # Using 'job_status' instead of 'status' to avoid Zsh read-only variable conflicts
+  while IFS=$'\t' read -r name job_status elapsed url; do
+    if [[ "$job_status" == *fail* ]]; then
+      has_fail=true
+      failed_urls+=("$url")
+    elif [[ "$job_status" == *pending* ]]; then
+      has_pending=true
+    fi
+  done <<< "$output"
+
+  if [[ "$has_fail" == true ]]; then
+    echo "Failed jobs detected! Opening URLs..."
+    for url in "${failed_urls[@]}"; do
+      if command -v open >/dev/null 2>&1; then
+        open "$url"
+      elif command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$url"
+      else
+        echo "Could not auto-open: $url"
+      fi
+    done
+  elif [[ "$has_pending" == true ]]; then
+    echo "There are still pending jobs."
+  else
+    echo "All jobs passed!"
+  fi
+}
+pr-diff() {
+    local repo pr
+    repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+    pr=$(gh pr view --json number --jq .number)
+    gh api -H "Accept: application/vnd.github.v3.diff" "repos/$repo/pulls/$pr" | pbcopy
+}
+pr-draft() {
+    gh pr ready --undo
+}
+pr-files() {
+    PR_URL=$(gh pr view --json url --jq '.url')
+    open "${PR_URL}/files"
+}
+pr-ready() {
+    gh pr ready
+}
+pr-url() {
+    local url
+    url=$(PAGER=cat gh pr view --json url --jq '.url' 2>/dev/null) || {
+        echo "❌ Unable to determine current PR URL." >&2
+        return 1
+    }
+
+    if [[ -n "$url" ]]; then
+        if command -v pbcopy >/dev/null 2>&1; then
+            printf '%s' "$url" | pbcopy
+            echo "$url"
+            echo "✅ PR URL copied to clipboard."
+        else
+            echo "$url"
+        fi
+    else
+        echo "❌ Unable to determine current PR URL." >&2
+        return 1
+    fi
+}
+pr-view() {
+    gh pr view --web
+}
+alias practions="pr-actions"
+
+alias prdiff="pr-diff"
+
+alias prdraft="pr-draft"
+
+alias prfiles="pr-files"
+
+alias prready="pr-ready"
+
+# 1. Executes `gh pr checks` to fetch the status of all pipeline jobs.
+# 2. If any jobs have failed, it automatically opens their URLs in the default browser.
+# 3. If all jobs are either "pass" or "pending" (no fails), it prints that jobs are pending.
+# 4. If all jobs have successfully passed, it prints a clear success message.
+alias prurl="pr-url"
+
+alias prview="pr-view"
+pulls() {
+    GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr view --web
+}
+
+request-copilot-review() {
+    gh pr edit --add-reviewer @copilot
+}
+switchpr() {
+    GH_FORCE_TTY=100% gh pr list --assignee "fullchee" | tail -n +2 | fzf --ansi --preview 'GH_FORCE_TTY=100% gh pr view {1}' --preview-window down --header-lines 3 | awk '{print $1}' | xargs gh pr checkout
+}
+
+alias viewpr="pr-view"
+
 ############### WORKTREES ###################
 
 # create worktree
+
+# Worktree helpers
 cwt() {
     # 1. Configuration
     local MAIN_BRANCH="main"
@@ -1005,27 +1015,6 @@ cwt() {
         # Optional: if you want to land back in the 'app/frontend/app' equivalent
         # in the new worktree, we could add logic for that here.
         echo "✅ Done! You are now in the worktree for '$BRANCH'."
-    fi
-}
-
-worktree() {
-    _require_git_repo || return 1
-
-    # 2. Format the list: [Folder Name] [Branch] [Full Path (Hidden)]
-    # We use awk to print the last part of the path, the branch, and the full path
-    local selection=$(git worktree list | awk '{
-        n = split($1, path, "/");
-        print path[n], $3, $1
-    }' | column -t | fzf \
-        --header "Select Worktree (Folder | Branch)" \
-        --with-nth "1,2" \
-        --preview "git log --oneline -n 10 \$(echo {2} | tr -d '[]')")
-
-    # 3. The full path is the 3rd column of our custom list
-    local target=$(echo "$selection" | awk '{print $NF}')
-
-    if [ -n "$target" ]; then
-        cd "$target"
     fi
 }
 
@@ -1103,6 +1092,27 @@ swap-worktrees() {
     [[ "$main_detached" -eq 1 ]] && result_secondary="detached" || result_secondary="$branch_main"
     echo "✅ $main_dir → $result_main"
     echo "✅ $secondary_dir → $result_secondary"
+}
+
+worktree() {
+    _require_git_repo || return 1
+
+    # 2. Format the list: [Folder Name] [Branch] [Full Path (Hidden)]
+    # We use awk to print the last part of the path, the branch, and the full path
+    local selection=$(git worktree list | awk '{
+        n = split($1, path, "/");
+        print path[n], $3, $1
+    }' | column -t | fzf \
+        --header "Select Worktree (Folder | Branch)" \
+        --with-nth "1,2" \
+        --preview "git log --oneline -n 10 \$(echo {2} | tr -d '[]')")
+
+    # 3. The full path is the 3rd column of our custom list
+    local target=$(echo "$selection" | awk '{print $NF}')
+
+    if [ -n "$target" ]; then
+        cd "$target"
+    fi
 }
 
 wt-collapse() {
