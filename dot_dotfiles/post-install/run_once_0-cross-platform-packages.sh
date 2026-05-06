@@ -41,34 +41,27 @@ ensure_cargo() {
   #   ensure_cargo ping --locked
   #   ensure_cargo weave weave-cli --git https://github.com/Ataraxy-Labs/weave
   #   ensure_cargo gws --git https://github.com/googleworkspace/cli --locked
-  # If only <bin> is provided, assume the crate name matches the binary name.
   local bin="$1"; shift
   local crate="$bin"
-  if [ "$#" -gt 0 ] && [ "$1" != "--git" ]; then
+  # crate name never starts with '--'; if next arg does, it's a flag not a crate
+  if [[ "$#" -gt 0 && "$1" != --* ]]; then
     crate="$1"; shift
   fi
 
   local git_url=""
   local cargo_args=()
-  while [ "$#" -gt 0 ]; do
+  while [[ "$#" -gt 0 ]]; do
     case "$1" in
-      --git)
-        shift
-        git_url="$1"; shift
-        ;;
-      *)
-        cargo_args+=("$1")
-        shift
-        ;;
+      --git) git_url="$2"; shift 2 ;;
+      *)     cargo_args+=("$1"); shift ;;
     esac
   done
 
-  if ! ensure_command "$bin"; then
-    if [ -n "$git_url" ]; then
-      cargo install --git "$git_url" "$crate" "${cargo_args[@]}"
-    else
-      cargo install --locked "$crate" "${cargo_args[@]}"
-    fi
+  ensure_command "$bin" && return 0
+  if [[ -n "$git_url" ]]; then
+    cargo install --git "$git_url" "$crate" "${cargo_args[@]}"
+  else
+    cargo install --locked "$crate" "${cargo_args[@]}"
   fi
 }
 
@@ -234,10 +227,7 @@ ensure_pkg git-filter-repo  # remove a file from git history
 ensure_pnpm_global @withgraphite/graphite-cli@stable  # gt for declaring branch dependencies
 
 ensure_brew google-chrome
-
-if $IS_MAC; then
-  ensure_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
-fi
+ensure_pkg graphviz  # generate (DB) diagrams (eg: DBeaver to generate ER diagrams)
 
 ensure_cargo gws --git https://github.com/googleworkspace/cli --locked
 ensure_brew handbrake
@@ -256,6 +246,7 @@ ensure_cargo just-lsp # LSP server for justfiles
 ensure_uv_tool llm  # pipe LLM input & output from the terminal
 llm install llm-anthropic
 
+ensure_brew microsoft-edge  # best free TTS voice
 ensure_brew modern-csv
 
 ensure_pkg moor
