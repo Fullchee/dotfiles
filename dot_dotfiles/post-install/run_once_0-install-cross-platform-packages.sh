@@ -99,16 +99,11 @@ ensure_pnpm_global() {
 }
 
 ensure_brew() {
-  local pkg="$1"
-  if ! brew list --cask | grep -q "^$pkg$"; then
-    brew install --cask "$pkg"
-  fi
-}
+  local cli_name="$1"
+  local brew_name="${2:-$1}"
 
-ensure_mas_app() {
-  local app_id="$1"
-  if ! mas list | awk '{print $1}' | grep -q "^${app_id}$"; then
-    mas install "$app_id"
+  if ! brew ls --versions "$cli_name" >/dev/null 2>&1; then
+    brew install "$brew_name"
   fi
 }
 

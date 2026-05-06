@@ -9,6 +9,7 @@
 {{- if ne .chezmoi.os "darwin" }}
 Library/**
 .iterm2/**
+.dotfiles/post-install/mac/run_once_mac.sh
 {{- end }}
 
 
