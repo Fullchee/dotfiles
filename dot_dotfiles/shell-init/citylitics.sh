@@ -445,34 +445,6 @@ repo-root() {
     cd "$(citylitics-repo-root)" || return 1
 }
 
-y() {
-    local root
-    root=$(citylitics-repo-root --allow-default) || return 1
-    command yarn --cwd "$root/app/frontend/app" "$@"
-}
-
-yarntest() {
-    local root
-    root=$(citylitics-repo-root --allow-default) || return 1
-
-    local app_root="$root/app/frontend/app"
-    local normalized_args=()
-
-    for arg in "$@"; do
-        if [[ "$arg" == "$app_root"* ]]; then
-            # e.g. /Users/admin/watrhub-django/main/app/frontend/app/src/... -> src/...
-            normalized_args+=("${arg#$app_root/}")
-        elif [[ "$arg" == app/frontend/app/* ]]; then
-            # e.g. app/frontend/app/src/... -> src/...
-            normalized_args+=("${arg#app/frontend/app/}")
-        else
-            normalized_args+=("$arg")
-        fi
-    done
-
-    command yarn --cwd "$app_root" test --no-coverage "${normalized_args[@]}"
-}
-
 ####################### END OF LOCAL DEV
 
 ####### STORAGE
