@@ -323,23 +323,13 @@ ensure_pkg wget
 
 ensure_brew whatsapp
 
-ensure_cargo wt worktrunk
+ensure_cargo wt worktrunk  # TODO: do I even use this?
 wt config shell install
 
-# yt-dlp
-if command -v yt-dlp >/dev/null 2>&1; then
-  # Update in-place when already installed
-  uv tool upgrade yt-dlp
-else
-  uv tool install yt-dlp
-fi
-
-if $IS_MAC; then ensure_executable zed 'curl -f https://zed.dev/install.sh | sh'; fi
-
+ensure_uv_tool yt-dlp
+ensure_executable zed 'curl -f https://zed.dev/install.sh | sh'
 ensure_cargo zoxide
-
 ensure_brew zoom
-
 ensure_pkg zsh
 
 if [ ! -d "${ZDOTDIR:-$HOME}/.zprezto" ]; then
