@@ -1,11 +1,8 @@
-{{ if eq .chezmoi.os "darwin" -}}
-
-
-{{- if eq .chezmoi.hostname "Fullchee-Citylitics" }}
-eval "$(/usr/local/bin/brew shellenv)"
-{{- else }}
-eval "$(/opt/homebrew/bin/brew shellenv)"
-{{- end }}
+if [[ $HOSTNAME == "Fullchee-Citylitics" ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+else
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 lockafter() {
   # Check if a parameter was provided
@@ -32,27 +29,24 @@ lockafter() {
 }
 
 notify() {
-	if [ -z "$1" ] ; then
-		echo 'Usage: notify <message> time'
-		return
-	fi
-	echo 'notify-send "$1"' | at $2
+  if [ -z "$1" ]; then
+    echo 'Usage: notify <message> time'
+    return
+  fi
+  echo 'notify-send "$1"' | at $2
 }
-
 
 # Hide/show all desktop icons (useful when presenting)
 alias hide-desktop-icons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias show-desktop-icons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
 update-raycast-config() {
-	cd ~/.dotfiles
-  	for file in Raycast\ 202*.rayconfig; do
-		# Check if the file exists and matches the pattern
-		if [[ -f "$file" ]]; then
-			mv -f "$file" "Raycast.rayconfig"
-		fi
-	done
-	cd - > /dev/null
+  cd ~/.dotfiles
+  for file in Raycast\ 202*.rayconfig; do
+    # Check if the file exists and matches the pattern
+    if [[ -f "$file" ]]; then
+      mv -f "$file" "Raycast.rayconfig"
+    fi
+  done
+  cd - >/dev/null
 }
-
-{{- end}}
