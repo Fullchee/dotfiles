@@ -35,6 +35,8 @@ ensure_executable() {
 
 ensure_cargo() {
   # Usage: ensure_cargo <bin> [crate] [cargo args...]
+  # ensure_cargo bat
+  # ensure_cargo rg ripgrep
   local bin="$1"; shift
   local crate="$bin"
   [[ "$#" -gt 0 && "$1" != --* ]] && { crate="$1"; shift; }
@@ -44,6 +46,8 @@ ensure_cargo() {
 
 ensure_git_cargo() {
   # Usage: ensure_git_cargo <bin> <git_url> [crate] [cargo args...]
+  # ensure_git_cargo gws https://github.com/googleworkspace/cli --locked
+  # ensure_git_cargo weave https://github.com/Ataraxy-Labs/weave weave-cli
   local bin="$1" git_url="$2"; shift 2
   local crate="$bin"
   [[ "$#" -gt 0 && "$1" != --* ]] && { crate="$1"; shift; }
