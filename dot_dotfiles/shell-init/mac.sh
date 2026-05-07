@@ -1,7 +1,7 @@
-if [[ $HOSTNAME == "Fullchee-Citylitics" ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-else
+if [[ $(uname -m) == "arm64" ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+  eval "$(/usr/local/bin/brew shellenv)"
 fi
 
 lockafter() {
