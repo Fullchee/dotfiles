@@ -5,12 +5,11 @@
   },
   "permissions": {
     "allow": [
-      "mcp__plugin_context-mode_context-mode__ctx_batch_execute",
-      "Bash(mkdir -p /Users/admin/watrhub-django/main/.plans)",
-      "Bash(cp /Users/admin/.claude/plans/DEV-4543-migrate-sync-to-crm-to-list-entries.md /Users/admin/watrhub-django/main/.plans/)"
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute"
     ],
     "additionalDirectories": [
-      "/Users/admin/.claude/plans"
+      "/Users/admin/.claude/plans",
+      "/Users/admin/watrhub-django/main/.plans"
     ]
   },
   "hooks": {
@@ -23,7 +22,35 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/Users/admin/.claude/hooks/caveman-activate.js\"",
+            "timeout": 5,
+            "statusMessage": "Loading caveman mode..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/Users/admin/.claude/hooks/caveman-mode-tracker.js\"",
+            "timeout": 5,
+            "statusMessage": "Tracking caveman mode..."
+          }
+        ]
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"/Users/admin/.claude/hooks/caveman-statusline.sh\""
   },
   "enabledPlugins": {
     "code-review@claude-plugins-official": true,
@@ -41,6 +68,12 @@
       "source": {
         "source": "github",
         "repo": "mksglu/context-mode"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
       }
     }
   },
