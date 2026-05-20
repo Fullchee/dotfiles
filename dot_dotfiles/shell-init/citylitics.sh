@@ -404,7 +404,10 @@ pt() {
         for arg in "$@"; do
             # Absolute path: strip workdir prefix and use directly
             if [[ "$arg" == /* ]]; then
-                args+=("${arg#"$workdir"/}")
+                local resolved_workdir resolved_arg
+                resolved_workdir=$(realpath "$workdir" 2>/dev/null) || resolved_workdir="$workdir"
+                resolved_arg=$(realpath "$arg" 2>/dev/null) || resolved_arg="$arg"
+                args+=("${resolved_arg#"$resolved_workdir"/}")
                 continue
             fi
             if [[ "$arg" != */* ]]; then
