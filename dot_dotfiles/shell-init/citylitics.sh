@@ -402,12 +402,18 @@ pt() {
 
         local args=()
         for arg in "$@"; do
-            # Absolute path: strip workdir prefix and use directly
+            # Absolute path: convert to path relative to docker WORKDIR (/usr/src/app → repo's app/)
             if [[ "$arg" == /* ]]; then
-                local resolved_workdir resolved_arg
+                local resolved_workdir resolved_arg rel
                 resolved_workdir=$(realpath "$workdir" 2>/dev/null) || resolved_workdir="$workdir"
                 resolved_arg=$(realpath "$arg" 2>/dev/null) || resolved_arg="$arg"
-                args+=("${resolved_arg#"$resolved_workdir"/}")
+                # Docker mounts <repo>/app/ as WORKDIR; strip that prefix first
+                rel="${resolved_arg#"$resolved_workdir/app/"}"
+                # Fall back to stripping just workdir (e.g. path already relative to repo root)
+                if [[ "$rel" == "$resolved_arg" ]]; then
+                    rel="${resolved_arg#"$resolved_workdir/"}"
+                fi
+                args+=("$rel")
                 continue
             fi
             if [[ "$arg" != */* ]]; then
