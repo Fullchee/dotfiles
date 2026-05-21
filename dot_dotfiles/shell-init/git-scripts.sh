@@ -905,6 +905,7 @@ pr-files() {
 pr-ready() {
     gh pr ready
 }
+
 pr-url() {
     local url
     url=$(PAGER=cat gh pr view --json url --jq '.url' 2>/dev/null) || {

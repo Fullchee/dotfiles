@@ -46,10 +46,10 @@ citylitics-repo-root() {
     printf '%s' "$repo_root"
 }
 
-jira() {
+pr-ticket() {
     local branch="${1:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null)}"
     if [[ -z "$branch" ]]; then
-        echo "Usage: jira [branch-name]"
+        echo "Usage: pr-ticket [branch-name]"
         return 1
     fi
     local ticket
@@ -60,6 +60,7 @@ jira() {
     fi
     open "https://citylitics.atlassian.net/browse/$ticket"
 }
+alias prticket=pr-ticket
 
 alias repo='open https://github.com/WatrHub/watrhub-django'
 
