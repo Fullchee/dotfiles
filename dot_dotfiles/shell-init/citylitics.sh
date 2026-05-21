@@ -167,59 +167,6 @@ _resolve_and_check_origin_sha() {
     printf '%s' "$sha"
 }
 
-_deploy-sha() {
-    local trigger="$1"
-    local project="$2"
-    local input_commit_sha="$3"
-
-    local REPO_ROOT
-    REPO_ROOT=$(citylitics-repo-root) || return 1
-
-    local commit_sha
-    commit_sha=$(_resolve_and_check_origin_sha "$REPO_ROOT" "$input_commit_sha") || return 1
-    echo "Resolved commit SHA: $commit_sha"
-
-    local commit_author
-    commit_author=$(git -C "$REPO_ROOT" show -s --format='%an <%ae>' "$commit_sha")
-    local commit_date
-    commit_date=$(git -C "$REPO_ROOT" show -s --format='%ad' --date=iso-strict "$commit_sha")
-    local commit_subject
-    commit_subject=$(git -C "$REPO_ROOT" show -s --format='%s' "$commit_sha")
-    local commit_branches
-    commit_branches=$(git -C "$REPO_ROOT" branch --all --contains "$commit_sha" | sed 's#^..##' | sort | paste -sd ', ' -)
-    if [[ -z "$commit_branches" ]]; then
-        commit_branches="(none)"
-    fi
-    echo "  Author: $commit_author"
-    echo "  Date:   $commit_date"
-    echo "  Subject: $commit_subject"
-    echo "  Branches containing commit: $commit_branches"
-
-    local output
-    output=$(gcloud builds triggers run "$trigger" --project="$project" --sha="$commit_sha" --format=json)
-    echo "$output"
-
-    local build_id
-    build_id=$(echo "$output" | jq -r '.metadata.build.id')
-    if [[ -n "$build_id" && "$build_id" != "null" ]]; then
-        local url="https://console.cloud.google.com/cloud-build/builds;region=global/${build_id}?project=${project}"
-        echo "Opening: $url"
-        open "$url"
-    fi
-}
-
-deploy-sha-to-prod() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: deploy-sha-to-prod <commit-sha>"
-        return 1
-    fi
-    _deploy-sha citylitics-app-ci-cd-production crawler-147820 "$1"
-}
-
-deploy-sha-to-staging() {
-    _deploy-sha citylitics-app-ci-cd dev-review-env "${1:-HEAD}"
-}
-
 frontend-pr-cloud-build() {
     gh pr checks --json name,link | jq -r '.[] | select(.name | contains("frontend")) | .link' | xargs open
 }

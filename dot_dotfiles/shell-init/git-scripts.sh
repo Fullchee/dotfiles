@@ -177,7 +177,7 @@ git-clone-personal() {
     fi
 }
 
-git-full-status() {
+git-view-hidden() {
     _require_git_repo || return 1
 
     git status --short --branch "$@"
