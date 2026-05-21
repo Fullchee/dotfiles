@@ -37,52 +37,62 @@ Fields to fill:
 6. **Review instructions** — step-by-step reviewer instructions (with localhost URLs if applicable)?
 7. **Story Points** — sum of all scenario estimated days (derived automatically; do not ask)
 
-## Step 3 — Draft the description
+## Step 3 — Draft the description as ADF
 
-```markdown
-**SO THAT** {value statement}
+Build the description as an ADF JSON document (Atlassian Document Format). Do NOT use markdown.
 
----
+### ADF essentials
 
-## Scenarios
-
-### [{days} day(s)] Scenario {N} - {Behavior Description (Who, What, Why, When)}
-
-- Given ...
-- When ...
-- Then ...
-
----
-
-## [Tests & Data Validation Queries|https://citylitics.atlassian.net/wiki/spaces/DEV/pages/2070708231/Achieve+Product-Driven+Jira+Ticket+Structure#2.-Tests-&-Data-Validation-Queries]
-
-- Frontend
-  - {scenario}
-- Backend
-  - {scenario}
-
----
-
-## Context/Background
-
-{context and background}
-
----
-
-## Approach
-
-### Scenario {N} {Behavior description} (repeated)
-
-{approach description}
-
----
-
-## Review instructions
+```
+doc          = { "version": 1, "type": "doc", "content": [...block nodes] }
+paragraph    = { "type": "paragraph", "content": [...inline nodes] }
+heading(N)   = { "type": "heading", "attrs": { "level": N }, "content": [...inline nodes] }
+rule         = { "type": "rule" }
+bulletList   = { "type": "bulletList", "content": [...listItem nodes] }
+listItem     = { "type": "listItem", "content": [...paragraph nodes] }
+text(s)      = { "type": "text", "text": "s" }
+bold(s)      = { "type": "text", "text": "s", "marks": [{ "type": "strong" }] }
+link(s, url) = { "type": "text", "text": "s", "marks": [{ "type": "link", "attrs": { "href": "url" } }] }
 ```
 
-## Step 4 — Create or update the ticket
+Nested lists: `listItem.content` may contain another `bulletList`.
 
-Write the description to a temp file, then:
+### Template structure
+
+```
+doc.content = [
+  paragraph([bold("SO THAT"), text(" {value statement}")]),
+  rule,
+  heading(2, "Scenarios"),
+  heading(3, "[{days} day(s)] Scenario {N} - {Behavior Description}"),
+  bulletList([
+    listItem([paragraph([text("Given ...")])]),
+    listItem([paragraph([text("When ...")])]),
+    listItem([paragraph([text("Then ...")])])
+  ]),
+  // repeat heading(3) + bulletList for each scenario
+  rule,
+  heading(2, [link("Tests & Data Validation Queries", "https://citylitics.atlassian.net/wiki/spaces/DEV/pages/2070708231/Achieve+Product-Driven+Jira+Ticket+Structure#2.-Tests-&-Data-Validation-Queries")]),
+  bulletList([
+    listItem([paragraph([text("Frontend")]), bulletList([listItem([paragraph([text("{scenario}")])])])]),
+    listItem([paragraph([text("Backend")]),  bulletList([listItem([paragraph([text("{scenario}")])])])])
+  ]),
+  rule,
+  heading(2, "Context/Background"),
+  paragraph([text("{context and background}")]),
+  rule,
+  heading(2, "Approach"),
+  heading(3, "Scenario {N} {Behavior description}"),
+  paragraph([text("{approach description}")]),
+  rule,
+  heading(2, "Review instructions"),
+  // bullet steps
+]
+```
+
+Write the complete ADF JSON to `/tmp/tech-debt-description.json`.
+
+## Step 4 — Create or update the ticket
 
 **(Create mode only)**
 
@@ -115,11 +125,11 @@ sleep 5
 
 **(Both modes)**
 
-**4c.** Update the ticket description:
+**4c.** Update the ticket description with the ADF JSON:
 
 ```bash
 acli jira workitem update {TICKET_ID} \
-  --description-file /tmp/tech-debt-description.md
+  --description-file /tmp/tech-debt-description.json
 ```
 
 Output the ticket URL to the user.
