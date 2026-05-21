@@ -152,21 +152,6 @@ open-deploy-url() {
     fi
 }
 
-_resolve_and_check_origin_sha() {
-    local repo_root="$1" input_commit_sha="$2"
-    local sha
-    if ! sha=$(git -C "$repo_root" rev-parse --verify "$input_commit_sha^{commit}" 2>/dev/null); then
-        echo "Error: commit '$input_commit_sha' not found in local repo." >&2
-        return 1
-    fi
-    git -C "$repo_root" fetch origin --quiet 2>/dev/null
-    if ! git -C "$repo_root" branch -r --contains "$sha" 2>/dev/null | grep -q "origin/"; then
-        echo "Error: $sha is not on origin. Did you forget to git push?" >&2
-        return 1
-    fi
-    printf '%s' "$sha"
-}
-
 frontend-pr-cloud-build() {
     gh pr checks --json name,link | jq -r '.[] | select(.name | contains("frontend")) | .link' | xargs open
 }
